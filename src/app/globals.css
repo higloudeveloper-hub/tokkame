@@ -1972,7 +1972,16 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .pay-panel { width: 100%; border-radius: 22px 22px 0 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 
   .phone-home { gap: 0; }
-  .lux { display: grid; gap: 16px; margin: 0 -14px 8px; color: white; }
+  .lux { display: grid; gap: 22px; margin: 8px -14px 12px; color: white; }
+  .lux > * { animation: lux-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .lux > *:nth-child(2) { animation-delay: 0.06s; }
+  .lux > *:nth-child(3) { animation-delay: 0.12s; }
+  .lux > *:nth-child(4) { animation-delay: 0.16s; }
+  .lux-intro { display: grid; gap: 8px; padding: 8px 18px 0; }
+  .lux-intro p { margin: 0; color: #ff8b94; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+  .lux-intro h1 { margin: 0; font-size: 40px; line-height: 0.94; letter-spacing: -0.045em; }
+  .lux-intro h1 span { display: block; }
+  .lux-intro .lead { color: #d7d7de; font-size: 15px; font-weight: 500; letter-spacing: 0; text-transform: none; line-height: 1.4; max-width: 34ch; }
   .lux-stories, .lux-stage, .lux-promos, .lux-unlock { scrollbar-width: none; }
   .lux-stories::-webkit-scrollbar, .lux-stage::-webkit-scrollbar, .lux-promos::-webkit-scrollbar, .lux-unlock::-webkit-scrollbar { display: none; }
   .lux-stories { display: flex; gap: 14px; overflow-x: auto; padding: 10px 16px 0; }
@@ -2012,101 +2021,131 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
     background: #ff2e3c;
     border: 2px solid #0c0c0e;
   }
+  .lux-stories em { font-style: normal; color: #3ddc84; font-size: 11px; font-weight: 750; }
   .lux-stage { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .lux-slide { flex: 0 0 100%; scroll-snap-align: start; padding: 0 16px; box-sizing: border-box; }
   .lux-card {
-    position: relative;
-    flex: 0 0 100%;
-    height: 500px;
-    scroll-snap-align: start;
+    display: grid;
+    border-radius: 26px;
     overflow: hidden;
-    border-radius: 0 0 32px 32px;
+    background: #f4f4f6;
+    color: #141416;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
   }
-  .lux-card video, .lux-card img.drift { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 16%; }
-  .lux-card img.drift { animation: lux-drift 16s ease-in-out infinite alternate; }
-  .lux-card .shade, .lux-promo .shade, .lux-unlock .shade {
-    position: absolute;
-    inset: 0;
-  }
-  .lux-card .shade { background: linear-gradient(180deg, rgba(0,0,0,0.28) 0%, transparent 26%, transparent 46%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.94) 100%); }
-  .lux-card .copy { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 1; display: grid; gap: 8px; }
+  .lux-card .frame { position: relative; height: 340px; overflow: hidden; }
+  .lux-card video, .lux-card img.drift { width: 100%; height: 100%; object-fit: cover; object-position: center 16%; display: block; }
+  .lux-card img.drift, .lux-topic img.drift { animation: lux-drift 16s ease-in-out infinite alternate; }
   .lux-live {
+    position: absolute;
+    top: 12px;
+    left: 12px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    width: fit-content;
     padding: 5px 9px;
     border-radius: 999px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(0, 0, 0, 0.62);
+    color: white;
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
-  .lux-live i { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 4px rgba(61, 220, 132, 0.28); }
-  .lux-card h2 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 42px; line-height: 0.95; letter-spacing: -0.045em; text-shadow: 0 8px 24px rgba(0,0,0,0.55); }
-  .lux-card h2 .lux-check { position: static; width: 22px; height: 22px; }
-  .lux-card p { margin: 0; max-width: 26ch; color: rgba(255,255,255,0.94); font-size: 15px; line-height: 1.35; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
-  .lux-actions { display: grid; grid-template-columns: 1.25fr 1fr; gap: 8px; margin-top: 4px; }
-  .lux-actions .red-btn, .lux-actions .glass { min-height: 48px; border-radius: 14px; font-size: 15px; }
-  .lux-actions .glass {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.16);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.34);
-    border-radius: 14px;
-    font-weight: 800;
-    backdrop-filter: blur(12px);
-  }
+  .lux-live i { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 4px rgba(61, 220, 132, 0.28); animation: lux-blink 1.4s ease-in-out infinite; }
+  .lux-card .sheet { display: grid; gap: 8px; padding: 14px 14px 16px; }
+  .lux-card h2 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 32px; line-height: 1; letter-spacing: -0.04em; color: #141416; }
+  .lux-card h2 .lux-check { position: static; width: 20px; height: 20px; }
+  .lux-card p { margin: 0; color: #3a3a44; font-size: 15px; line-height: 1.35; }
+  .lux-card .call-now { min-height: 52px; border-radius: 14px; font-size: 16px; }
+  .lux-card .see { justify-self: center; color: #5c5c66; font-size: 13px; font-weight: 700; }
   .lux-dots { display: flex; justify-content: center; gap: 6px; margin-top: -6px; }
   .lux-dots button { width: 7px; height: 7px; min-height: 0; padding: 0; border: 0; border-radius: 99px; background: rgba(255,255,255,0.32); }
   .lux-dots button.on { width: 18px; background: #ff2e3c; }
-  .lux-head { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 16px 0; }
-  .lux-head h3 { margin: 0; font-size: 18px; letter-spacing: -0.03em; }
-  .lux-head a { color: #ff8b94; font-size: 13px; font-weight: 750; }
-  .lux-promos, .lux-unlock { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px; }
-  .lux-promo {
-    position: relative;
-    flex: 0 0 78%;
-    height: 156px;
-    scroll-snap-align: center;
+  .lux-block { display: grid; gap: 12px; }
+  .lux-head { display: flex; align-items: baseline; justify-content: space-between; padding: 0 18px; }
+  .lux-head h3 { margin: 0; font-size: 22px; letter-spacing: -0.03em; }
+  .lux-head a, .lux-head span { color: #ff8b94; font-size: 13px; font-weight: 750; }
+  .lux-calls { display: grid; gap: 10px; padding: 0 16px; }
+  .lux-call {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    min-height: 132px;
     border-radius: 20px;
     overflow: hidden;
-    color: white;
+    background: #f4f4f6;
+    color: #141416;
   }
-  .lux-promo img { width: 100%; height: 100%; object-fit: cover; }
-  .lux-promo img.drift { animation: lux-drift 18s ease-in-out infinite alternate; }
-  .lux-promo .shade { background: linear-gradient(90deg, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.2) 78%); }
-  .lux-promo span { position: absolute; left: 14px; bottom: 14px; z-index: 1; display: grid; gap: 2px; }
-  .lux-promo small { color: #ffb3b8; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
-  .lux-promo strong { font-size: 26px; letter-spacing: -0.04em; text-shadow: 0 6px 16px rgba(0,0,0,0.55); }
-  .lux-promo::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg, transparent 36%, rgba(255,255,255,0.22), transparent 64%);
-    transform: translateX(-130%);
-    animation: lux-shine 5.5s ease-in-out infinite;
+  .lux-call img { width: 108px; height: 100%; object-fit: cover; }
+  .lux-call div { display: grid; align-content: center; gap: 3px; padding: 12px 12px 12px 14px; }
+  .lux-call small, .lux-topic small, .lux-close small { color: #ff2e3c; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+  .lux-call strong { display: flex; align-items: center; gap: 6px; font-size: 20px; letter-spacing: -0.03em; }
+  .lux-call .lux-check, .lux-unlock .lux-check { position: static; width: 16px; height: 16px; }
+  .lux-call p, .lux-topic p { margin: 0; color: #3a3a44; font-size: 13px; line-height: 1.3; }
+  .lux-call .call-now { justify-self: start; min-height: 36px; margin-top: 6px; padding: 0 14px; border-radius: 12px; }
+  .lux-steps { list-style: none; margin: 0; padding: 0 16px; display: grid; gap: 8px; }
+  .lux-steps li {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: #17171b;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
+  .lux-steps b { grid-row: 1 / span 2; color: #ff2e3c; font-size: 18px; letter-spacing: -0.04em; }
+  .lux-steps strong { font-size: 16px; }
+  .lux-steps span { color: #b7b7c0; font-size: 13px; }
+  .lux-topics, .lux-unlock { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px 4px; scrollbar-width: none; }
+  .lux-topics::-webkit-scrollbar, .lux-unlock::-webkit-scrollbar { display: none; }
+  .lux-topic {
+    flex: 0 0 78%;
+    scroll-snap-align: center;
+    display: grid;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #f4f4f6;
+    color: #141416;
+  }
+  .lux-topic img { width: 100%; height: 168px; object-fit: cover; display: block; }
+  .lux-topic div { display: grid; gap: 4px; padding: 12px 12px 14px; }
+  .lux-topic strong { font-size: 22px; letter-spacing: -0.03em; }
+  .lux-topic .red-btn { justify-self: start; min-height: 40px; margin-top: 6px; border-radius: 12px; }
   .lux-unlock a {
-    position: relative;
     flex: 0 0 168px;
-    height: 228px;
     scroll-snap-align: start;
+    display: grid;
     border-radius: 18px;
     overflow: hidden;
-    color: white;
+    background: #f4f4f6;
+    color: #141416;
   }
-  .lux-unlock img { width: 100%; height: 100%; object-fit: cover; }
-  .lux-unlock a::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 42%, rgba(0,0,0,0.88)); }
-  .lux-unlock span { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 1; display: grid; gap: 2px; }
+  .lux-unlock img { width: 100%; height: 210px; object-fit: cover; display: block; }
+  .lux-unlock span { display: grid; gap: 2px; padding: 10px 10px 12px; }
   .lux-unlock strong { display: flex; align-items: center; gap: 6px; font-size: 15px; }
-  .lux-unlock .lux-check { position: static; width: 16px; height: 16px; }
-  .lux-unlock em { font-style: normal; color: rgba(255,255,255,0.82); font-size: 12px; }
-  .lux-note { margin: 0; padding: 0 16px; color: #9c9ca6; font-size: 12px; }
-  @keyframes lux-drift { from { transform: scale(1); } to { transform: scale(1.07); } }
+  .lux-unlock em { font-style: normal; color: #ff2e3c; font-size: 12px; font-weight: 800; }
+  .lux-close {
+    margin: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 22px;
+    background: #f4f4f6;
+    color: #141416;
+  }
+  .lux-close div { display: grid; gap: 2px; }
+  .lux-close strong { font-size: 22px; letter-spacing: -0.03em; }
+  .lux-close .call-now { min-height: 48px; border-radius: 14px; }
+  .lux .call-now { animation: call-glow 1.8s ease-in-out infinite; }
+  .lux-note { margin: 0; padding: 0 18px 8px; color: #9c9ca6; font-size: 12px; }
+  @keyframes lux-drift { from { transform: scale(1); } to { transform: scale(1.06); } }
   @keyframes lux-pulse { 50% { box-shadow: 0 0 0 7px rgba(61, 220, 132, 0.05); } }
-  @keyframes lux-shine { 0%, 55% { transform: translateX(-130%); } 100% { transform: translateX(130%); } }
+  @keyframes lux-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes lux-blink { 50% { opacity: 0.35; } }
+  @keyframes call-glow {
+    50% { box-shadow: 0 10px 26px rgba(255, 36, 54, 0.55); transform: scale(1.03); }
+  }
 }
