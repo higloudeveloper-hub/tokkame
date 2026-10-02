@@ -5,7 +5,7 @@ import "./globals.css";
 import { getSessionUser, hasAgeCookie, sessionView } from "@/lib/auth";
 import { AgeGate } from "@/components/age-gate";
 import { AppShell } from "@/components/app-shell";
-import { activityFeed } from "@/lib/studio";
+import { activityFeed, creatorCards } from "@/lib/studio";
 import { readDb } from "@/lib/store";
 
 const outfit = Outfit({
@@ -37,13 +37,20 @@ export const dynamic = "force-dynamic";
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const aged = await hasAgeCookie();
   const user = aged ? await getSessionUser() : null;
-  const activity = aged ? activityFeed(readDb()) : [];
+  const db = aged ? readDb() : null;
+  const activity = db ? activityFeed(db) : [];
+  const online = db ? creatorCards(db).filter((creator) => creator.online).map((creator) => ({
+    id: creator.id,
+    name: creator.name,
+    username: creator.username,
+    photo: creator.photo,
+  })) : [];
   return (
     <html lang="en" className={`${outfit.variable} ${fraunces.variable}`}>
       <body>
         {aged ? (
           <Suspense>
-            <AppShell user={user ? sessionView(user) : null} activity={activity}>
+            <AppShell user={user ? sessionView(user) : null} activity={activity} online={online}>
               {children}
             </AppShell>
           </Suspense>

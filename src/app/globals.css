@@ -1621,6 +1621,47 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 .pay-panel-head b { font-size: 22px; letter-spacing: -0.03em; }
 .pay-panel select { width: 100%; border-radius: 12px; }
 .tabbar, .phone-only, .msg-back { display: none; }
+.online-dock { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: grid; justify-items: end; gap: 10px; }
+.online-fab {
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ff2e3c;
+  color: white;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+.online-fab i {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3ddc84;
+  border: 2px solid #ff2e3c;
+}
+.online-panel {
+  width: min(320px, calc(100vw - 32px));
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 20px;
+  background: #16161a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  color: white;
+}
+.online-panel header { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 8px; }
+.online-panel header button { width: 28px; height: 28px; border: 0; border-radius: 50%; background: #1c1c20; color: white; }
+.online-panel a { display: grid; grid-template-columns: 48px 1fr; gap: 10px; align-items: center; padding: 8px; border-radius: 14px; }
+.online-panel a:hover { background: #1c1c20; }
+.online-panel img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #3ddc84; }
+.online-panel b, .online-panel em { display: block; }
+.online-panel em { color: #9c9ca6; font-style: normal; font-size: 12px; }
 .msg-head { display: contents; }
 
 @media (max-width: 860px) {
@@ -1657,6 +1698,7 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .scrim.show { z-index: 65; }
   .app.nav-open .tabbar { visibility: hidden; }
 
+  .online-dock { right: 16px; bottom: calc(74px + env(safe-area-inset-bottom)); }
   .tabbar {
     display: grid;
     position: fixed;

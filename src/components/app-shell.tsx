@@ -7,6 +7,7 @@ import { logout } from "@/lib/actions";
 import type { SessionView } from "@/lib/types";
 
 type Activity = { id: string; name: string; username: string; line: string; time: string; photo: string };
+type Online = { id: string; name: string; username: string; photo: string };
 
 const mainLinks = [
   { href: "/", label: "Home", icon: "home" },
@@ -19,10 +20,12 @@ const mainLinks = [
 export function AppShell({
   user,
   activity,
+  online,
   children,
 }: {
   user: SessionView | null;
   activity: Activity[];
+  online: Online[];
   children: ReactNode;
 }) {
   const path = usePathname();
@@ -30,6 +33,7 @@ export function AppShell({
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(true);
   const [bell, setBell] = useState(false);
+  const [dock, setDock] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("tokkame-theme");
@@ -42,6 +46,7 @@ export function AppShell({
   useEffect(() => {
     setOpen(false);
     setBell(false);
+    setDock(false);
   }, [path]);
 
   function toggleTheme() {
@@ -161,6 +166,31 @@ export function AppShell({
         </div>
         <small>© 2026 Tokkame. All rights reserved.</small>
       </footer>
+      {path.startsWith("/call/") ? null : (
+        <div className={`online-dock${dock ? " open" : ""}`}>
+          {dock ? (
+            <section className="online-panel" aria-label="Online now">
+              <header>
+                <strong>Online now</strong>
+                <button type="button" aria-label="Close" onClick={() => setDock(false)}>×</button>
+              </header>
+              {online.map((person) => (
+                <Link key={person.id} href={`/call/${person.username}`}>
+                  <img src={person.photo} alt="" />
+                  <span>
+                    <b>{person.name.split(" ")[0]}</b>
+                    <em>Verified · Online</em>
+                  </span>
+                </Link>
+              ))}
+            </section>
+          ) : null}
+          <button className="online-fab" type="button" aria-label="See who is online" onClick={() => setDock((value) => !value)}>
+            <Icon name="chat" />
+            <i />
+          </button>
+        </div>
+      )}
       <nav className="tabbar" aria-label="App">
         {mainLinks.map((link) => (
           <Link key={link.href} href={link.href} className={active(link.href) ? "on" : ""}>
