@@ -24,18 +24,11 @@ const topics = [
   { href: "/talk#listen", img: "/talk/listen.jpg?v=3", kicker: "Request her", title: "Just listen", text: "You talk. She stays with it." },
 ];
 
-function Mark() {
+function Check() {
   return (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" aria-hidden><path d="m5 12 5 5L20 7" /></svg>
-  );
-}
-
-function Verified() {
-  return (
-    <span className="lux-verified">
-      <i><Mark /></i>
-      Verified
-    </span>
+    <i className="lux-check" aria-label="Verified">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="m5 12 5 5L20 7" /></svg>
+    </i>
   );
 }
 
@@ -69,14 +62,9 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
   return (
     <div className="lux">
       <header className="lux-intro">
-        <p>Verified women · 18+</p>
-        <h1>A problem.<span>Tell her.</span></h1>
-        <p className="lead">Every woman here is verified. If you need to talk, request her. Infidelity, work, a secret. A private conversation.</p>
-        <ul className="lux-trust">
-          <li>Verified</li>
-          <li>Online now</li>
-          <li>Private</li>
-        </ul>
+        <p>Talk to a woman · 18+</p>
+        <h1>Got a problem?<span>Tell her.</span></h1>
+        <p className="lead">If you need to talk, request a woman who is online. Infidelity, work, a secret. She listens. You choose who.</p>
       </header>
 
       <div className="lux-stories">
@@ -84,10 +72,10 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
           <button key={person.id} type="button" className={i === index ? "on" : ""} onClick={() => go(i)}>
             <span className="lux-ring">
               <img src={person.photo} alt="" />
-              <i className="lux-check"><Mark /></i>
+              <Check />
             </span>
             <strong>{person.name.split(" ")[0]}</strong>
-            <em>Online</em>
+            <em>Live</em>
           </button>
         ))}
       </div>
@@ -102,14 +90,10 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
                 ) : (
                   <img className="drift" src={person.photo} alt="" />
                 )}
-                <span className="lux-live"><i />Online</span>
+                <span className="lux-live"><i />Live</span>
               </div>
               <div className="sheet">
-                <div className="who">
-                  <h2>{person.name.split(" ")[0]}</h2>
-                  <Verified />
-                </div>
-                <p className="handle">@{person.username}</p>
+                <h2>{person.name.split(" ")[0]} <Check /></h2>
                 <p>{lines[i % lines.length]}</p>
                 <Link className="red-btn call-now" href={`/creator/${person.username}`}>Request her</Link>
                 <Link className="see" href={`/creator/${person.username}`}>See her profile</Link>
@@ -134,10 +118,9 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
             <Link className="lux-call" key={person.id} href={`/creator/${person.username}`}>
               <img src={person.photo} alt="" />
               <div>
-                <small>Online</small>
-                <strong>{person.name.split(" ")[0]}</strong>
-                <Verified />
-                <p>Verified profile. Tell her the problem.</p>
+                <small>Talk to her</small>
+                <strong>{person.name.split(" ")[0]} <Check /></strong>
+                <p>Tell her the problem. She listens.</p>
                 <span className="red-btn call-now">Request her</span>
               </div>
             </Link>
@@ -186,8 +169,8 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
             <Link key={person.id} href={`/creator/${person.username}`}>
               <img src={person.photo} alt="" />
               <span>
-                <strong>{person.name.split(" ")[0]}</strong>
-                <em>Verified</em>
+                <strong>{person.name.split(" ")[0]} <Check /></strong>
+                <em>See posts</em>
               </span>
             </Link>
           ))}
