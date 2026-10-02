@@ -21,7 +21,9 @@ export const REFERRAL_RATE = 0.05;
 export const REFERRAL_DAYS = 180;
 export const SEED_VERSION = 1;
 
-const file = path.join(process.cwd(), "data", "db.json");
+const file = process.env.VERCEL
+  ? path.join("/tmp", "tokkame-db.json")
+  : path.join(process.cwd(), "data", "db.json");
 
 const g = globalThis as unknown as { __tokkameQueue?: Promise<unknown> };
 if (!g.__tokkameQueue) g.__tokkameQueue = Promise.resolve();
@@ -741,7 +743,9 @@ export function upcomingDrops(db: DB) {
 }
 
 export function uploadDir() {
-  return path.join(process.cwd(), "data", "uploads");
+  return process.env.VERCEL
+    ? path.join("/tmp", "tokkame-uploads")
+    : path.join(process.cwd(), "data", "uploads");
 }
 
 export function spend(
