@@ -1735,7 +1735,6 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .app-top .wordmark { justify-self: center; min-width: 0; }
   .app-top .top-right { justify-self: end; min-width: 0; gap: 6px; }
   .top-right .phone-only { display: none; }
-  .top-right .lang-bar select { width: 88px; height: 32px; padding: 0 4px; font-size: 12px; }
   .top-right .red-btn { min-height: 32px; padding: 0 10px; font-size: 12px; }
   .studio .lang-bar { display: none; }
   .lang-bar span { display: none; }
@@ -2186,7 +2185,7 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .lux > *:nth-child(2) { animation-delay: 0.06s; }
   .lux > *:nth-child(3) { animation-delay: 0.12s; }
   .lux > *:nth-child(4) { animation-delay: 0.16s; }
-  .lux-intro { display: grid; gap: 8px; padding: 8px 20px 0; justify-items: center; text-align: center; }
+  .lux-intro { display: grid; gap: 8px; padding: 8px 20px 0; justify-items: start; text-align: left; }
   .lux-intro p { margin: 0; color: #ff8b94; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
   .lux-intro h1 { margin: 0; font-size: clamp(30px, 9vw, 40px); line-height: 0.94; letter-spacing: -0.045em; }
   .lux-intro h1 span { display: block; }
@@ -2236,8 +2235,8 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
     border: 2px solid #0c0c0e;
   }
   .lux-stories em { font-style: normal; color: #3ddc84; font-size: 11px; font-weight: 750; }
-  .lux-stage { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
-  .lux-slide { flex: 0 0 100%; width: 100%; max-width: 100%; scroll-snap-align: start; scroll-snap-stop: always; padding: 0 16px; box-sizing: border-box; }
+  .lux-stage { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px; scroll-padding-left: 16px; }
+  .lux-slide { flex: 0 0 calc(100% - 72px); width: calc(100% - 72px); max-width: calc(100% - 72px); scroll-snap-align: start; scroll-snap-stop: always; padding: 0; box-sizing: border-box; }
   .lux-card {
     display: grid;
     border-radius: 26px;

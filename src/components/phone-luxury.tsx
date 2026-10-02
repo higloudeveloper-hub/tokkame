@@ -145,18 +145,26 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
   const count = live.length;
   const first = live[0];
 
+  function stride() {
+    const el = track.current;
+    const slide = el?.querySelector<HTMLElement>(".lux-slide");
+    if (!el || !slide) return 1;
+    const gap = Number.parseFloat(getComputedStyle(el).columnGap || "0") || 0;
+    return slide.offsetWidth + gap;
+  }
+
   function go(next: number) {
     const el = track.current;
     if (!el || !count) return;
     const i = (next + count) % count;
-    el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+    el.scrollTo({ left: i * stride(), behavior: "smooth" });
     setIndex(i);
   }
 
   function onScroll() {
     const el = track.current;
     if (!el) return;
-    const next = Math.round(el.scrollLeft / (el.clientWidth || 1));
+    const next = Math.round(el.scrollLeft / stride());
     setIndex((current) => (current === next ? current : next));
   }
 
