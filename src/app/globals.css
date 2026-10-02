@@ -1575,17 +1575,48 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 .chat-compose textarea { min-height: 52px; border-radius: 16px; }
 .chat-compose p { margin: 0; color: #9c9ca6; font-size: 13px; }
 .phone-home { display: none; }
-.lang-bar { display: flex; justify-content: flex-end; margin: 0; }
-.top-right .lang-bar select { height: 34px; }
-.lang-bar label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-weight: 700; }
-.lang-bar select {
-  height: 36px;
-  padding: 0 10px;
-  border-radius: 10px;
+.lang-bar { position: relative; display: flex; flex: none; margin: 0; }
+.lang-current {
+  height: 34px;
+  padding: 0 10px 0 12px;
+  border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--panel);
   color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
+.lang-current svg { width: 12px; height: 12px; }
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 70;
+  min-width: 148px;
+  padding: 6px;
+  display: grid;
+  gap: 2px;
+  border-radius: 14px;
+  background: #16161a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+.lang-menu button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: white;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 650;
+}
+.lang-menu button.on { background: #ff2e3c; }
 .call-room { max-width: 440px; margin: 12px auto 28px; }
 .call-pay, .call-ringing, .call-live { display: grid; justify-items: center; gap: 10px; text-align: center; }
 .call-pay > img, .call-live > img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
@@ -1772,17 +1803,16 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
     height: calc(50px + env(safe-area-inset-top));
     padding: env(safe-area-inset-top) 12px 0;
     gap: 8px;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    align-items: center;
     background: color-mix(in srgb, var(--bg) 94%, transparent);
   }
-  .app-top .menu-btn { justify-self: start; }
-  .app-top .wordmark { justify-self: center; min-width: 0; }
-  .app-top .top-right { justify-self: end; min-width: 0; gap: 6px; }
+  .app-top .wordmark { min-width: 0; }
+  .app-top .top-right { margin-left: auto; flex: none; gap: 6px; }
   .top-right .phone-only { display: none; }
   .top-right .red-btn { min-height: 32px; padding: 0 10px; font-size: 12px; }
   .studio .lang-bar { display: none; }
-  .lang-bar span { display: none; }
+  .lang-current { height: 32px; font-size: 13px; }
   .wordmark { font-size: 15px; letter-spacing: 0.16em; }
   .wordmark i { width: 16px; height: 16px; box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 5px var(--red); }
   .icon-btn, .avatar-link { width: 36px; height: 36px; }
