@@ -106,7 +106,6 @@ export default async function HomePage() {
               <Link className="tcard-visual" href={`/creator/${creator.username}`}>
                 <img src={creator.photo} alt="" />
                 <span className="rank">#{index + 1}</span>
-                <span className="heart" aria-hidden>♡</span>
               </Link>
               <div className="tcard-meta">
                 <strong>{creator.username.replace(".", "_")}</strong>

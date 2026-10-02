@@ -174,19 +174,15 @@ export function AppShell({
 }
 
 function Icon({ name }: { name: string }) {
-  const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8 };
-  if (name === "chat") return <svg {...common}><path d="M5 6h14v9H8l-3 3z" /></svg>;
-  if (name === "play") return <svg {...common}><path d="M8 6.5v11l9-5.5z" /></svg>;
-  if (name === "home") return <svg {...common}><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" /></svg>;
-  if (name === "compass") return <svg {...common}><circle cx="12" cy="12" r="8" /><path d="m14.5 9.5-1.2 4.8-4.8 1.2 1.2-4.8z" /></svg>;
-  if (name === "flame") return <svg {...common}><path d="M12 3s5 4 5 9a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1.2 3 2 3C11 7.5 12 5 12 3z" /></svg>;
-  if (name === "spark") return <svg {...common}><path d="M12 3v6M12 15v6M3 12h6M15 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3" /></svg>;
-  if (name === "star") return <svg {...common}><path d="m12 3 2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z" /></svg>;
-  if (name === "pin") return <svg {...common}><path d="M12 21s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10z" /><circle cx="12" cy="11" r="2" /></svg>;
-  if (name === "search") return <svg {...common}><circle cx="11" cy="11" r="6" /><path d="m16 16 4 4" /></svg>;
-  if (name === "bell") return <svg {...common}><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z" /><path d="M10 19a2 2 0 0 0 4 0" /></svg>;
+  const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.75, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  if (name === "chat") return <svg {...common}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>;
+  if (name === "play") return <svg {...common}><path d="M7 5.5v13l12-6.5z" /></svg>;
+  if (name === "home") return <svg {...common}><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .7-1.5l7-6a2 2 0 0 1 2.6 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>;
+  if (name === "compass") return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z" /></svg>;
+  if (name === "flame") return <svg {...common}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>;
+  if (name === "search") return <svg {...common}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>;
+  if (name === "bell") return <svg {...common}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>;
   if (name === "menu") return <svg {...common}><path d="M4 7h16M4 12h16M4 17h16" /></svg>;
-  if (name === "crown") return <svg {...common}><path d="m3 17 2-9 5 5 2-7 2 7 5-5 2 9z" /></svg>;
-  if (name === "more") return <svg {...common}><path d="M5 12h.01M12 12h.01M19 12h.01" strokeWidth="3" /></svg>;
+  if (name === "crown") return <svg {...common}><path d="M11.6 3.4a.5.5 0 0 1 .8 0l2.4 3.6 4.2-1.2a.5.5 0 0 1 .6.6L18 14H6L4.4 6.4a.5.5 0 0 1 .6-.6l4.2 1.2z" /><path d="M6 18h12" /></svg>;
   return <svg {...common}><circle cx="12" cy="12" r="3" /></svg>;
 }
