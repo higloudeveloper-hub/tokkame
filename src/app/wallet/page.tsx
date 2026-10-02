@@ -3,6 +3,7 @@ import { Flash, Footer } from "@/components/ui";
 import { addFunds, requestPayout } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { money } from "@/lib/format";
+import { getLang } from "@/lib/lang";
 import { earnings, readDb } from "@/lib/store";
 import { redirect } from "next/navigation";
 
@@ -12,6 +13,8 @@ export default async function WalletPage({
   searchParams: Promise<{ error?: string; ok?: string }>;
 }) {
   const sp = await searchParams;
+  const lang = await getLang();
+  const es = lang === "es";
   const me = await getSessionUser();
   if (!me) redirect("/login");
   const db = readDb();
@@ -24,27 +27,27 @@ export default async function WalletPage({
   return (
     <>
       <Flash error={sp.error} ok={sp.ok} />
-      <p className="kicker">Wallet</p>
-      <h1 className="display" style={{ fontSize: 52, marginTop: 0 }}>Saldos</h1>
+      <p className="kicker">{es ? "Billetera" : "Wallet"}</p>
+      <h1 className="display" style={{ fontSize: 52, marginTop: 0 }}>{es ? "Saldos" : "Balances"}</h1>
       <div className="stat-grid">
-        <article className="card stat"><strong>{money(me.balance)}</strong><span>para gastar, prueba</span></article>
-        <article className="card stat"><strong>{money(available)}</strong><span>ingresos por retirar</span></article>
+        <article className="card stat"><strong>{money(me.balance)}</strong><span>{es ? "para gastar, prueba" : "to spend, sandbox"}</span></article>
+        <article className="card stat"><strong>{money(available)}</strong><span>{es ? "ingresos por retirar" : "earnings to withdraw"}</span></article>
       </div>
       <div className="row" style={{ margin: "16px 0" }}>
         <form action={addFunds} className="wallet-pay">
-          <PayChoices label="Add $50" />
+          <PayChoices lang={lang} label={es ? "Agregar $50" : "Add $50"} />
         </form>
         {me.role === "creator" ? (
-          <form action={requestPayout}><button className="btn gold" type="submit">Solicitar retiro</button></form>
+          <form action={requestPayout}><button className="btn gold" type="submit">{es ? "Solicitar retiro" : "Request payout"}</button></form>
         ) : null}
       </div>
       <p className="tiny muted">
-        Eliges Apple Pay, tarjeta o PayPal. En esta demo el cargo entra al saldo de prueba y el número de tarjeta no se guarda.
+        {es ? "Eliges Apple Pay, tarjeta o PayPal. En esta demo el cargo entra al saldo de prueba y el número de tarjeta no se guarda." : "Choose Apple Pay, card, or PayPal. In this demo the charge hits the sandbox balance and the card number is not stored."}
       </p>
       <div className="panel" style={{ marginTop: 16, overflowX: "auto" }}>
         <table>
           <thead>
-            <tr><th>Tipo</th><th>Nota</th><th>Bruto</th><th>Neto</th></tr>
+            <tr><th>{es ? "Tipo" : "Type"}</th><th>{es ? "Nota" : "Note"}</th><th>{es ? "Bruto" : "Gross"}</th><th>{es ? "Neto" : "Net"}</th></tr>
           </thead>
           <tbody>
             {rows.map((tx) => (

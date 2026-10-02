@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { compact, money } from "@/lib/format";
+import { getLang } from "@/lib/lang";
 import { photoAt } from "@/lib/studio";
 import { creators, followerCount, lowestPrice, publicPosts, readDb, subscriberCount } from "@/lib/store";
 
-export default function TrendingPage() {
+export default async function TrendingPage() {
+  const lang = await getLang();
+  const es = lang === "es";
   const db = readDb();
   const likesOf = (id: string) =>
     publicPosts(db).filter((post) => post.creatorId === id).reduce((sum, post) => sum + post.likes.length, 0);
@@ -24,8 +27,8 @@ export default function TrendingPage() {
   return (
     <div className="chart-page">
       <div className="section-head" style={{ marginTop: 0 }}>
-        <h2>Chart</h2>
-        <Link href="/discover">Browse the catalog</Link>
+        <h2>{es ? "Ranking" : "Chart"}</h2>
+        <Link href="/discover">{es ? "Ver el catálogo" : "Browse the catalog"}</Link>
       </div>
 
       {top ? (
@@ -35,16 +38,16 @@ export default function TrendingPage() {
             <span className="rank">#1</span>
           </Link>
           <div className="chart-copy">
-            <small>THIS WEEK</small>
+            <small>{es ? "ESTA SEMANA" : "THIS WEEK"}</small>
             <h1>{top.user.username.replace(".", "_")}</h1>
-            <p>Most watched content right now. The preview is free. The rest opens with a subscription.</p>
+            <p>{es ? "Lo más visto ahora. La vista previa es gratis. El resto se abre con la suscripción." : "Most watched content right now. The preview is free. The rest opens with a subscription."}</p>
             <div className="heat"><span style={{ width: "100%" }} /></div>
             <div className="chart-stats">
-              <div><b>{compact(top.likes)}</b><span>likes</span></div>
-              <div><b>{compact(top.followers)}</b><span>followers</span></div>
-              <div><b>{money(top.price)}</b><span>/month</span></div>
+              <div><b>{compact(top.likes)}</b><span>{es ? "me gusta" : "likes"}</span></div>
+              <div><b>{compact(top.followers)}</b><span>{es ? "seguidores" : "followers"}</span></div>
+              <div><b>{money(top.price)}</b><span>{es ? "/mes" : "/month"}</span></div>
             </div>
-            <Link className="red-btn" href={`/creator/${top.user.username}?tab=circle`}>Subscribe to #1</Link>
+            <Link className="red-btn" href={`/creator/${top.user.username}?tab=circle`}>{es ? "Suscribirme al #1" : "Subscribe to #1"}</Link>
           </div>
         </section>
       ) : null}
@@ -57,11 +60,11 @@ export default function TrendingPage() {
               <img src={row.photo} alt="" />
               <span>
                 <strong>{row.user.username.replace(".", "_")}</strong>
-                <em>{compact(row.likes)} likes · {money(row.price)}/mo</em>
+                <em>{compact(row.likes)} {es ? "me gusta" : "likes"} · {money(row.price)}/{es ? "mes" : "mo"}</em>
                 <i className="heat"><b style={{ width: `${Math.max(18, Math.round((row.likes / peak) * 100))}%` }} /></i>
               </span>
             </Link>
-            <Link className="red-btn" href={`/creator/${row.user.username}?tab=circle`}>Subscribe</Link>
+            <Link className="red-btn" href={`/creator/${row.user.username}?tab=circle`}>{es ? "Suscribirme" : "Subscribe"}</Link>
           </li>
         ))}
       </ol>

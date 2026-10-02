@@ -3,8 +3,58 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { askCall, sandboxHear, startCall, unlock } from "@/lib/actions";
+import { askCall, sandboxHear, startCall, unlock as unlockAction } from "@/lib/actions";
 import { PayChoices } from "@/components/pay-choices";
+import type { Lang } from "@/lib/lang";
+
+const copy = {
+  en: {
+    kicker: "Private call · 18+",
+    hour: "/ hour",
+    more: "More of",
+    profile: "See her profile",
+    rest: "Her profile has the rest.",
+    free: "Free",
+    reading: "She is reading your note",
+    wait: "She can accept or decline. The hour is not charged until she says yes.",
+    accepted: "She accepted. Pay for the hour. The call stays on Tokkame.",
+    pay: "Pay $13",
+    declined: "She said no to that note. Write another if you want to ask again.",
+    note: "Note for",
+    placeholder: "Tell her why you want the hour.",
+    before: "She reads this before the call. She can say yes or no. You pay only if she accepts.",
+    send: "Send note",
+    connecting: "Connecting with",
+    already: "She already accepted. The call stays on Tokkame.",
+    on: "On Tokkame with",
+    left: "Time left",
+    add: "Add another hour",
+    addPay: "Add 1 hour · $13",
+  },
+  es: {
+    kicker: "Llamada privada · 18+",
+    hour: "/ hora",
+    more: "Más de",
+    profile: "Ver su perfil",
+    rest: "El resto está en su perfil.",
+    free: "Gratis",
+    reading: "Ella está leyendo tu nota",
+    wait: "Puede aceptar o decir que no. La hora no se cobra hasta que diga que sí.",
+    accepted: "Ella aceptó. Paga la hora. La llamada se queda en Tokkame.",
+    pay: "Pagar $13",
+    declined: "Dijo que no a esa nota. Escribe otra si quieres pedir de nuevo.",
+    note: "Nota para",
+    placeholder: "Dile por qué quieres la hora.",
+    before: "Ella lee esto antes de la llamada. Puede decir que sí o que no. Pagas solo si acepta.",
+    send: "Enviar nota",
+    connecting: "Conectando con",
+    already: "Ella ya aceptó. La llamada se queda en Tokkame.",
+    on: "En Tokkame con",
+    left: "Tiempo restante",
+    add: "Agregar otra hora",
+    addPay: "Agregar 1 hora · $13",
+  },
+} as const;
 
 function clock(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -33,6 +83,7 @@ export function CallRoom({
   error,
   posts,
   ask,
+  lang,
 }: {
   name: string;
   username: string;
@@ -42,7 +93,9 @@ export function CallRoom({
   error?: string;
   posts: CallPost[];
   ask: { status: "pending" | "accepted" | "declined" | "closed"; note: string } | null;
+  lang: Lang;
 }) {
+  const t = copy[lang];
   const router = useRouter();
   const active = Boolean(paidUntil && new Date(paidUntil).getTime() > Date.now());
   const [phase, setPhase] = useState<"pay" | "ring" | "live">(active ? (ring ? "ring" : "live") : "pay");
@@ -85,40 +138,40 @@ export function CallRoom({
       {phase === "pay" ? (
         <div className="call-pay">
           <img src={photo} alt="" />
-          <p className="call-kicker">Private call · 18+</p>
+          <p className="call-kicker">{t.kicker}</p>
           <h1>{name}</h1>
-          <strong>$13 <span>/ hour</span></strong>
-          <HerPosts name={name} username={username} posts={posts} />
+          <strong>$13 <span>{t.hour}</span></strong>
+          <HerPosts name={name} username={username} posts={posts} lang={lang} />
           {ask?.status === "pending" ? (
             <div className="call-wait">
               <div className="call-pulse">
                 <img src={photo} alt="" />
               </div>
-              <h2>She is reading your note</h2>
+              <h2>{t.reading}</h2>
               <blockquote>{ask.note}</blockquote>
-              <p>She can accept or decline. The hour is not charged until she says yes.</p>
+              <p>{t.wait}</p>
             </div>
           ) : null}
           {ask?.status === "accepted" ? (
             <form action={startCall} className="call-pay-form">
               <input type="hidden" name="username" value={username} />
-              <p className="call-copy">She accepted. Pay for the hour. The call stays on Tokkame.</p>
+              <p className="call-copy">{t.accepted}</p>
               <blockquote>{ask.note}</blockquote>
               {error ? <p className="pay-note">{error}</p> : null}
-              <PayChoices label="Pay $13" />
+              <PayChoices lang={lang} label={t.pay} />
             </form>
           ) : null}
           {ask?.status !== "pending" && ask?.status !== "accepted" ? (
             <form action={askCall} className="call-pay-form">
               <input type="hidden" name="username" value={username} />
-              {ask?.status === "declined" ? <p className="pay-note">She said no to that note. Write another if you want to ask again.</p> : null}
+              {ask?.status === "declined" ? <p className="pay-note">{t.declined}</p> : null}
               <label className="call-note">
-                <span>Note for {name}</span>
-                <textarea name="note" required minLength={8} maxLength={240} placeholder="Tell her why you want the hour." />
+                <span>{t.note} {name}</span>
+                <textarea name="note" required minLength={8} maxLength={240} placeholder={t.placeholder} />
               </label>
-              <p className="call-copy">She reads this before the call. She can say yes or no. You pay only if she accepts.</p>
+              <p className="call-copy">{t.before}</p>
               {error ? <p className="pay-note">{error}</p> : null}
-              <button className="red-btn" type="submit">Send note</button>
+              <button className="red-btn" type="submit">{t.send}</button>
             </form>
           ) : null}
         </div>
@@ -129,21 +182,21 @@ export function CallRoom({
           <div className="call-pulse">
             <img src={photo} alt="" />
           </div>
-          <h1>Connecting with {name}</h1>
-          <p>She already accepted. The call stays on Tokkame.</p>
+          <h1>{t.connecting} {name}</h1>
+          <p>{t.already}</p>
         </div>
       ) : null}
 
       {phase === "live" ? (
         <div className="call-live">
           <img src={photo} alt="" />
-          <p>On Tokkame with {name}</p>
+          <p>{t.on} {name}</p>
           <b suppressHydrationWarning>{clock(left)}</b>
-          <span>Time left</span>
+          <span>{t.left}</span>
           <form action={startCall} className="call-more">
             <input type="hidden" name="username" value={username} />
-            <p>Add another hour</p>
-            <PayChoices label="Add 1 hour · $13" />
+            <p>{t.add}</p>
+            <PayChoices lang={lang} label={t.addPay} />
           </form>
         </div>
       ) : null}
@@ -151,12 +204,14 @@ export function CallRoom({
   );
 }
 
-function HerPosts({ name, username, posts }: { name: string; username: string; posts: CallPost[] }) {
+function HerPosts({ name, username, posts, lang }: { name: string; username: string; posts: CallPost[]; lang: Lang }) {
+  const t = copy[lang];
+  const unlock = lang === "es" ? "Desbloquear" : "Unlock";
   return (
     <div className="call-extra">
       <div className="call-extra-head">
-        <strong>More of {name}</strong>
-        <Link href={`/creator/${username}`}>See her profile</Link>
+        <strong>{t.more} {name}</strong>
+        <Link href={`/creator/${username}`}>{t.profile}</Link>
       </div>
       {posts.length ? (
         <div className="call-shots">
@@ -165,18 +220,18 @@ function HerPosts({ name, username, posts }: { name: string; username: string; p
               <img src={post.image} alt="" />
               <span>{post.caption}</span>
               {post.locked && !post.premium ? (
-                <form action={unlock}>
+                <form action={unlockAction}>
                   <input type="hidden" name="postId" value={post.id} />
-                  <button className="red-btn" type="submit">Unlock {post.price}</button>
+                  <button className="red-btn" type="submit">{unlock} {post.price}</button>
                 </form>
               ) : null}
-              {post.premium ? <Link className="red-btn" href={`/creator/${username}?tab=premium`}>Unlock</Link> : null}
-              {!post.locked ? <em>Free</em> : null}
+              {post.premium ? <Link className="red-btn" href={`/creator/${username}?tab=premium`}>{unlock}</Link> : null}
+              {!post.locked ? <em>{t.free}</em> : null}
             </article>
           ))}
         </div>
       ) : (
-        <p className="call-copy">Her profile has the rest.</p>
+        <p className="call-copy">{t.rest}</p>
       )}
     </div>
   );

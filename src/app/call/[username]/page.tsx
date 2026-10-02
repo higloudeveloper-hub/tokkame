@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { CallRoom } from "@/components/call-room";
 import { getSessionUser } from "@/lib/auth";
 import { money } from "@/lib/format";
+import { getLang } from "@/lib/lang";
 import { photoAt } from "@/lib/studio";
 import { canViewPost, creators, isDropLocked, readDb } from "@/lib/store";
 
@@ -12,6 +13,7 @@ export default async function CallPage({
   params: Promise<{ username: string }>;
   searchParams: Promise<{ ring?: string; error?: string }>;
 }) {
+  const lang = await getLang();
   const { username } = await params;
   const sp = await searchParams;
   const db = readDb();
@@ -53,6 +55,7 @@ export default async function CallPage({
       error={sp.error}
       posts={posts}
       ask={ask ? { status: ask.status, note: ask.note } : null}
+      lang={lang}
     />
   );
 }

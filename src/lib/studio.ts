@@ -54,11 +54,11 @@ function labelCategory(categories: string[]) {
   return map[preferred] || "Adult";
 }
 
-export function relTime(iso: string) {
+export function relTime(iso: string, lang: "en" | "es" = "en") {
   const seconds = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (seconds < 3600) return `${Math.max(1, Math.floor(seconds / 60))}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  return `${Math.floor(seconds / 86400)}d ago`;
+  const n = seconds < 3600 ? Math.max(1, Math.floor(seconds / 60)) : seconds < 86400 ? Math.floor(seconds / 3600) : Math.floor(seconds / 86400);
+  const unit = seconds < 3600 ? "m" : seconds < 86400 ? "h" : "d";
+  return lang === "es" ? `hace ${n} ${unit}` : `${n}${unit} ago`;
 }
 
 export function categoryCount(db: DB, label: string, category: string) {
@@ -69,7 +69,16 @@ export function categoryCount(db: DB, label: string, category: string) {
   return list.filter((user) => user.categories.includes(category)).length;
 }
 
-function lineFor(tx: Transaction, name: string) {
+function lineFor(tx: Transaction, name: string, lang: "en" | "es") {
+  if (lang === "es") {
+    if (tx.type === "tip") return `recibió una propina de ${money(tx.amount)}`;
+    if (tx.type === "subscription") return "tiene un suscriptor nuevo";
+    if (tx.type === "ppv") return `vendió contenido premium por ${money(tx.amount)}`;
+    if (tx.type === "message") return "te envió un mensaje";
+    if (tx.type === "call") return "reservó una hora";
+    if (tx.type === "referral") return "ganó un referido";
+    return name;
+  }
   if (tx.type === "tip") return `received a tip of ${money(tx.amount)}`;
   if (tx.type === "subscription") return "gained a new subscriber";
   if (tx.type === "ppv") return `sold premium content for ${money(tx.amount)}`;
@@ -79,7 +88,7 @@ function lineFor(tx: Transaction, name: string) {
   return name;
 }
 
-export function activityFeed(db: DB) {
+export function activityFeed(db: DB, lang: "en" | "es" = "en") {
   const list = creators(db);
   return [...db.transactions]
     .filter((tx) => tx.type !== "topup" && tx.type !== "payout" && tx.toUserId)
@@ -88,13 +97,13 @@ export function activityFeed(db: DB) {
     .map((tx) => {
       const user = findUserById(db, tx.toUserId || "");
       const index = list.findIndex((item) => item.id === user?.id);
-      const name = user?.displayName ?? "Creator";
+      const name = user?.displayName ?? (lang === "es" ? "Creadora" : "Creator");
       return {
         id: tx.id,
         name,
         username: user?.username ?? "",
-        line: lineFor(tx, name),
-        time: relTime(tx.createdAt),
+        line: lineFor(tx, name, lang),
+        time: relTime(tx.createdAt, lang),
         photo: photoAt(index < 0 ? 0 : index),
       };
     });

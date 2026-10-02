@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { HeroBanner } from "@/components/hero-banner";
 import { LangSelect } from "@/components/lang-select";
 import { PhoneLuxury } from "@/components/phone-luxury";
 import { VideoRail } from "@/components/video-rail";
+import { getLang } from "@/lib/lang";
 import { CLIPS, creatorCards, photoAt } from "@/lib/studio";
 import { isDropLocked, readDb } from "@/lib/store";
 
@@ -57,8 +57,7 @@ const desk = {
 } as const;
 
 export default async function HomePage() {
-  const jar = await cookies();
-  const lang = jar.get("tokkame_lang")?.value === "es" ? "es" : "en";
+  const lang = await getLang();
   const d = desk[lang];
   const db = readDb();
   const cards = creatorCards(db);
@@ -167,7 +166,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <VideoRail clips={CLIPS.slice(0, 3)} />
+        <VideoRail clips={CLIPS.slice(0, 3)} lang={lang} />
 
         <div className="section-head">
           <h2>{d.choose}</h2>

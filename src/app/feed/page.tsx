@@ -5,13 +5,14 @@ import { Flash, Footer } from "@/components/ui";
 import { getSessionUser } from "@/lib/auth";
 import { until, when } from "@/lib/format";
 import { creators, findUserById, publicPosts, readDb, upcomingDrops } from "@/lib/store";
+import { getLang } from "@/lib/lang";
 import { presentPost } from "@/lib/view";
 
 const tabs = [
-  { id: "foryou", label: "For You" },
-  { id: "following", label: "Following" },
-  { id: "trending", label: "Trending" },
-  { id: "new", label: "New" },
+  { id: "foryou", en: "For You", es: "Para ti" },
+  { id: "following", en: "Following", es: "Siguiendo" },
+  { id: "trending", en: "Trending", es: "Tendencias" },
+  { id: "new", en: "New", es: "Nuevo" },
 ] as const;
 
 export default async function FeedPage({
@@ -19,6 +20,7 @@ export default async function FeedPage({
 }: {
   searchParams: Promise<{ tab?: string; error?: string; ok?: string }>;
 }) {
+  const lang = await getLang();
   const sp = await searchParams;
   const tab = tabs.some((item) => item.id === sp.tab) ? sp.tab! : "foryou";
   if (tab === "trending") redirect("/trending");
@@ -53,7 +55,7 @@ export default async function FeedPage({
       <div className="tabs" style={{ marginBottom: 16 }}>
         {tabs.map((item) => (
           <Link key={item.id} className={`tab${tab === item.id ? " active" : ""}`} href={`/feed?tab=${item.id}`}>
-            {item.label}
+            {lang === "es" ? item.es : item.en}
           </Link>
         ))}
       </div>
@@ -65,7 +67,7 @@ export default async function FeedPage({
               <p className="muted">
                 {tab === "following" ? "Sigue creadores y su contenido público aparece aquí." : "Cuando haya publicaciones públicas, caen en este feed."}
               </p>
-              <Link className="btn" href="/discover">Discover</Link>
+              <Link className="btn" href="/discover">{lang === "es" ? "Descubrir" : "Discover"}</Link>
             </div>
           ) : (
             cards.map((item) => <FeedCard key={item.post.id} item={item} viewer={Boolean(viewer)} />)

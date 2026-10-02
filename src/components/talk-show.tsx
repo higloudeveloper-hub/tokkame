@@ -2,11 +2,46 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import type { Lang } from "@/lib/lang";
 
 type Topic = { id: string; kicker: string; title: string; text: string; image: string };
 type Person = { id: string; name: string; username: string; photo: string; online: boolean };
 
-export function TalkShow({ topics, people }: { topics: Topic[]; people: Person[] }) {
+const copy = {
+  en: {
+    private: "Private · 18+",
+    title: "Tell her.",
+    lead: "Swipe a subject. Then call a verified woman. $13 an hour, on Tokkame.",
+    about: "Call about this",
+    promo: "Promo · $13 / hour",
+    online: "is online",
+    promoText: "Pay, then she accepts. The clock stays on the call.",
+    call: "Call her",
+    who: "Who can hear it",
+    all: "All",
+    live: "Online · Verified",
+    verified: "Verified",
+    profile: "Profile",
+  },
+  es: {
+    private: "Privado · 18+",
+    title: "Cuéntaselo.",
+    lead: "Desliza un tema. Luego llama a una mujer verificada. $13 la hora, en Tokkame.",
+    about: "Llamar por esto",
+    promo: "Promo · $13 / hora",
+    online: "está en línea",
+    promoText: "Pagas y ella acepta. El reloj se queda en la llamada.",
+    call: "Llamarla",
+    who: "Quién puede escucharlo",
+    all: "Todas",
+    live: "En línea · Verificada",
+    verified: "Verificada",
+    profile: "Perfil",
+  },
+} as const;
+
+export function TalkShow({ lang, topics, people }: { lang: Lang; topics: Topic[]; people: Person[] }) {
+  const t = copy[lang];
   const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const online = people.filter((person) => person.online);
@@ -30,9 +65,9 @@ export function TalkShow({ topics, people }: { topics: Topic[]; people: Person[]
   return (
     <div className="talk-show">
       <header className="talk-lead">
-        <p>Private · 18+</p>
-        <h1>Tell her.</h1>
-        <p>Swipe a subject. Then call a verified woman. $13 an hour, on Tokkame.</p>
+        <p>{t.private}</p>
+        <h1>{t.title}</h1>
+        <p>{t.lead}</p>
       </header>
 
       <div className="talk-stage" ref={track} onScroll={(event) => {
@@ -48,7 +83,7 @@ export function TalkShow({ topics, people }: { topics: Topic[]; people: Person[]
               <small>{topic.kicker}</small>
               <strong>{topic.title}</strong>
               <p>{topic.text}</p>
-              <a className="red-btn" href="#people">Call about this</a>
+              <a className="red-btn" href="#people">{t.about}</a>
             </div>
           </article>
         ))}
@@ -63,17 +98,17 @@ export function TalkShow({ topics, people }: { topics: Topic[]; people: Person[]
         <Link className="talk-promo" href={`/call/${first.username}`}>
           <img src={first.photo} alt="" />
           <div>
-            <small>Promo · $13 / hour</small>
-            <strong>{first.name.split(" ")[0]} is online</strong>
-            <p>Pay, then she accepts. The clock stays on the call.</p>
-            <span className="red-btn">Call her</span>
+            <small>{t.promo}</small>
+            <strong>{first.name.split(" ")[0]} {t.online}</strong>
+            <p>{t.promoText}</p>
+            <span className="red-btn">{t.call}</span>
           </div>
         </Link>
       ) : null}
 
       <div className="section-head" id="people">
-        <h2>Who can hear it</h2>
-        <Link href="/discover">All</Link>
+        <h2>{t.who}</h2>
+        <Link href="/discover">{t.all}</Link>
       </div>
       <div className="talk-people">
         {people.map((person) => (
@@ -81,9 +116,9 @@ export function TalkShow({ topics, people }: { topics: Topic[]; people: Person[]
             <img src={person.photo} alt="" />
             <div>
               <strong>{person.name.split(" ")[0]}</strong>
-              <span>{person.online ? "Online · Verified" : "Verified"}</span>
-              <Link className="red-btn" href={`/call/${person.username}`}>Call her</Link>
-              <Link className="ghost" href={`/creator/${person.username}`}>Profile</Link>
+              <span>{person.online ? t.live : t.verified}</span>
+              <Link className="red-btn" href={`/call/${person.username}`}>{t.call}</Link>
+              <Link className="ghost" href={`/creator/${person.username}`}>{t.profile}</Link>
             </div>
           </article>
         ))}

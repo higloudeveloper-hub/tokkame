@@ -3,6 +3,7 @@ import { Flash, Footer } from "@/components/ui";
 import { cancelSubscription } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { money, when } from "@/lib/format";
+import { getLang } from "@/lib/lang";
 import { findUserById, readDb } from "@/lib/store";
 import { redirect } from "next/navigation";
 
@@ -12,6 +13,7 @@ export default async function SubscriptionsPage({
   searchParams: Promise<{ error?: string; ok?: string }>;
 }) {
   const sp = await searchParams;
+  const es = (await getLang()) === "es";
   const me = await getSessionUser();
   if (!me) redirect("/login");
   const db = readDb();
@@ -22,12 +24,12 @@ export default async function SubscriptionsPage({
   return (
     <>
       <Flash error={sp.error} ok={sp.ok} />
-      <p className="kicker">Circles</p>
-      <h1 className="display" style={{ fontSize: 52, marginTop: 0 }}>Tus suscripciones</h1>
+      <p className="kicker">{es ? "Circles" : "Circles"}</p>
+      <h1 className="display" style={{ fontSize: 52, marginTop: 0 }}>{es ? "Tus suscripciones" : "Your subscriptions"}</h1>
       {mine.length === 0 ? (
         <div className="panel">
-          <p>Todavía no entraste a un Circle.</p>
-          <Link className="btn" href="/discover">Discover</Link>
+          <p>{es ? "Todavía no entraste a un Circle." : "You have not joined a Circle yet."}</p>
+          <Link className="btn" href="/discover">{es ? "Descubrir" : "Discover"}</Link>
         </div>
       ) : (
         <div className="list">

@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { clearSession, confirmAgeCookie, getSessionUser, setSession } from "./auth";
 import { hashPassword, uid, verifyPassword } from "./password";
 import { CATEGORIES, cents, REGIONS } from "./format";
+import { getLang } from "./lang";
 import { cleanText, SAFETY_ERROR, violatesSafety } from "./safety";
 import {
   activeSub,
@@ -271,13 +272,14 @@ export async function askCall(formData: FormData) {
   const me = await getSessionUser();
   if (!me) redirect(`/signup?next=${encodeURIComponent(back)}`);
   const note = cleanText(String(formData.get("note") || ""), 240);
-  if (note.length < 8) redirect(`${back}?error=${encodeURIComponent("Write her a note first.")}`);
+  const es = (await getLang()) === "es";
+  if (note.length < 8) redirect(`${back}?error=${encodeURIComponent(es ? "Primero escríbele una nota." : "Write her a note first.")}`);
   if (violatesSafety(note)) redirect(`${back}?error=${encodeURIComponent(SAFETY_ERROR)}`);
   const result = await mutate((db) => {
     const fan = db.users.find((user) => user.id === me!.id)!;
     const creator = db.users.find((user) => user.username === username && user.role === "creator");
-    if (!creator || creator.id === fan.id) return { error: "That call is not available." };
-    if (creator.verified !== "verified") return { error: "She is not verified to take calls yet." };
+    if (!creator || creator.id === fan.id) return { error: es ? "Esa llamada no está disponible." : "That call is not available." };
+    if (creator.verified !== "verified") return { error: es ? "Ella todavía no está verificada para recibir llamadas." : "She is not verified to take calls yet." };
     if (!db.callAsks) db.callAsks = [];
     const open = db.callAsks.find(
       (item) => item.fanId === fan.id && item.creatorId === creator.id && (item.status === "pending" || item.status === "declined"),
@@ -342,21 +344,22 @@ export async function startCall(formData: FormData) {
   const back = callBack(username);
   const me = await getSessionUser();
   if (!me) redirect(`/signup?next=${encodeURIComponent(back)}`);
+  const esCall = (await getLang()) === "es";
   const result = await mutate((db) => {
     const fan = db.users.find((user) => user.id === me!.id)!;
     const creator = db.users.find((user) => user.username === username && user.role === "creator");
-    if (!creator || creator.id === fan.id) return { error: "That call is not available." };
-    if (creator.verified !== "verified") return { error: "She is not verified to take calls yet." };
+    if (!creator || creator.id === fan.id) return { error: esCall ? "Esa llamada no está disponible." : "That call is not available." };
+    if (creator.verified !== "verified") return { error: esCall ? "Ella todavía no está verificada para recibir llamadas." : "She is not verified to take calls yet." };
     if (!db.calls) db.calls = [];
     const now = Date.now();
     const hour = 60 * 60 * 1000;
     const open = db.calls.find((item) => item.fanId === fan.id && item.creatorId === creator.id && new Date(item.paidUntil).getTime() > now);
     if (!open) {
       const ask = db.callAsks?.find((item) => item.fanId === fan.id && item.creatorId === creator.id && item.status === "accepted");
-      if (!ask) return { error: "She has not accepted this call yet." };
+      if (!ask) return { error: esCall ? "Ella todavía no aceptó esta llamada." : "She has not accepted this call yet." };
     }
     const paid = spend(db, fan, creator, CALL_HOUR, "call", checkoutNote("Private hour", formData));
-    if ("error" in paid && paid.error) return { error: "Not enough sandbox balance. Add funds in Wallet." };
+    if ("error" in paid && paid.error) return { error: esCall ? "No alcanza el saldo de prueba. Agrega fondos en la billetera." : "Not enough sandbox balance. Add funds in Wallet." };
     if (open) {
       open.paidUntil = new Date(new Date(open.paidUntil).getTime() + hour).toISOString();
       return { ok: true as const, extend: true };

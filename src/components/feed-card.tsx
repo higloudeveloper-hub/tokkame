@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ago, money } from "@/lib/format";
 import type { PresentedPost } from "@/lib/view";
 import { comment, follow, likePost, remixPost, reportContent, unlock } from "@/lib/actions";
+import { getLang } from "@/lib/lang";
 import { Avatar } from "./ui";
 import { MediaArt } from "./media-art";
 
@@ -13,7 +14,8 @@ const lockCopy = {
   drop: "El drop todavía no abre.",
 };
 
-export function FeedCard({ item, viewer, poster }: { item: PresentedPost; viewer: boolean; poster?: string }) {
+export async function FeedCard({ item, viewer, poster }: { item: PresentedPost; viewer: boolean; poster?: string }) {
+  const es = (await getLang()) === "es";
   const { post, creator } = item;
   return (
     <article className="panel" style={{ padding: 12 }}>
@@ -23,7 +25,7 @@ export function FeedCard({ item, viewer, poster }: { item: PresentedPost; viewer
           <strong>{lockCopy[item.lock]}</strong>
           <p className="tiny muted" style={{ margin: "6px 0 10px" }}>
             {item.lock === "ppv"
-              ? `Unlock ${money(post.price)}`
+              ? `${es ? "Desbloquear" : "Unlock"} ${money(post.price)}`
               : item.lock === "drop"
                 ? "El contenido abre a la hora anunciada."
                 : item.lock === "login"
@@ -33,7 +35,7 @@ export function FeedCard({ item, viewer, poster }: { item: PresentedPost; viewer
           {item.lock === "ppv" && viewer ? (
             <form action={unlock}>
               <input type="hidden" name="postId" value={post.id} />
-              <button className="btn small" type="submit">Unlock {money(post.price)}</button>
+              <button className="btn small" type="submit">{es ? "Desbloquear" : "Unlock"} {money(post.price)}</button>
             </form>
           ) : (
             <Link className="btn small" href={viewer ? `/creator/${creator.username}` : "/login"}>

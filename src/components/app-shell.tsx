@@ -4,30 +4,61 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { logout } from "@/lib/actions";
+import type { Lang } from "@/lib/lang";
 import type { SessionView } from "@/lib/types";
+import { LangSelect } from "./lang-select";
 
 type Activity = { id: string; name: string; username: string; line: string; time: string; photo: string };
 type Online = { id: string; name: string; username: string; photo: string };
 
-const mainLinks = [
-  { href: "/", label: "Home", icon: "home" },
-  { href: "/talk", label: "Talk", icon: "chat" },
-  { href: "/videos", label: "Videos", icon: "play" },
-  { href: "/discover", label: "Discover", icon: "compass" },
-  { href: "/trending", label: "Trending", icon: "flame" },
-];
+const shell = {
+  en: {
+    home: "Home", talk: "Talk", videos: "Videos", discover: "Discover", trending: "Trending",
+    search: "Search creators, categories...", menu: "Open menu", close: "Close menu",
+    notes: "Notifications", empty: "No activity yet.", account: "Your account", login: "Log in",
+    pricing: "Pricing", creators: "For Creators", premium: "Premium",
+    premiumText: "Talk, tip, or unlock her subscription.", see: "See the three",
+    dark: "Dark mode", darkToggle: "Toggle dark mode", logout: "Log out",
+    about: "About", terms: "Terms", privacy: "Privacy", help: "Help",
+    rights: "© 2026 Tokkame. All rights reserved.",
+    online: "Online now", onlineClose: "Close", verified: "Verified · Online", who: "See who is online",
+    ticker: ["18+ ADULTS ONLY", "SAY IT HERE", "INFIDELITY", "WORK", "A SECRET", "YOU CHOOSE WHO"],
+  },
+  es: {
+    home: "Inicio", talk: "Hablar", videos: "Videos", discover: "Descubrir", trending: "Tendencias",
+    search: "Buscar creadoras, categorías...", menu: "Abrir menú", close: "Cerrar menú",
+    notes: "Avisos", empty: "Todavía no hay actividad.", account: "Tu cuenta", login: "Entrar",
+    pricing: "Precios", creators: "Para creadoras", premium: "Premium",
+    premiumText: "Habla, deja propina o desbloquea su suscripción.", see: "Ver los tres",
+    dark: "Modo oscuro", darkToggle: "Cambiar modo oscuro", logout: "Salir",
+    about: "Acerca de", terms: "Términos", privacy: "Privacidad", help: "Ayuda",
+    rights: "© 2026 Tokkame. Todos los derechos reservados.",
+    online: "En línea ahora", onlineClose: "Cerrar", verified: "Verificada · En línea", who: "Ver quién está en línea",
+    ticker: ["SOLO ADULTOS 18+", "DILO AQUÍ", "INFIDELIDAD", "TRABAJO", "UN SECRETO", "TÚ ELIGES QUIÉN"],
+  },
+} as const;
 
 export function AppShell({
+  lang,
   user,
   activity,
   online,
   children,
 }: {
+  lang: Lang;
   user: SessionView | null;
   activity: Activity[];
   online: Online[];
   children: ReactNode;
 }) {
+  const t = shell[lang];
+  const mainLinks = [
+    { href: "/", label: t.home, icon: "home" },
+    { href: "/talk", label: t.talk, icon: "chat" },
+    { href: "/videos", label: t.videos, icon: "play" },
+    { href: "/discover", label: t.discover, icon: "compass" },
+    { href: "/trending", label: t.trending, icon: "flame" },
+  ];
   const path = usePathname();
   const sp = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -69,25 +100,26 @@ export function AppShell({
   return (
     <div className={`app${open ? " nav-open" : ""}`}>
       <header className="app-top">
-        <button className="icon-btn menu-btn" type="button" aria-label="Open menu" onClick={() => setOpen(true)}>
+        <button className="icon-btn menu-btn" type="button" aria-label={t.menu} onClick={() => setOpen(true)}>
           <Icon name="menu" />
         </button>
         <Link href="/" className="wordmark"><i />TOKKAME</Link>
         <form className="search" action="/discover">
           <Icon name="search" />
-          <input name="q" placeholder="Search creators, categories..." aria-label="Search creators, categories" />
+          <input name="q" placeholder={t.search} aria-label={t.search} />
         </form>
         <div className="top-right">
-          <Link href="/discover" className="icon-btn phone-only" aria-label="Search">
+          <LangSelect lang={lang} />
+          <Link href="/discover" className="icon-btn phone-only" aria-label={t.search}>
             <Icon name="search" />
           </Link>
           <div style={{ position: "relative" }}>
-            <button className="icon-btn" type="button" aria-label="Notifications" onClick={() => setBell((value) => !value)}>
+            <button className="icon-btn" type="button" aria-label={t.notes} onClick={() => setBell((value) => !value)}>
               <Icon name="bell" />
             </button>
             {bell ? (
               <div className="bell-pop">
-                {activity.length === 0 ? <p className="soft">No activity yet.</p> : null}
+                {activity.length === 0 ? <p className="soft">{t.empty}</p> : null}
                 {activity.map((item) => (
                   <Link key={item.id} href={item.username ? `/creator/${item.username}` : "/feed"}>
                     <img src={item.photo} alt="" />
@@ -101,11 +133,11 @@ export function AppShell({
             ) : null}
           </div>
           {user ? (
-            <Link className="avatar-link" href={user.role === "creator" ? "/dashboard" : "/wallet"} aria-label="Your account">
+            <Link className="avatar-link" href={user.role === "creator" ? "/dashboard" : "/wallet"} aria-label={t.account}>
               {user.displayName.slice(0, 1)}
             </Link>
           ) : (
-            <Link className="red-btn" href="/login">Log in</Link>
+            <Link className="red-btn" href="/login">{t.login}</Link>
           )}
         </div>
       </header>
@@ -113,41 +145,36 @@ export function AppShell({
         <div className="ticker-track">
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy}>
-              <span>18+ ADULTS ONLY</span>
-              <span>SAY IT HERE</span>
-              <span>INFIDELITY</span>
-              <span>WORK</span>
-              <span>A SECRET</span>
-              <span>YOU CHOOSE WHO</span>
+              {t.ticker.map((item) => <span key={item}>{item}</span>)}
             </div>
           ))}
         </div>
       </div>
       <div className="app-body">
-        <button className={`scrim${open ? " show" : ""}`} type="button" aria-label="Close menu" onClick={() => setOpen(false)} />
+        <button className={`scrim${open ? " show" : ""}`} type="button" aria-label={t.close} onClick={() => setOpen(false)} />
         <aside className={`app-side${open ? " open" : ""}`}>
           {mainLinks.map((link) => (
             <Link key={link.label} href={link.href} className={`side-link${active(link.href) ? " on" : ""}`}>
               <Icon name={link.icon} /> {link.label}
             </Link>
           ))}
-          <Link href="/pricing" className={`side-link${path === "/pricing" ? " on" : ""}`}><Icon name="dot" /> Pricing</Link>
-          <Link href="/signup?as=creator" className="side-link"><Icon name="dot" /> For Creators</Link>
+          <Link href="/pricing" className={`side-link${path === "/pricing" ? " on" : ""}`}><Icon name="dot" /> {t.pricing}</Link>
+          <Link href="/signup?as=creator" className="side-link"><Icon name="dot" /> {t.creators}</Link>
           <div className="premium">
             <Icon name="crown" />
-            <strong>Premium</strong>
-            <p>Talk, tip, or unlock her subscription.</p>
-            <Link className="red-btn block" href="/pricing">See the three</Link>
+            <strong>{t.premium}</strong>
+            <p>{t.premiumText}</p>
+            <Link className="red-btn block" href="/pricing">{t.see}</Link>
           </div>
           <div className="theme-row">
-            Dark mode
-            <button className={`switch${dark ? " on" : ""}`} type="button" aria-label="Toggle dark mode" onClick={toggleTheme}>
+            {t.dark}
+            <button className={`switch${dark ? " on" : ""}`} type="button" aria-label={t.darkToggle} onClick={toggleTheme}>
               <span />
             </button>
           </div>
           {user ? (
             <form action={logout}>
-              <button className="side-link" type="submit" style={{ width: "100%", background: "transparent" }}>Log out</button>
+              <button className="side-link" type="submit" style={{ width: "100%", background: "transparent" }}>{t.logout}</button>
             </form>
           ) : null}
         </aside>
@@ -156,36 +183,36 @@ export function AppShell({
       <footer className="studio-foot">
         <Link href="/" className="wordmark" style={{ fontSize: 14 }}><i />TOKKAME</Link>
         <nav>
-          <Link href="/rules">About</Link>
-          <Link href="/rules">Terms</Link>
-          <Link href="/rules">Privacy</Link>
-          <Link href="/rules">Help</Link>
+          <Link href="/rules">{t.about}</Link>
+          <Link href="/rules">{t.terms}</Link>
+          <Link href="/rules">{t.privacy}</Link>
+          <Link href="/rules">{t.help}</Link>
         </nav>
         <div className="socials" aria-hidden>
           <span>X</span><span>IG</span><span>TT</span><span>YT</span>
         </div>
-        <small>© 2026 Tokkame. All rights reserved.</small>
+        <small>{t.rights}</small>
       </footer>
       {path.startsWith("/call/") ? null : (
         <div className={`online-dock${dock ? " open" : ""}`}>
           {dock ? (
-            <section className="online-panel" aria-label="Online now">
+            <section className="online-panel" aria-label={t.online}>
               <header>
-                <strong>Online now</strong>
-                <button type="button" aria-label="Close" onClick={() => setDock(false)}>×</button>
+                <strong>{t.online}</strong>
+                <button type="button" aria-label={t.onlineClose} onClick={() => setDock(false)}>×</button>
               </header>
               {online.map((person) => (
                 <Link key={person.id} href={`/call/${person.username}`}>
                   <img src={person.photo} alt="" />
                   <span>
                     <b>{person.name.split(" ")[0]}</b>
-                    <em>Verified · Online</em>
+                    <em>{t.verified}</em>
                   </span>
                 </Link>
               ))}
             </section>
           ) : null}
-          <button className="online-fab" type="button" aria-label="See who is online" onClick={() => setDock((value) => !value)}>
+          <button className="online-fab" type="button" aria-label={t.who} onClick={() => setDock((value) => !value)}>
             <Icon name="chat" />
             <i />
           </button>
