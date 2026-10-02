@@ -1803,7 +1803,8 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .m-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 68% center; }
   .m-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15) 10%, rgba(0,0,0,0.82) 100%); }
   .m-hero > div { position: relative; z-index: 1; padding: 22px 18px 26px; }
-  .m-hero h1 { margin: 12px 0 8px; font-size: 42px; line-height: 0.96; letter-spacing: -0.045em; font-weight: 750; }
+  .m-hero h1 { margin: 0 0 8px; font-size: 42px; line-height: 0.96; letter-spacing: -0.045em; font-weight: 750; }
+  .home-note { margin: 2px 2px 0; color: var(--muted); font-size: 12px; letter-spacing: 0.01em; }
   .m-hero h1 span { display: block; }
   .m-hero p { margin: 0; max-width: 28ch; color: rgba(255,255,255,0.84); font-size: 15px; line-height: 1.4; }
   .m-hero .hero-actions { margin-top: 16px; }

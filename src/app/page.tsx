@@ -17,7 +17,6 @@ export default async function HomePage() {
           <article className="m-hero">
             <img src="/talk/hero.jpg" alt="" />
             <div>
-              <span className="age-pill"><b>18+</b> NOT SEX</span>
               <h1>Say it.<span>Someone hears it.</span><span>You choose who.</span></h1>
               <p>Infidelity, work, a secret. A private conversation. Call her, or unlock her posts.</p>
               <div className="hero-actions">
@@ -89,6 +88,7 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
+          <p className="home-note">18+ · Private conversation. Not sex.</p>
         </section>
         <div className="desk-home">
         <div className="hero-row">
