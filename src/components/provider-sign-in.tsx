@@ -1,6 +1,6 @@
 import { signInProvider } from "@/lib/actions";
 
-export function ProviderSignIn({ next = "", lang = "en" }: { next?: string; lang?: "en" | "es" }) {
+export function ProviderSignIn({ next = "", lang = "en", bare = false }: { next?: string; lang?: "en" | "es"; bare?: boolean }) {
   const es = lang === "es";
   return (
     <div className="providers">
@@ -14,7 +14,7 @@ export function ProviderSignIn({ next = "", lang = "en" }: { next?: string; lang
         {next ? <input type="hidden" name="next" value={next} /> : null}
         <button className="provider apple" type="submit">{es ? "Continuar con Apple" : "Continue with Apple"}</button>
       </form>
-      <p>{es ? "Demo 18+. Un toque. Tokkame no toma tu contraseña de Google ni de Apple." : "18+ demo. One tap. Tokkame does not take your Google or Apple password."}</p>
+      {bare ? null : <p>{es ? "Demo 18+. Un toque. Tokkame no toma tu contraseña de Google ni de Apple." : "18+ demo. One tap. Tokkame does not take your Google or Apple password."}</p>}
     </div>
   );
 }

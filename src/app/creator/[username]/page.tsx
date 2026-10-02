@@ -199,7 +199,7 @@ export default async function CreatorPage({
           <small>TALK</small>
           <strong>{creator.messagePrice > 0 ? money(creator.messagePrice) : "—"}</strong>
           <em>{es ? "por mensaje" : "per message"}</em>
-          {canPay ? <Link className="red-btn" href={`/call/${creator.username}`}>{es ? "Llamarla" : "Call her"}</Link> : null}
+          {canPay ? <Link className="red-btn" href={viewer ? `/call/${creator.username}` : `/signup?next=${encodeURIComponent(`/call/${creator.username}`)}`}>{es ? "Llamarla" : "Call her"}</Link> : null}
         </article>
         <article className="pay-card" id="tip">
           <img src="/talk/secret.jpg" alt="" />

@@ -202,7 +202,7 @@ export function AppShell({
                 <button type="button" aria-label={t.onlineClose} onClick={() => setDock(false)}>×</button>
               </header>
               {online.map((person) => (
-                <Link key={person.id} href={`/call/${person.username}`}>
+                <Link key={person.id} href={`/creator/${person.username}`}>
                   <img src={person.photo} alt="" />
                   <span>
                     <b>{person.name.split(" ")[0]}</b>

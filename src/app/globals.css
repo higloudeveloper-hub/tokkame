@@ -1627,7 +1627,8 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 }
 .provider.google { background: white; color: #111; border: 0; }
 .provider.apple { background: #111; color: white; border: 1px solid rgba(255, 255, 255, 0.16); }
-.providers p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.providers p, .call-note-line { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.guest-go { width: 100%; min-height: 46px; }
 .wallet-pay { width: min(440px, 100%); }
 .pay-choices { display: grid; gap: 8px; }
 .pay-methods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }

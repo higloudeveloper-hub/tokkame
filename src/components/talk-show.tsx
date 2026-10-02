@@ -95,7 +95,7 @@ export function TalkShow({ lang, topics, people }: { lang: Lang; topics: Topic[]
       </div>
 
       {first ? (
-        <Link className="talk-promo" href={`/call/${first.username}`}>
+        <Link className="talk-promo" href={`/creator/${first.username}`}>
           <img src={first.photo} alt="" />
           <div>
             <small>{t.promo}</small>
@@ -117,7 +117,7 @@ export function TalkShow({ lang, topics, people }: { lang: Lang; topics: Topic[]
             <div>
               <strong>{person.name.split(" ")[0]}</strong>
               <span>{person.online ? t.live : t.verified}</span>
-              <Link className="red-btn" href={`/call/${person.username}`}>{t.call}</Link>
+              <Link className="red-btn" href={`/creator/${person.username}`}>{t.call}</Link>
               <Link className="ghost" href={`/creator/${person.username}`}>{t.profile}</Link>
             </div>
           </article>

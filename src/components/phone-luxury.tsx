@@ -191,7 +191,7 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
               <div className="sheet">
                 <h2>{person.name.split(" ")[0]} <Check /></h2>
                 <p>{t.lines[i % t.lines.length]}</p>
-                <Link className="red-btn call-now" href={`/call/${person.username}`}>{t.call}</Link>
+                <Link className="red-btn call-now" href={`/creator/${person.username}`}>{t.call}</Link>
                 <Link className="see" href={`/creator/${person.username}`}>{t.profile}</Link>
               </div>
             </article>
@@ -241,7 +241,7 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
         </div>
         <div className="lux-calls">
           {live.map((person) => (
-            <Link className="lux-call" key={person.id} href={`/call/${person.username}`}>
+            <Link className="lux-call" key={person.id} href={`/creator/${person.username}`}>
               <img src={person.photo} alt="" />
               <div>
                 <small>{t.talk}</small>
@@ -304,7 +304,7 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
       </section>
 
       {first ? (
-        <Link className="lux-close" href={`/call/${first.username}`}>
+        <Link className="lux-close" href={`/creator/${first.username}`}>
           <div>
             <small>{t.sheOn}</small>
             <strong>{t.tell}</strong>

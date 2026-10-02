@@ -106,15 +106,62 @@ export async function login(formData: FormData) {
   redirect(user!.role === "creator" ? "/dashboard" : "/feed");
 }
 
+const WELCOME_CREDITS = "13 créditos de registro";
+
 export async function signInProvider(formData: FormData) {
   const provider = String(formData.get("provider") || "");
   if (provider !== "google" && provider !== "apple") await bounce({ error: "Elige Google o Apple." });
   const db = readDb();
   const user = db.users.find((item) => item.email === "sofia@tokkame.app" && !item.suspended);
   if (!user) await bounce({ error: "No hay una cuenta de demostración." });
+  const account = user!;
+  const next = safeNext(String(formData.get("next") || ""));
+  if (next.startsWith("/call/")) {
+    await mutate((store) => {
+      const fan = store.users.find((item) => item.id === account.id);
+      const already = store.transactions.some((item) => item.toUserId === account.id && item.note === WELCOME_CREDITS);
+      if (fan && !already) addTopup(store, fan, 13, WELCOME_CREDITS);
+    });
+  }
   await confirmAgeCookie();
-  await setSession(user!.id);
-  redirect(safeNext(String(formData.get("next") || "")) || "/");
+  await setSession(account.id);
+  redirect(next || "/");
+}
+
+export async function continueAsGuest(formData: FormData) {
+  const next = safeNext(String(formData.get("next") || ""));
+  const passwordHash = hashPassword(uid("guest"));
+  const created = await mutate((db) => {
+    const id = uid("usr");
+    const stamp = id.slice(-6).toLowerCase();
+    db.users.push({
+      id,
+      email: `guest.${stamp}@tokkame.app`,
+      passwordHash,
+      username: `guest.${stamp}`,
+      displayName: "Guest",
+      role: "fan",
+      bio: "",
+      categories: [],
+      region: null,
+      shareRegion: false,
+      avatarHue: 0,
+      bannerHue: 0,
+      tiers: [],
+      verified: "none",
+      verificationNote: "",
+      ageConfirmedAt: new Date().toISOString(),
+      balance: 0,
+      messagePrice: 0,
+      referredBy: null,
+      suspended: false,
+      createdAt: new Date().toISOString(),
+    });
+    return id;
+  });
+  await confirmAgeCookie();
+  await setSession(created);
+  redirect(next || "/");
 }
 
 export async function signup(formData: FormData) {
