@@ -1714,7 +1714,7 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 .msg-head { display: contents; }
 
 @media (max-width: 860px) {
-  html { -webkit-text-size-adjust: 100%; }
+  html, body { max-width: 100%; overflow-x: clip; -webkit-text-size-adjust: 100%; }
   body { overscroll-behavior-y: none; }
   a, button { -webkit-tap-highlight-color: transparent; }
   input, textarea, select { font-size: 16px; }
@@ -1732,8 +1732,11 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
     background: color-mix(in srgb, var(--bg) 94%, transparent);
   }
   .app-top .menu-btn { justify-self: start; }
-  .app-top .wordmark { justify-self: center; }
-  .app-top .top-right { justify-self: end; }
+  .app-top .wordmark { justify-self: center; min-width: 0; }
+  .app-top .top-right { justify-self: end; min-width: 0; gap: 6px; }
+  .top-right .phone-only { display: none; }
+  .top-right .lang-bar select { width: 88px; height: 32px; padding: 0 4px; font-size: 12px; }
+  .top-right .red-btn { min-height: 32px; padding: 0 10px; font-size: 12px; }
   .studio .lang-bar { display: none; }
   .lang-bar span { display: none; }
   .wordmark { font-size: 15px; letter-spacing: 0.16em; }
@@ -1741,10 +1744,15 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .icon-btn, .avatar-link { width: 36px; height: 36px; }
   .bell-pop { width: min(320px, calc(100vw - 20px)); }
 
+  .app, .app-body, .app-main, .studio, .studio > div, .phone-home {
+    min-width: 0;
+    max-width: 100%;
+  }
   .app-main {
     width: min(440px, 100%);
     margin-inline: auto;
-    padding: 0 16px calc(74px + env(safe-area-inset-bottom));
+    overflow-x: clip;
+    padding: 0 0 calc(74px + env(safe-area-inset-bottom));
   }
   .app-side {
     top: 0;
@@ -2172,17 +2180,24 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .pay-panel { width: 100%; border-radius: 22px 22px 0 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 
   .phone-home { gap: 0; }
-  .lux { display: grid; gap: 22px; margin: 8px auto 12px; width: 100%; color: white; }
+  .lux { display: grid; gap: 22px; margin: 8px auto 12px; width: 100%; max-width: 100%; min-width: 0; color: white; }
+  .lux > * { min-width: 0; max-width: 100%; }
   .lux > * { animation: lux-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .lux > *:nth-child(2) { animation-delay: 0.06s; }
   .lux > *:nth-child(3) { animation-delay: 0.12s; }
   .lux > *:nth-child(4) { animation-delay: 0.16s; }
   .lux-intro { display: grid; gap: 8px; padding: 8px 20px 0; justify-items: center; text-align: center; }
   .lux-intro p { margin: 0; color: #ff8b94; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
-  .lux-intro h1 { margin: 0; font-size: 40px; line-height: 0.94; letter-spacing: -0.045em; }
+  .lux-intro h1 { margin: 0; font-size: clamp(30px, 9vw, 40px); line-height: 0.94; letter-spacing: -0.045em; }
   .lux-intro h1 span { display: block; }
   .lux-intro .lead { color: #d7d7de; font-size: 15px; font-weight: 500; letter-spacing: 0; text-transform: none; line-height: 1.4; max-width: 34ch; }
-  .lux-stories, .lux-stage, .lux-promos, .lux-unlock { scrollbar-width: none; }
+  .lux-stories, .lux-stage, .lux-promos, .lux-unlock, .lux-topics, .lux-feed {
+    scrollbar-width: none;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overscroll-behavior-x: contain;
+  }
   .lux-stories::-webkit-scrollbar, .lux-stage::-webkit-scrollbar, .lux-promos::-webkit-scrollbar, .lux-unlock::-webkit-scrollbar { display: none; }
   .lux-stories { display: flex; gap: 14px; overflow-x: auto; padding: 10px 16px 0; }
   .lux-stories button {
@@ -2222,7 +2237,7 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   }
   .lux-stories em { font-style: normal; color: #3ddc84; font-size: 11px; font-weight: 750; }
   .lux-stage { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
-  .lux-slide { flex: 0 0 100%; scroll-snap-align: start; padding: 0 16px; box-sizing: border-box; }
+  .lux-slide { flex: 0 0 100%; width: 100%; max-width: 100%; scroll-snap-align: start; scroll-snap-stop: always; padding: 0 16px; box-sizing: border-box; }
   .lux-card {
     display: grid;
     border-radius: 26px;

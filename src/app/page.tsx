@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { HeroBanner } from "@/components/hero-banner";
-import { LangSelect } from "@/components/lang-select";
 import { PhoneLuxury } from "@/components/phone-luxury";
 import { VideoRail } from "@/components/video-rail";
 import { getLang } from "@/lib/lang";
@@ -82,7 +81,6 @@ export default async function HomePage() {
   return (
     <div className="studio solo">
       <div>
-        <LangSelect lang={lang} />
         <section className="phone-home">
           <PhoneLuxury
             live={online.map((creator) => ({
