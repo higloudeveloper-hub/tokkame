@@ -98,6 +98,7 @@ export type TxType =
   | "tip"
   | "ppv"
   | "message"
+  | "call"
   | "payout"
   | "topup"
   | "referral";
@@ -132,6 +133,14 @@ export type Report = {
   status: "open" | "removed" | "dismissed";
 };
 
+export type CallSession = {
+  id: string;
+  fanId: string;
+  creatorId: string;
+  paidUntil: string;
+  createdAt: string;
+};
+
 export type DB = {
   version: number;
   users: User[];
@@ -142,6 +151,7 @@ export type DB = {
   transactions: Transaction[];
   messages: DirectMessage[];
   reports: Report[];
+  calls: CallSession[];
 };
 
 export type PublicUser = Omit<User, "passwordHash">;

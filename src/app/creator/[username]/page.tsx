@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChatRoom, OpenChat } from "@/components/chat-room";
+import { ChatRoom } from "@/components/chat-room";
 import { Decide } from "@/components/decide";
 import { PayChoices, PaySheet } from "@/components/pay-choices";
 import { notFound } from "next/navigation";
@@ -169,7 +169,6 @@ export default async function CreatorPage({
         <Decide
           name={creator.displayName.split(" ")[0]}
           photo={poster}
-          callPrice={creator.messagePrice > 0 ? money(creator.messagePrice) : "Free"}
           unlockPrice={money(lowestPrice(creator))}
           unlockHref={`/creator/${creator.username}?tab=premium`}
           signedIn={Boolean(viewer)}
@@ -182,7 +181,7 @@ export default async function CreatorPage({
           <small>TALK</small>
           <strong>{creator.messagePrice > 0 ? money(creator.messagePrice) : "—"}</strong>
           <em>per message</em>
-          {canPay ? <OpenChat className="red-btn">Talk</OpenChat> : null}
+          {canPay ? <Link className="red-btn" href={`/call/${creator.username}`}>Call her</Link> : null}
         </article>
         <article className="pay-card" id="tip">
           <img src="/talk/secret.jpg" alt="" />

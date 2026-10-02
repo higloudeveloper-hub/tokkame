@@ -1483,6 +1483,23 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 .chat-compose textarea { min-height: 52px; border-radius: 16px; }
 .chat-compose p { margin: 0; color: #9c9ca6; font-size: 13px; }
 .phone-home { display: none; }
+.call-room { max-width: 440px; margin: 12px auto 28px; }
+.call-pay, .call-ringing, .call-live { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.call-pay img, .call-live img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
+.call-pay h1, .call-ringing h1 { margin: 0; font-size: 36px; letter-spacing: -0.04em; }
+.call-pay > p:first-of-type, .call-live > p { margin: 0; color: #ff8b94; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.call-pay strong { font-size: 40px; letter-spacing: -0.04em; }
+.call-pay strong span { color: var(--muted); font-size: 16px; font-weight: 650; }
+.call-copy, .call-ringing p { margin: 0; max-width: 32ch; color: var(--muted); line-height: 1.4; }
+.call-pay form, .call-pay, .call-more { width: 100%; }
+.call-pay .pay-choices, .call-more .pay-choices { text-align: left; }
+.call-pulse { width: 168px; height: 168px; border-radius: 50%; display: grid; place-items: center; animation: call-pulse 1.6s ease-out infinite; }
+.call-pulse img { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; }
+.call-live b { font-size: 64px; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+.call-live > span { color: var(--muted); font-size: 13px; }
+.call-more { margin-top: 8px; padding: 14px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); text-align: left; }
+.call-more > p { margin: 0 0 8px; font-weight: 750; }
+@keyframes call-pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 46, 60, 0.45); } 100% { box-shadow: 0 0 0 28px rgba(255, 46, 60, 0); } }
 .desk-home { display: contents; }
 .providers { display: grid; gap: 8px; margin: 4px 0 8px; }
 .provider {

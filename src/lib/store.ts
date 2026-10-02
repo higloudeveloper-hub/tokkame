@@ -262,6 +262,7 @@ function seed(): DB {
     transactions: [],
     messages: [],
     reports: [],
+    calls: [],
   };
 
   const post = (
@@ -588,6 +589,7 @@ function readFile(): DB | null {
     if (!fs.existsSync(file)) return null;
     const parsed = JSON.parse(fs.readFileSync(file, "utf8")) as DB;
     if (!parsed || parsed.version !== SEED_VERSION) return null;
+    if (!parsed.calls) parsed.calls = [];
     return parsed;
   } catch {
     return null;
@@ -699,6 +701,7 @@ export function earnings(db: DB, userId: string, since?: number) {
         tx.type === "tip" ||
         tx.type === "ppv" ||
         tx.type === "message" ||
+        tx.type === "call" ||
         tx.type === "referral")
     ) {
       total += tx.net;
@@ -714,6 +717,7 @@ export function earningsByType(db: DB, userId: string, since?: number) {
     tip: 0,
     ppv: 0,
     message: 0,
+    call: 0,
     referral: 0,
   };
   for (const tx of db.transactions) {

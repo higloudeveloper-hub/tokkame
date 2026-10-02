@@ -74,6 +74,7 @@ function lineFor(tx: Transaction, name: string) {
   if (tx.type === "subscription") return "gained a new subscriber";
   if (tx.type === "ppv") return `sold premium content for ${money(tx.amount)}`;
   if (tx.type === "message") return "sent you a message";
+  if (tx.type === "call") return "booked an hour";
   if (tx.type === "referral") return "earned a referral";
   return name;
 }

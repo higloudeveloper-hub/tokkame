@@ -95,7 +95,7 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
               <div className="sheet">
                 <h2>{person.name.split(" ")[0]} <Check /></h2>
                 <p>{lines[i % lines.length]}</p>
-                <Link className="red-btn call-now" href={`/creator/${person.username}`}>Request her</Link>
+                <Link className="red-btn call-now" href={`/call/${person.username}`}>Call her</Link>
                 <Link className="see" href={`/creator/${person.username}`}>See her profile</Link>
               </div>
             </article>
@@ -115,13 +115,13 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
         </div>
         <div className="lux-calls">
           {live.map((person) => (
-            <Link className="lux-call" key={person.id} href={`/creator/${person.username}`}>
+            <Link className="lux-call" key={person.id} href={`/call/${person.username}`}>
               <img src={person.photo} alt="" />
               <div>
                 <small>Talk to her</small>
                 <strong>{person.name.split(" ")[0]} <Check /></strong>
                 <p>Tell her the problem. She listens.</p>
-                <span className="red-btn call-now">Request her</span>
+                <span className="red-btn call-now">Call her</span>
               </div>
             </Link>
           ))}
@@ -178,12 +178,12 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
       </section>
 
       {first ? (
-        <Link className="lux-close" href={`/creator/${first.username}`}>
+        <Link className="lux-close" href={`/call/${first.username}`}>
           <div>
             <small>She is online</small>
             <strong>Tell her the problem.</strong>
           </div>
-          <span className="red-btn call-now">Request her</span>
+          <span className="red-btn call-now">Call her</span>
         </Link>
       ) : null}
 

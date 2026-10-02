@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { useChat } from "@/components/chat-room";
 
 export function Decide({
   name,
   photo,
-  callPrice,
   unlockPrice,
   unlockHref,
   signedIn,
@@ -16,15 +14,14 @@ export function Decide({
 }: {
   name: string;
   photo: string;
-  callPrice: string;
   unlockPrice: string;
   unlockHref: string;
   signedIn: boolean;
   profilePath: string;
 }) {
-  const chat = useChat();
   const [choice, setChoice] = useState<"call" | "unlock" | null>(null);
-  const next = choice === "call" ? `${profilePath}?chat=1` : unlockHref;
+  const callPath = profilePath.startsWith("/creator/") ? `/call/${profilePath.slice("/creator/".length)}` : profilePath;
+  const next = choice === "call" ? callPath : unlockHref;
   const href = signedIn || !next ? next : `/signup?next=${encodeURIComponent(next)}`;
 
   return (
@@ -42,12 +39,8 @@ export function Decide({
                 <small>{choice === "call" ? "Private call" : "Her locked posts"}</small>
                 <strong>{choice === "call" ? `${name} is listening.` : `Open ${name}'s posts.`}</strong>
                 <p>{choice === "call" ? "One conversation. Nobody else in the room. Not sex." : "The photos she keeps locked. Still not sex."}</p>
-                <b>{choice === "call" ? `${callPrice} a message` : `From ${unlockPrice}`}</b>
-                {choice === "call" && signedIn ? (
-                  <button className="red-btn" type="button" onClick={() => { setChoice(null); chat.open(); }}>Open the private chat</button>
-                ) : (
-                  <Link className="red-btn" href={href}>{signedIn ? "Continue" : "Continue with Google or Apple"}</Link>
-                )}
+                <b>{choice === "call" ? "$13 an hour" : `From ${unlockPrice}`}</b>
+                <Link className="red-btn" href={href}>{choice === "call" ? "Pay and call" : signedIn ? "Continue" : "Continue with Google or Apple"}</Link>
               </div>
             </div>,
             document.body,

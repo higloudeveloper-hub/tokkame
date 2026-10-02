@@ -259,6 +259,41 @@ export async function tip(formData: FormData) {
   await bounce({ ok: "propina" });
 }
 
+const CALL_HOUR = 13;
+
+export async function startCall(formData: FormData) {
+  const username = String(formData.get("username") || "");
+  const back = `/call/${username}`;
+  const me = await getSessionUser();
+  if (!me) redirect(`/signup?next=${encodeURIComponent(back)}`);
+  const result = await mutate((db) => {
+    const fan = db.users.find((user) => user.id === me!.id)!;
+    const creator = db.users.find((user) => user.username === username && user.role === "creator");
+    if (!creator || creator.id === fan.id) return { error: "That call is not available." };
+    if (creator.verified !== "verified") return { error: "She is not verified to take calls yet." };
+    if (!db.calls) db.calls = [];
+    const paid = spend(db, fan, creator, CALL_HOUR, "call", checkoutNote("Private hour", formData));
+    if ("error" in paid && paid.error) return { error: "Not enough sandbox balance. Add funds in Wallet." };
+    const now = Date.now();
+    const hour = 60 * 60 * 1000;
+    const open = db.calls.find((item) => item.fanId === fan.id && item.creatorId === creator.id && new Date(item.paidUntil).getTime() > now);
+    if (open) {
+      open.paidUntil = new Date(new Date(open.paidUntil).getTime() + hour).toISOString();
+      return { ok: true as const, extend: true };
+    }
+    db.calls.push({
+      id: uid("call"),
+      fanId: fan.id,
+      creatorId: creator.id,
+      paidUntil: new Date(now + hour).toISOString(),
+      createdAt: new Date(now).toISOString(),
+    });
+    return { ok: true as const, extend: false };
+  });
+  if ("error" in result && result.error) redirect(`${back}?error=${encodeURIComponent(result.error)}`);
+  redirect(result.extend ? back : `${back}?ring=1`);
+}
+
 export async function unlock(formData: FormData) {
   const me = await getSessionUser();
   if (!me) await bounce({ error: "Entra para desbloquear." });

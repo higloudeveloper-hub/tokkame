@@ -51,7 +51,7 @@ export default function TalkPage() {
               <strong>{person.name}</strong>
               <span>{person.online ? "Online · Verified" : "Verified"}</span>
             </div>
-            <Link className="red-btn" href={`/creator/${person.username}`}>Request her</Link>
+            <Link className="red-btn" href={`/call/${person.username}`}>Call her</Link>
           </article>
         ))}
       </div>
