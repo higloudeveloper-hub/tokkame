@@ -1860,7 +1860,7 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .call-slide {
     position: relative;
     flex: 0 0 86%;
-    min-height: 300px;
+    min-height: 68dvh;
     scroll-snap-align: center;
     border-radius: 18px;
     overflow: hidden;

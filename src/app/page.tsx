@@ -14,9 +14,6 @@ export default async function HomePage() {
     <div className="studio solo">
       <div>
         <section className="phone-home">
-          <div className="hero-row">
-            <HeroBanner />
-          </div>
           <div className="section-head" id="calls">
             <h2>Online now</h2>
             <span>{online.length} verified</span>
