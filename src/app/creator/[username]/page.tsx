@@ -94,6 +94,16 @@ export default async function CreatorPage({
           ))}
         </div>
         <p>{creator.bio}</p>
+        {creator.verified === "verified" && viewer?.id !== creator.id ? (
+          <Decide
+            name={creator.displayName.split(" ")[0]}
+            photo={poster}
+            unlockPrice={money(lowestPrice(creator))}
+            unlockHref={`/creator/${creator.username}?tab=premium`}
+            signedIn={Boolean(viewer)}
+            profilePath={profilePath}
+          />
+        ) : null}
       </div>
       <section className="profile-stage">
         <div className="profile-hero">
@@ -178,16 +188,6 @@ export default async function CreatorPage({
         </div>
       </section>
 
-      {creator.verified === "verified" && viewer?.id !== creator.id ? (
-        <Decide
-          name={creator.displayName.split(" ")[0]}
-          photo={poster}
-          unlockPrice={money(lowestPrice(creator))}
-          unlockHref={`/creator/${creator.username}?tab=premium`}
-          signedIn={Boolean(viewer)}
-          profilePath={profilePath}
-        />
-      ) : null}
       <div className="pay-board slim">
         <article className="pay-card">
           <img src="/talk/listen.jpg" alt="" />

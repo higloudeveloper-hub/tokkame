@@ -444,7 +444,9 @@ button { cursor: pointer; }
 .shot span { display: grid; gap: 2px; padding: 12px; }
 .shot strong { font-size: 15px; line-height: 1.15; }
 .shot em { color: #ff8b94; font-style: normal; font-size: 12px; font-weight: 700; }
-.shot .red-btn, .shot form { position: absolute; top: 10px; right: 10px; z-index: 1; }
+.shot { flex-direction: column; align-items: stretch; justify-content: flex-end; }
+.shot .red-btn, .shot form { position: relative; z-index: 1; margin: 0 12px 12px; }
+.shot form .red-btn { width: 100%; margin: 0; min-height: 36px; border-radius: 10px; box-shadow: none; }
 .profile-hero .profile-stats { max-width: none; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .profile-hero .profile-stats span { color: rgba(255,255,255,0.72); }
 .pay-card {
@@ -2046,34 +2048,21 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .face-track b { font-size: 28px; letter-spacing: -0.04em; }
   .face-track span { color: rgba(255, 255, 255, 0.8); font-size: 13px; }
   .face-slides > p { margin: 0 14px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+  .profile-cta { display: grid; grid-template-columns: 1.4fr 0.8fr; gap: 8px; margin: 0 14px; }
+  .profile-cta a { min-height: 44px; border-radius: 12px; }
+  .profile-cta .quiet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    font-weight: 700;
+  }
   .profile-mosaic { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: auto; }
   .profile-mosaic .shot { flex: 0 0 78%; height: 320px; scroll-snap-align: center; }
-  .decide-bar {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: calc(66px + env(safe-area-inset-bottom));
-    z-index: 45;
-  }
-  .decide-bar button {
-    min-height: 48px;
-    border: 0;
-    border-radius: 14px;
-    background: var(--red);
-    color: white;
-    font-weight: 800;
-  }
-  .decide-bar button.ghost { background: #1c1c20; color: white; border: 1px solid rgba(255,255,255,0.16); }
-  .decide-panel { justify-items: start; }
-  .decide-panel img { width: 100%; height: 180px; object-fit: cover; border-radius: 16px; }
-  .decide-panel small { color: #ff8b94; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
-  .decide-panel strong { font-size: 26px; letter-spacing: -0.04em; line-height: 1; }
-  .decide-panel p { margin: 0; color: rgba(255,255,255,0.78); }
-  .decide-panel b { font-size: 22px; letter-spacing: -0.03em; }
-  .profile-screen { padding-bottom: 72px; }
+  .profile-screen { padding-bottom: 12px; }
   .pay-sheet { place-items: end; padding: 0; }
   .pay-panel { width: 100%; border-radius: 22px 22px 0 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 
