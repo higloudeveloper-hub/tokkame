@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { CallSlides } from "@/components/call-slides";
 import { HeroBanner } from "@/components/hero-banner";
+import { PhoneLuxury } from "@/components/phone-luxury";
 import { VideoRail } from "@/components/video-rail";
 import { CLIPS, creatorCards } from "@/lib/studio";
 import { readDb } from "@/lib/store";
@@ -14,70 +14,21 @@ export default async function HomePage() {
     <div className="studio solo">
       <div>
         <section className="phone-home">
-          <div className="section-head" id="calls">
-            <h2>Online now</h2>
-            <span>{online.length} verified</span>
-          </div>
-          <div className="online-row">
-            {online.map((creator) => (
-              <Link key={creator.id} href={`/creator/${creator.username}`}>
-                <span className="online-face">
-                  <img src={creator.photo} alt="" />
-                  <i className="verified-badge" aria-label="Verified">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="m5 12 5 5L20 7" /></svg>
-                  </i>
-                </span>
-                <strong>{creator.name.split(" ")[0]}</strong>
-                <span>Online</span>
-              </Link>
-            ))}
-          </div>
-          <CallSlides people={online} />
-          <section className="talk-block">
-            <div className="section-head">
-              <div>
-                <p className="kicker">Private · 18+</p>
-                <h2>Talk about it</h2>
-              </div>
-              <Link href="/talk">Choose who</Link>
-            </div>
-            <div className="talk-grid">
-              <Link className="talk-card" href="/talk#infidelity">
-                <img src="/talk/infidelity.jpg?v=3" alt="" />
-                <b>01</b>
-                <span><small>Infidelity</small><strong>The part you<br />have not said.</strong></span>
-              </Link>
-              <Link className="talk-card" href="/talk#work">
-                <img src="/talk/work.jpg?v=3" alt="" />
-                <b>02</b>
-                <span><small>Work</small><strong>When the day<br />will not end.</strong></span>
-              </Link>
-              <Link className="talk-card" href="/talk#secret">
-                <img src="/talk/secret.jpg?v=3" alt="" />
-                <b>03</b>
-                <span><small>A secret</small><strong>One person.<br />Nobody else.</strong></span>
-              </Link>
-              <Link className="talk-card" href="/talk#listen">
-                <img src="/talk/listen.jpg?v=3" alt="" />
-                <b>04</b>
-                <span><small>Just listen</small><strong>No advice.<br />No judgment.</strong></span>
-              </Link>
-            </div>
-          </section>
-          <div className="section-head" id="unlock">
-            <h2>Unlock her posts</h2>
-            <Link href="/discover">All</Link>
-          </div>
-          <div className="unlock-row">
-            {cards.slice(0, 4).map((creator) => (
-              <Link key={creator.id} href={`/creator/${creator.username}`}>
-                <img src={creator.photo} alt="" />
-                <strong>{creator.name.split(" ")[0]}</strong>
-                <span>See her</span>
-              </Link>
-            ))}
-          </div>
-          <p className="home-note">18+ · Private conversation. Not sex.</p>
+          <PhoneLuxury
+            live={online.map((creator) => ({
+              id: creator.id,
+              name: creator.name,
+              username: creator.username,
+              photo: creator.photo,
+              clip: CLIPS.find((clip) => clip.username === creator.username)?.src,
+            }))}
+            more={cards.slice(0, 6).map((creator) => ({
+              id: creator.id,
+              name: creator.name,
+              username: creator.username,
+              photo: creator.photo,
+            }))}
+          />
         </section>
         <div className="desk-home">
         <div className="hero-row">
