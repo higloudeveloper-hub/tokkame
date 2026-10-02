@@ -28,7 +28,8 @@ const copy = {
     placeholder: "Tell her why you want the hour.",
     before: "She reads this before the call. She can say yes or no. You pay only if she accepts.",
     send: "Send note",
-    connecting: "Connecting with",
+    connecting: "Connecting",
+    opening: "Opening the room on Tokkame",
     already: "She already accepted. The call stays on Tokkame.",
     on: "On Tokkame with",
     left: "Time left",
@@ -55,7 +56,8 @@ const copy = {
     placeholder: "Dile por qué quieres la hora.",
     before: "Ella lee esto antes de la llamada. Puede decir que sí o que no. Pagas solo si acepta.",
     send: "Enviar nota",
-    connecting: "Conectando con",
+    connecting: "Conectando",
+    opening: "Abriendo la sala en Tokkame",
     already: "Ella ya aceptó. La llamada se queda en Tokkame.",
     on: "En Tokkame con",
     left: "Tiempo restante",
@@ -182,11 +184,16 @@ export function CallRoom({
 
       {phase === "ring" ? (
         <div className="call-ringing">
-          <div className="call-pulse">
+          <div className="ring-stage">
+            <span />
+            <span />
+            <span />
             <img src={photo} alt="" />
           </div>
-          <h1>{t.connecting} {name}</h1>
-          <p>{t.already}</p>
+          <p className="call-kicker">{t.connecting}</p>
+          <h1>{name}</h1>
+          <div className="ring-bar" aria-hidden><b /></div>
+          <p>{t.opening}</p>
         </div>
       ) : null}
 

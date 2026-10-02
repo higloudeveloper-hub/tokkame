@@ -83,6 +83,13 @@ export default async function CreatorPage({
       <div className="profile-screen">
       <div className="face-slides">
         <div className="face-track">
+          <figure>
+            <video src={cover} poster={poster} autoPlay muted loop playsInline />
+            <figcaption>
+              <b>{creator.displayName}</b>
+              <span>{creator.verified === "verified" ? (es ? "Verificada" : "Verified") : (es ? "En revisión" : "In review")} · {es ? "En línea" : "Online"}</span>
+            </figcaption>
+          </figure>
           {faces.map((src, index) => (
             <figure key={src + index}>
               <img src={src} alt="" />
@@ -98,14 +105,24 @@ export default async function CreatorPage({
           ))}
         </div>
         <p>{creator.bio}</p>
+        <div className="profile-facts">
+          <div><b>{compact(followerCount(db, creator.id))}</b><span>{es ? "Seguidores" : "Followers"}</span></div>
+          <div><b>$13</b><span>{es ? "La hora" : "The hour"}</span></div>
+          <div><b>{cards.length}</b><span>{es ? "Posts" : "Posts"}</span></div>
+        </div>
+        {cards.length ? (
+          <div className="profile-strip">
+            {cards.slice(0, 6).map((item, index) => (
+              <article key={item.post.id} className={item.visible ? "" : "is-locked"}>
+                <img src={item.post.image || photoAt(slot + index)} alt="" />
+                <em>{item.visible ? (es ? "Gratis" : "Free") : (es ? "Bloqueado" : "Locked")}</em>
+              </article>
+            ))}
+          </div>
+        ) : null}
         <div className="profile-hook">
           <strong>{es ? "Quédate con ella" : "Stay with her"}</strong>
-          <span>{es ? "La hora es privada. Primero la ves. Si quieres más, desbloqueas lo que está borroso." : "The hour is private. You see her first. If you want more, unlock what is blurred."}</span>
-          <div>
-            <em>{es ? "Nota" : "Note"}</em>
-            <em>$13 / {es ? "hora" : "hour"}</em>
-            <em>{es ? "Posts" : "Posts"}</em>
-          </div>
+          <span>{es ? "Mira lo gratis. Lo borroso se abre si lo desbloqueas. La llamada empieza con una nota." : "Look at what is free. The blur opens if you unlock it. The call starts with a note."}</span>
         </div>
         {creator.verified === "verified" && viewer?.id !== creator.id ? (
           <Decide
