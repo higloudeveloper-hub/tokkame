@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CopyButton } from "@/components/copy-button";
-import { Flash, Footer } from "@/components/ui";
+import { Flash, Footer } from "@/components/notices";
 import {
   answerCall,
   becomeCreator,
@@ -11,6 +11,7 @@ import {
   updateTiers,
 } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
+import { getLang } from "@/lib/lang";
 import { CATEGORIES, money, REGIONS } from "@/lib/format";
 import {
   earnings,
@@ -28,6 +29,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ error?: string; ok?: string }>;
 }) {
   const sp = await searchParams;
+  const es = (await getLang()) === "es";
   const me = await getSessionUser();
   if (!me) redirect("/login");
   if (me.role === "fan") {
@@ -71,22 +73,22 @@ export default async function DashboardPage({
           <img src="/talk/listen.jpg" alt="" />
           <small>TALK</small>
           <strong>{money(buckets.message)}</strong>
-          <em>this month · you charge {money(db.users.find((user) => user.id === me.id)?.messagePrice || 0)} a message</em>
+          <em>{es ? `este mes · cobras ${money(db.users.find((user) => user.id === me.id)?.messagePrice || 0)} por mensaje` : `this month · you charge ${money(db.users.find((user) => user.id === me.id)?.messagePrice || 0)} a message`}</em>
         </article>
         <article className="pay-card">
           <img src="/talk/secret.jpg" alt="" />
           <small>TIPS</small>
           <strong>{money(buckets.tip)}</strong>
-          <em>this month · $5 to $50, on top of everything</em>
+          <em>{es ? "este mes · de $5 a $50, aparte de todo" : "this month · $5 to $50, on top of everything"}</em>
         </article>
         <article className="pay-card lead">
           <img src="/talk/work.jpg" alt="" />
           <small>PREMIUM</small>
           <strong>{money(buckets.subscription)}</strong>
-          <em>this month · {subscriberCount(db, me.id)} unlocked you</em>
+          <em>{es ? `este mes · ${subscriberCount(db, me.id)} te desbloquearon` : `this month · ${subscriberCount(db, me.id)} unlocked you`}</em>
         </article>
       </section>
-      <p className="tiny muted" style={{ marginTop: 8 }}>Net this month {money(monthNet)}. Unlocks also include single posts {money(buckets.ppv)}. New subscribers +{newSubs.length}. Retention {retention}%. Followers {followerCount(db, me.id)}. Referrals {money(buckets.referral)}.</p>
+      <p className="tiny muted" style={{ marginTop: 8 }}>{es ? `Neto este mes ${money(monthNet)}. Los desbloqueos de posts suman ${money(buckets.ppv)}. Suscriptores nuevos +${newSubs.length}. Retención ${retention}%. Seguidores ${followerCount(db, me.id)}. Referidos ${money(buckets.referral)}.` : `Net this month ${money(monthNet)}. Unlocks also include single posts ${money(buckets.ppv)}. New subscribers +${newSubs.length}. Retention ${retention}%. Followers ${followerCount(db, me.id)}. Referrals ${money(buckets.referral)}.`}</p>
 
       <section className="panel" style={{ marginTop: 16 }}>
         <h2>Tu enlace</h2>
@@ -139,7 +141,7 @@ export default async function DashboardPage({
             <select name="visibility" defaultValue="public">
               <option value="public">Feed público</option>
               <option value="circle">Circle</option>
-              <option value="ppv">Unlock</option>
+              <option value="ppv">{es ? "Desbloqueo" : "Unlock"}</option>
             </select>
           </label>
           <label className="stack">Nivel mínimo del Circle

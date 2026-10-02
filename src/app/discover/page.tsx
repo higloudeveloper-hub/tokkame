@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flash, Footer } from "@/components/ui";
+import { Flash, Footer } from "@/components/notices";
 import { updateRegion } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { compact, money, REGIONS } from "@/lib/format";

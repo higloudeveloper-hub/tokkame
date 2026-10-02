@@ -1,4 +1,4 @@
-import { Footer } from "@/components/ui";
+import { Footer } from "@/components/notices";
 
 export default function RulesPage() {
   return (

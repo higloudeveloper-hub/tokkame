@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ProviderSignIn } from "@/components/provider-sign-in";
-import { Flash } from "@/components/ui";
+import { Flash } from "@/components/notices";
 import { continueAsGuest, signup } from "@/lib/actions";
 import { getLang } from "@/lib/lang";
 

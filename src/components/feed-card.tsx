@@ -56,7 +56,7 @@ export async function FeedCard({ item, viewer, poster }: { item: PresentedPost; 
         {viewer && creator.id ? (
           <form action={follow}>
             <input type="hidden" name="creatorId" value={creator.id} />
-            <button className="btn ghost small" type="submit">{item.following ? "Siguiendo" : "Follow"}</button>
+            <button className="btn ghost small" type="submit">{item.following ? (es ? "Siguiendo" : "Following") : (es ? "Seguir" : "Follow")}</button>
           </form>
         ) : null}
       </div>
@@ -71,7 +71,7 @@ export async function FeedCard({ item, viewer, poster }: { item: PresentedPost; 
         </form>
         <span className="icon-count">💬 {post.comments.length}</span>
         {!item.subscribed && creator.verified === "verified" ? (
-          <Link className="btn small" href={`/creator/${creator.username}?tab=circle`}>Subscribe</Link>
+          <Link className="btn small" href={`/creator/${creator.username}?tab=circle`}>{es ? "Suscribirme" : "Subscribe"}</Link>
         ) : null}
       </div>
       {item.visible && item.comments.length > 0 ? (

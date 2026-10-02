@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PayChoices } from "@/components/pay-choices";
-import { Flash, Footer } from "@/components/ui";
+import { Flash, Footer } from "@/components/notices";
 import { sendMessage } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { ago, money } from "@/lib/format";

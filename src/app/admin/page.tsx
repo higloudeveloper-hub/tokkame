@@ -1,4 +1,4 @@
-import { Flash, Footer } from "@/components/ui";
+import { Flash, Footer } from "@/components/notices";
 import { adminDismiss, adminSuspend, adminVerify, deletePost } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { findUserById, readDb } from "@/lib/store";

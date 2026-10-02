@@ -4,7 +4,7 @@ import { Decide } from "@/components/decide";
 import { PayChoices, PaySheet } from "@/components/pay-choices";
 import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/copy-button";
-import { Flash } from "@/components/ui";
+import { Flash } from "@/components/notices";
 import { follow, subscribe, tip, unlock } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { ago, compact, money } from "@/lib/format";

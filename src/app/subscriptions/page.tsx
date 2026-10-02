@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flash, Footer } from "@/components/ui";
+import { Flash, Footer } from "@/components/notices";
 import { cancelSubscription } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { money, when } from "@/lib/format";

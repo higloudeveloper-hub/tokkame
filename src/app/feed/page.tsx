@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FeedCard } from "@/components/feed-card";
-import { Flash, Footer } from "@/components/ui";
+import { Flash, Footer } from "@/components/notices";
 import { getSessionUser } from "@/lib/auth";
 import { until, when } from "@/lib/format";
 import { creators, findUserById, publicPosts, readDb, upcomingDrops } from "@/lib/store";

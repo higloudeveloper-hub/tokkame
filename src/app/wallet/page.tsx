@@ -1,5 +1,5 @@
 import { PayChoices } from "@/components/pay-choices";
-import { Flash, Footer } from "@/components/ui";
+import { Flash, Footer } from "@/components/notices";
 import { addFunds, requestPayout } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
 import { money } from "@/lib/format";

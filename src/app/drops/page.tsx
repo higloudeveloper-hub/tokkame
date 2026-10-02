@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Footer } from "@/components/ui";
+import { Footer } from "@/components/notices";
 import { until, when } from "@/lib/format";
 import { findUserById, readDb, upcomingDrops } from "@/lib/store";
 
