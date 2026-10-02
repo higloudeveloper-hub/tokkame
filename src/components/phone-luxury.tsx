@@ -64,6 +64,13 @@ const pack = {
     sheOn: "She is online",
     tell: "Tell her the problem.",
     note: "18+ · Private conversation. Not sex.",
+    want: "Stay",
+    wantTitle: "She can hear it tonight.",
+    options: [
+      ["Tell her", "The problem, in private.", "/talk"],
+      ["See her", "Her profile, before you call.", "profile"],
+      ["Unlock", "Free posts, and the blurred ones.", "/discover"],
+    ],
     tonight: "On Tokkame",
     meter: [
       ["Verified", "Before she can charge"],
@@ -115,6 +122,13 @@ const pack = {
     sheOn: "Está en línea",
     tell: "Cuéntale el problema.",
     note: "18+ · Conversación privada. No es sexo.",
+    want: "Quédate",
+    wantTitle: "Ella puede escucharlo esta noche.",
+    options: [
+      ["Contarle", "El problema, en privado.", "/talk"],
+      ["Verla", "Su perfil, antes de llamar.", "profile"],
+      ["Desbloquear", "Posts gratis y los que están borrosos.", "/discover"],
+    ],
     tonight: "En Tokkame",
     meter: [
       ["Verificada", "Antes de poder cobrar"],
@@ -223,6 +237,19 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
           <button key={person.id} type="button" className={dot === index ? "on" : ""} aria-label={person.name} onClick={() => go(dot)} />
         ))}
       </div>
+
+      <section className="lux-pull">
+        <p>{t.want}</p>
+        <h3>{t.wantTitle}</h3>
+        <div>
+          {t.options.map((item) => (
+            <Link key={item[0]} href={item[2] === "profile" && first ? `/creator/${first.username}` : item[2] === "profile" ? "/discover" : item[2]}>
+              <strong>{item[0]}</strong>
+              <span>{item[1]}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <section className="lux-meter">
         <p>{t.tonight}</p>

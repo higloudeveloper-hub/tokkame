@@ -98,6 +98,15 @@ export default async function CreatorPage({
           ))}
         </div>
         <p>{creator.bio}</p>
+        <div className="profile-hook">
+          <strong>{es ? "Quédate con ella" : "Stay with her"}</strong>
+          <span>{es ? "La hora es privada. Primero la ves. Si quieres más, desbloqueas lo que está borroso." : "The hour is private. You see her first. If you want more, unlock what is blurred."}</span>
+          <div>
+            <em>{es ? "Nota" : "Note"}</em>
+            <em>$13 / {es ? "hora" : "hour"}</em>
+            <em>{es ? "Posts" : "Posts"}</em>
+          </div>
+        </div>
         {creator.verified === "verified" && viewer?.id !== creator.id ? (
           <Decide
             name={creator.displayName.split(" ")[0]}

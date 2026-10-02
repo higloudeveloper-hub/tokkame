@@ -15,7 +15,7 @@ const shell = {
   en: {
     home: "Home", talk: "Talk", videos: "Videos", discover: "Discover", trending: "Trending",
     search: "Search creators, categories...", menu: "Open menu", close: "Close menu",
-    notes: "Notifications", empty: "No activity yet.", account: "Your account", login: "Log in",
+    notes: "Notifications", empty: "Nothing yet.", emptyHint: "When she accepts the hour, or someone writes, it shows up here.", done: "Done", account: "Your account", login: "Log in",
     pricing: "Pricing", creators: "For Creators", premium: "Premium",
     premiumText: "Talk, tip, or unlock her subscription.", see: "See the three",
     dark: "Dark mode", darkToggle: "Toggle dark mode", logout: "Log out",
@@ -27,7 +27,7 @@ const shell = {
   es: {
     home: "Inicio", talk: "Hablar", videos: "Videos", discover: "Descubrir", trending: "Tendencias",
     search: "Buscar creadoras, categorías...", menu: "Abrir menú", close: "Cerrar menú",
-    notes: "Notificaciones", empty: "Todavía no hay actividad.", account: "Tu cuenta", login: "Entrar",
+    notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando ella acepte la hora, o alguien escriba, aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
     pricing: "Precios", creators: "Para creadoras", premium: "Premium",
     premiumText: "Habla, deja propina o desbloquea su suscripción.", see: "Ver los tres",
     dark: "Modo oscuro", darkToggle: "Cambiar modo oscuro", logout: "Salir",
@@ -123,9 +123,11 @@ export function AppShell({
                 <div className="bell-pop" role="dialog" aria-label={t.notes}>
                   <header>
                     <strong>{t.notes}</strong>
-                    <button type="button" aria-label={t.close} onClick={() => setBell(false)}>×</button>
+                    <button type="button" onClick={() => setBell(false)}>{t.done}</button>
                   </header>
-                  {activity.length === 0 ? <p className="bell-empty">{t.empty}</p> : null}
+                  {activity.length === 0 ? (
+                    <p className="bell-empty"><b>{t.empty}</b><span>{t.emptyHint}</span></p>
+                  ) : null}
                   <div className="bell-list">
                     {activity.map((item) => (
                       <Link key={item.id} href={item.username ? `/creator/${item.username}` : "/feed"} onClick={() => setBell(false)}>
