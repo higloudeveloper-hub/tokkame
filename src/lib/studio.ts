@@ -34,6 +34,8 @@ export const NAV_CATS = [
   { label: "Travel", category: "" },
 ];
 
+const ONLINE = new Set(["luna.vale", "nia.reed", "vera.night"]);
+
 export function photoAt(index: number) {
   return PHOTOS[Math.abs(index) % PHOTOS.length];
 }
@@ -110,5 +112,6 @@ export function creatorCards(db: DB) {
       price: money(lowestPrice(user)),
       talk: money(user.messagePrice),
       photo: photoAt(index),
+      online: ONLINE.has(user.username),
     }));
 }

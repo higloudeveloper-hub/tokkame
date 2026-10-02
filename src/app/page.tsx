@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CallSlides } from "@/components/call-slides";
 import { HeroBanner } from "@/components/hero-banner";
 import { VideoRail } from "@/components/video-rail";
 import { CLIPS, creatorCards } from "@/lib/studio";
@@ -7,10 +8,28 @@ import { readDb } from "@/lib/store";
 export default function HomePage() {
   const cards = creatorCards(readDb());
   const featured = cards[0];
+  const online = cards.filter((creator) => creator.online);
 
   return (
     <div className="studio solo">
       <div>
+        <section className="phone-home">
+          <CallSlides people={online} />
+          <p className="phone-how">Call who is online. Then talk, tip, or unlock. Pay with Apple Pay, a card, or PayPal.</p>
+          <div className="section-head">
+            <h2>Online now</h2>
+            <span>{online.length} on</span>
+          </div>
+          <div className="online-row">
+            {online.map((creator) => (
+              <Link key={creator.id} href={`/messages?with=${creator.id}`}>
+                <img src={creator.photo} alt="" />
+                <strong>{creator.name.split(" ")[0]}</strong>
+                <span>Call {creator.talk}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
         <div className="hero-row">
           <HeroBanner />
           {featured ? (

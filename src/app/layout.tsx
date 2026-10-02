@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -21,6 +21,15 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "TOKKAME — Say it. Choose who hears it.",
   description: "Adults talk in private. Infidelity, work, a secret, or whatever it is. You choose the person.",
+  applicationName: "TOKKAME",
+  appleWebApp: { capable: true, title: "TOKKAME", statusBarStyle: "black-translucent" },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0c0c0e",
 };
 
 export const dynamic = "force-dynamic";

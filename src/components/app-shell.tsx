@@ -62,7 +62,7 @@ export function AppShell({
   }
 
   return (
-    <div className="app">
+    <div className={`app${open ? " nav-open" : ""}`}>
       <header className="app-top">
         <button className="icon-btn menu-btn" type="button" aria-label="Open menu" onClick={() => setOpen(true)}>
           <Icon name="menu" />
@@ -73,6 +73,9 @@ export function AppShell({
           <input name="q" placeholder="Search creators, categories..." aria-label="Search creators, categories" />
         </form>
         <div className="top-right">
+          <Link href="/discover" className="icon-btn phone-only" aria-label="Search">
+            <Icon name="search" />
+          </Link>
           <div style={{ position: "relative" }}>
             <button className="icon-btn" type="button" aria-label="Notifications" onClick={() => setBell((value) => !value)}>
               <Icon name="bell" />
@@ -158,6 +161,14 @@ export function AppShell({
         </div>
         <small>© 2026 Tokkame. All rights reserved.</small>
       </footer>
+      <nav className="tabbar" aria-label="App">
+        {mainLinks.map((link) => (
+          <Link key={link.href} href={link.href} className={active(link.href) ? "on" : ""}>
+            <Icon name={link.icon} />
+            <span>{link.label}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

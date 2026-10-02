@@ -1,3 +1,4 @@
+import { PayChoices } from "@/components/pay-choices";
 import { Flash, Footer } from "@/components/ui";
 import { addFunds, requestPayout } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
@@ -30,14 +31,15 @@ export default async function WalletPage({
         <article className="card stat"><strong>{money(available)}</strong><span>ingresos por retirar</span></article>
       </div>
       <div className="row" style={{ margin: "16px 0" }}>
-        <form action={addFunds}><button className="btn" type="submit">Agregar $50 de prueba</button></form>
+        <form action={addFunds} className="wallet-pay">
+          <PayChoices label="Add $50" />
+        </form>
         {me.role === "creator" ? (
           <form action={requestPayout}><button className="btn gold" type="submit">Solicitar retiro</button></form>
         ) : null}
       </div>
       <p className="tiny muted">
-        Esta versión no cobra tarjetas. El saldo de prueba deja ver el recorrido fan → suscripción → ingreso del creador.
-        En producción, Tokkame se conecta a un procesador que acepte explícitamente este modelo.
+        Eliges Apple Pay, tarjeta o PayPal. En esta demo el cargo entra al saldo de prueba y el número de tarjeta no se guarda.
       </p>
       <div className="panel" style={{ marginTop: 16, overflowX: "auto" }}>
         <table>

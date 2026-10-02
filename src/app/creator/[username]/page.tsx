@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PayChoices, PaySheet } from "@/components/pay-choices";
 import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/copy-button";
 import { Flash } from "@/components/ui";
@@ -52,6 +53,7 @@ export default async function CreatorPage({
   return (
     <>
       <Flash error={sp.error} ok={sp.ok} />
+      <div className="profile-screen">
       <section className="profile-stage">
         <div className="profile-hero">
           <video src={cover} poster={poster} autoPlay muted loop playsInline />
@@ -136,16 +138,14 @@ export default async function CreatorPage({
           <strong>$5–$50</strong>
           <em>straight to her</em>
           {canPay ? (
-            <form action={tip} className="pay-form">
-              <input type="hidden" name="creatorId" value={creator.id} />
+            <PaySheet action={tip} hidden={[{ name: "creatorId", value: creator.id }]} title="Send a tip" amount="$5–$50" trigger="Send">
               <select name="amount" defaultValue="10" aria-label="Tip amount">
                 <option value="5">$5</option>
                 <option value="10">$10</option>
                 <option value="25">$25</option>
                 <option value="50">$50</option>
               </select>
-              <button className="red-btn" type="submit">Send</button>
-            </form>
+            </PaySheet>
           ) : null}
         </article>
         <article className="pay-card lead">
@@ -155,6 +155,7 @@ export default async function CreatorPage({
           <em>to unlock</em>
           <Link className="red-btn" href={`/creator/${creator.username}?tab=premium`}>Unlock</Link>
         </article>
+      </div>
       </div>
     </>
   );
@@ -188,8 +189,8 @@ function PremiumUnlock({
           <em>{tier.perks.join(" · ")}</em>
         </label>
       ))}
-      <button className="red-btn" type="submit">Unlock premium</button>
-      <p className="tiny muted">Sandbox wallet. Tokkame keeps 20% in this demo. She keeps the rest.</p>
+      <PayChoices label="Unlock premium" />
+      <p className="tiny muted">Tokkame keeps 20% in this demo. She keeps the rest.</p>
     </form>
   );
 }

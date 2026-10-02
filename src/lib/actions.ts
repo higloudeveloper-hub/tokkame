@@ -24,6 +24,12 @@ import {
 } from "./store";
 import type { DropKind, Motif, TierId, Visibility } from "./types";
 
+function checkoutNote(base: string, formData: FormData) {
+  const method = String(formData.get("method") || "");
+  const label = method === "apple" ? "Apple Pay" : method === "card" ? "Card" : method === "paypal" ? "PayPal" : "";
+  return label ? `${base} · ${label}` : base;
+}
+
 const RESERVED = new Set([
   "admin",
   "support",
@@ -188,7 +194,7 @@ export async function subscribe(formData: FormData) {
     if (!chosen) return { error: "Ese nivel no existe." };
     const current = activeSub(db, fan.id, creator.id);
     if (current?.tier === tier) return { error: "Ya estás en ese nivel." };
-    const paid = spend(db, fan, creator, chosen.price, "subscription", chosen.name);
+    const paid = spend(db, fan, creator, chosen.price, "subscription", checkoutNote(chosen.name, formData));
     if (!paid.ok) return paid;
     if (current) current.status = "canceled";
     const now = new Date();
@@ -230,7 +236,7 @@ export async function tip(formData: FormData) {
     const creator = db.users.find((user) => user.id === creatorId && user.role === "creator");
     if (!creator || creator.id === fan.id) return { error: "No puedes enviarte una propina." };
     if (creator.verified !== "verified") return { error: "Este creador todavía no puede cobrar." };
-    return spend(db, fan, creator, amount, "tip", "Propina");
+    return spend(db, fan, creator, amount, "tip", checkoutNote("Propina", formData));
   });
   if ("error" in result && result.error) await bounce({ error: result.error });
   await bounce({ ok: "propina" });
@@ -553,7 +559,7 @@ export async function sendMessage(formData: FormData) {
       return { error: "Sigue al creador antes de escribir." };
     }
     if (to.role === "creator" && to.messagePrice > 0 && from.id !== to.id) {
-      const paid = spend(db, from, to, to.messagePrice, "message", "Mensaje");
+      const paid = spend(db, from, to, to.messagePrice, "message", checkoutNote("Mensaje", formData));
       if (!paid.ok) return paid;
     }
     db.messages.push({
@@ -591,12 +597,13 @@ export async function reportContent(formData: FormData) {
   await bounce({ ok: "reporte" });
 }
 
-export async function addFunds() {
+export async function addFunds(formData: FormData) {
   const me = await getSessionUser();
   if (!me) await bounce({ error: "Entra de nuevo." });
+  const note = checkoutNote("Fondos de prueba", formData);
   await mutate((db) => {
     const user = db.users.find((item) => item.id === me!.id)!;
-    addTopup(db, user, 50);
+    addTopup(db, user, 50, note);
   });
   await bounce({ ok: "fondos" });
 }

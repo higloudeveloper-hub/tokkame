@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PayChoices } from "@/components/pay-choices";
 import { Flash, Footer } from "@/components/ui";
 import { sendMessage } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
@@ -30,10 +31,10 @@ export default async function MessagesPage({
   return (
     <>
       <Flash error={sp.error} ok={sp.ok} />
-      <p className="kicker">Mensajes</p>
-      <h1 className="display" style={{ fontSize: 48, marginTop: 0 }}>Conversaciones</h1>
-      <div className="grid-2">
-        <aside className="panel list">
+      <p className="kicker msg-kicker">Mensajes</p>
+      <h1 className="display msg-title" style={{ fontSize: 48, marginTop: 0 }}>Conversaciones</h1>
+      <div className={`grid-2 msg-app${current ? " open" : ""}`}>
+        <aside className="panel list msg-list">
           {people.length === 0 ? <p className="muted">Sigue a un creador y escríbele desde su perfil.</p> : null}
           {people.map((person) => (
             <Link key={person.id} href={`/messages?with=${person.id}`} className="person">
@@ -42,10 +43,13 @@ export default async function MessagesPage({
             </Link>
           ))}
         </aside>
-        <section className="panel">
+        <section className="panel msg-thread">
           {current ? (
             <>
-              <h2 style={{ marginTop: 0 }}>@{current.username}</h2>
+              <div className="msg-head">
+                <Link className="msg-back" href="/messages">Back</Link>
+                <h2 style={{ marginTop: 0 }}>@{current.username}</h2>
+              </div>
               {current.role === "creator" && current.messagePrice > 0 && current.id !== me.id ? (
                 <p className="charge-line">Talk is {money(current.messagePrice)} a message. She keeps it. You need to follow her first.</p>
               ) : null}
@@ -60,11 +64,11 @@ export default async function MessagesPage({
               <form action={sendMessage} className="form-grid" style={{ marginTop: 12 }}>
                 <input type="hidden" name="toId" value={current.id} />
                 <textarea name="body" placeholder="Escribe" maxLength={1000} />
-                <button className="red-btn" type="submit">
-                  {current.role === "creator" && current.messagePrice > 0 && current.id !== me.id
-                    ? `Send · ${money(current.messagePrice)}`
-                    : "Send"}
-                </button>
+                {current.role === "creator" && current.messagePrice > 0 && current.id !== me.id ? (
+                  <PayChoices label={`Send · ${money(current.messagePrice)}`} />
+                ) : (
+                  <button className="red-btn" type="submit">Send</button>
+                )}
               </form>
             </>
           ) : (

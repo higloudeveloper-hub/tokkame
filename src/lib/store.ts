@@ -764,7 +764,7 @@ export function spend(
   return { ok: true as const };
 }
 
-export function addTopup(db: DB, user: User, amount: number) {
+export function addTopup(db: DB, user: User, amount: number, note = "Fondos de prueba") {
   const value = cents(amount);
   user.balance = cents(Math.min(5000, user.balance + value));
   db.transactions.push({
@@ -776,7 +776,7 @@ export function addTopup(db: DB, user: User, amount: number) {
     fee: 0,
     net: value,
     createdAt: new Date().toISOString(),
-    note: "Fondos de prueba",
+    note,
   });
 }
 
