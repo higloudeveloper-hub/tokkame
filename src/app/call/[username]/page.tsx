@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { CallRoom } from "@/components/call-room";
 import { getSessionUser } from "@/lib/auth";
 import { photoAt } from "@/lib/studio";
@@ -18,6 +18,7 @@ export default async function CallPage({
   const creator = list.find((user) => user.username === username);
   if (!creator || creator.verified !== "verified") notFound();
   const viewer = await getSessionUser();
+  if (!viewer) redirect(`/signup?next=${encodeURIComponent(`/call/${username}`)}`);
   const now = Date.now();
   const session = viewer
     ? db.calls.find((item) => item.fanId === viewer.id && item.creatorId === creator.id && new Date(item.paidUntil).getTime() > now)

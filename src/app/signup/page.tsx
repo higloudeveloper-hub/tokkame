@@ -11,10 +11,12 @@ export default async function SignupPage({
   const sp = await searchParams;
   const asCreator = sp.as === "creator";
   const next = sp.next?.startsWith("/") && !sp.next.startsWith("//") ? sp.next : "";
+  const forCall = next.startsWith("/call/");
   return (
     <div className="panel form-grid" style={{ maxWidth: 640 }}>
-      <p className="kicker">Registro</p>
-      <h1 className="display" style={{ fontSize: 48, margin: 0 }}>Entra a Tokkame</h1>
+      <p className="kicker">{forCall ? "Before the call" : "Registro"}</p>
+      <h1 className="display" style={{ fontSize: 48, margin: 0 }}>{forCall ? "Sign up to call her" : "Entra a Tokkame"}</h1>
+      {forCall ? <p className="tiny muted">One tap with Google or Apple. Then you pay for the hour. Tokkame does not take that password.</p> : null}
       <ProviderSignIn next={next} />
       <form action={signup} className="form-grid">
       <Flash error={sp.error} ok={sp.ok} />
