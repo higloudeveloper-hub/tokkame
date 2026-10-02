@@ -1804,17 +1804,26 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .phone-only { display: grid; }
 
   .app-top {
-    height: calc(50px + env(safe-area-inset-top));
+    height: calc(48px + env(safe-area-inset-top));
     padding: env(safe-area-inset-top) 10px 0;
     gap: 6px;
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
+    overflow: hidden;
     background: color-mix(in srgb, var(--bg) 94%, transparent);
   }
-  .app-top .wordmark { min-width: 0; font-size: 13px; letter-spacing: 0.08em; }
-  .app-top .top-right { display: flex; margin-left: auto; flex: none; align-items: center; gap: 6px; }
+  .app-top .wordmark {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .app-top .top-right { display: flex; flex: none; flex-wrap: nowrap; margin-left: auto; align-items: center; gap: 6px; }
   .app-top .lang-bar { width: auto; flex: none; border-radius: 999px; }
-  .app-top .lang-bar button { height: 30px; padding: 0 8px; font-size: 12px; font-weight: 750; border-radius: 999px; }
+  .app-top .lang-bar button { height: 28px; padding: 0 8px; font-size: 12px; font-weight: 750; border-radius: 999px; white-space: nowrap; }
   .top-right .phone-only { display: none; }
   .top-right .red-btn { min-height: 30px; padding: 0 8px; font-size: 12px; }
   .studio .lang-bar { display: none; }
