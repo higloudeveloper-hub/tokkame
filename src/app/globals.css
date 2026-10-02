@@ -1551,6 +1551,16 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 .chat-compose textarea { min-height: 52px; border-radius: 16px; }
 .chat-compose p { margin: 0; color: #9c9ca6; font-size: 13px; }
 .phone-home { display: none; }
+.lang-bar { display: flex; justify-content: flex-end; margin: 0 0 10px; }
+.lang-bar label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-weight: 700; }
+.lang-bar select {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+}
 .call-room { max-width: 440px; margin: 12px auto 28px; }
 .call-pay, .call-ringing, .call-live { display: grid; justify-items: center; gap: 10px; text-align: center; }
 .call-pay img, .call-live img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }

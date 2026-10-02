@@ -19,18 +19,100 @@ export type LuxPost = {
   locked: boolean;
 };
 
-const lines = [
-  "Tell her the problem. She is here for it.",
-  "Request her. One woman, and what you have not said.",
-  "Infidelity, work, a secret. She listens.",
-];
-
-const topics = [
-  { href: "/talk#infidelity", img: "/talk/infidelity.jpg?v=3", kicker: "Request her", title: "Infidelity", text: "Tell her the part you have not said." },
-  { href: "/talk#work", img: "/talk/work.jpg?v=3", kicker: "Request her", title: "Work", text: "When the day will not end, tell her." },
-  { href: "/talk#secret", img: "/talk/secret.jpg?v=3", kicker: "Request her", title: "A secret", text: "One woman. Nobody else hears it." },
-  { href: "/talk#listen", img: "/talk/listen.jpg?v=3", kicker: "Request her", title: "Just listen", text: "You talk. She stays with it." },
-];
+const pack = {
+  en: {
+    kicker: "Talk to a woman · 18+",
+    title: ["Got a problem?", "Tell her."],
+    lead: "If you need to talk, request a woman who is online. Infidelity, work, a secret. She listens. You choose who.",
+    live: "Live",
+    lines: [
+      "Tell her the problem. She is here for it.",
+      "Request her. One woman, and what you have not said.",
+      "Infidelity, work, a secret. She listens.",
+    ],
+    call: "Call her",
+    profile: "See her profile",
+    why: "Why you stay",
+    whyItems: [
+      ["She is verified", "You know who is listening."],
+      ["$13 an hour", "You pay, then she can accept."],
+      ["Add time", "The clock is on the call. Buy another hour there."],
+    ],
+    posts: "Free and locked",
+    all: "All",
+    free: "Free",
+    locked: "Locked",
+    request: "Request her",
+    online: "online",
+    talk: "Talk to her",
+    hears: "Tell her the problem. She listens.",
+    need: "If you need to talk",
+    steps: [
+      ["You have a problem", "Infidelity, work, a secret. Whatever it is."],
+      ["Request her", "Pick a woman who is online and verified."],
+      ["Tell her", "A private conversation. Nobody else is in it."],
+    ],
+    topicsTitle: "What you can tell her",
+    choose: "Choose a woman",
+    topics: [
+      ["Request her", "Infidelity", "Tell her the part you have not said."],
+      ["Request her", "Work", "When the day will not end, tell her."],
+      ["Request her", "A secret", "One woman. Nobody else hears it."],
+      ["Request her", "Just listen", "You talk. She stays with it."],
+    ],
+    open: "Open her posts",
+    see: "See posts",
+    sheOn: "She is online",
+    tell: "Tell her the problem.",
+    note: "18+ · Private conversation. Not sex.",
+  },
+  es: {
+    kicker: "Habla con una mujer · 18+",
+    title: ["¿Tienes un problema?", "Cuéntaselo."],
+    lead: "Si necesitas hablar, solicita a una mujer que esté en línea. Infidelidad, trabajo, un secreto. Ella escucha. Tú eliges.",
+    live: "En vivo",
+    lines: [
+      "Cuéntale el problema. Ella está aquí.",
+      "Solicítala. Una mujer, y lo que no has dicho.",
+      "Infidelidad, trabajo, un secreto. Ella escucha.",
+    ],
+    call: "Llamarla",
+    profile: "Ver su perfil",
+    why: "Por qué quedarte",
+    whyItems: [
+      ["Está verificada", "Sabes quién te escucha."],
+      ["$13 la hora", "Pagas y ella puede aceptar."],
+      ["Más tiempo", "El reloj está en la llamada. Ahí compras otra hora."],
+    ],
+    posts: "Gratis y bloqueados",
+    all: "Todas",
+    free: "Gratis",
+    locked: "Bloqueado",
+    request: "Solicítala",
+    online: "en línea",
+    talk: "Habla con ella",
+    hears: "Cuéntale el problema. Ella escucha.",
+    need: "Si necesitas hablar",
+    steps: [
+      ["Tienes un problema", "Infidelidad, trabajo, un secreto. Lo que sea."],
+      ["Solicítala", "Elige a una mujer en línea y verificada."],
+      ["Cuéntaselo", "Una conversación privada. Nadie más está ahí."],
+    ],
+    topicsTitle: "Qué puedes contarle",
+    choose: "Elegir una mujer",
+    topics: [
+      ["Solicítala", "Infidelidad", "Cuéntale lo que no has dicho."],
+      ["Solicítala", "Trabajo", "Cuando el día no termina."],
+      ["Solicítala", "Un secreto", "Una mujer. Nadie más lo oye."],
+      ["Solicítala", "Solo escuchar", "Tú hablas. Ella se queda."],
+    ],
+    open: "Abrir sus posts",
+    see: "Ver posts",
+    sheOn: "Está en línea",
+    tell: "Cuéntale el problema.",
+    note: "18+ · Conversación privada. No es sexo.",
+  },
+} as const;
 
 function Check() {
   return (
@@ -40,7 +122,14 @@ function Check() {
   );
 }
 
-export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: LuxPerson[]; posts: LuxPost[] }) {
+export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; more: LuxPerson[]; posts: LuxPost[]; lang: "en" | "es" }) {
+  const t = pack[lang];
+  const topicCards = [
+    { href: "/talk#infidelity", img: "/talk/infidelity.jpg?v=3" },
+    { href: "/talk#work", img: "/talk/work.jpg?v=3" },
+    { href: "/talk#secret", img: "/talk/secret.jpg?v=3" },
+    { href: "/talk#listen", img: "/talk/listen.jpg?v=3" },
+  ];
   const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const count = live.length;
@@ -70,9 +159,9 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
   return (
     <div className="lux">
       <header className="lux-intro">
-        <p>Talk to a woman · 18+</p>
-        <h1>Got a problem?<span>Tell her.</span></h1>
-        <p className="lead">If you need to talk, request a woman who is online. Infidelity, work, a secret. She listens. You choose who.</p>
+        <p>{t.kicker}</p>
+        <h1>{t.title[0]}<span>{t.title[1]}</span></h1>
+        <p className="lead">{t.lead}</p>
       </header>
 
       <div className="lux-stories">
@@ -83,7 +172,7 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
               <Check />
             </span>
             <strong>{person.name.split(" ")[0]}</strong>
-            <em>Live</em>
+            <em>{t.live}</em>
           </button>
         ))}
       </div>
@@ -98,13 +187,13 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
                 ) : (
                   <img className="drift" src={person.photo} alt="" />
                 )}
-                <span className="lux-live"><i />Live</span>
+                <span className="lux-live"><i />{t.live}</span>
               </div>
               <div className="sheet">
                 <h2>{person.name.split(" ")[0]} <Check /></h2>
-                <p>{lines[i % lines.length]}</p>
-                <Link className="red-btn call-now" href={`/call/${person.username}`}>Call her</Link>
-                <Link className="see" href={`/creator/${person.username}`}>See her profile</Link>
+                <p>{t.lines[i % t.lines.length]}</p>
+                <Link className="red-btn call-now" href={`/call/${person.username}`}>{t.call}</Link>
+                <Link className="see" href={`/creator/${person.username}`}>{t.profile}</Link>
               </div>
             </article>
           </div>
@@ -118,20 +207,20 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>Why you stay</h3>
+          <h3>{t.why}</h3>
         </div>
         <ol className="lux-steps">
-          <li><b>01</b><strong>She is verified</strong><span>You know who is listening.</span></li>
-          <li><b>02</b><strong>$13 an hour</strong><span>You pay, then she can accept.</span></li>
-          <li><b>03</b><strong>Add time</strong><span>The clock is on the call. Buy another hour there.</span></li>
+          {t.whyItems.map((item, step) => (
+            <li key={item[0]}><b>0{step + 1}</b><strong>{item[0]}</strong><span>{item[1]}</span></li>
+          ))}
         </ol>
       </section>
 
       {posts.length ? (
         <section className="lux-block">
           <div className="lux-head">
-            <h3>Free and locked</h3>
-            <Link href="/discover">All</Link>
+            <h3>{t.posts}</h3>
+            <Link href="/discover">{t.all}</Link>
           </div>
           <div className="lux-feed">
             {posts.map((post) => (
@@ -139,7 +228,7 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
                 <img src={post.photo} alt="" />
                 <span>
                   <strong>{post.name.split(" ")[0]}</strong>
-                  <em>{post.locked ? "Locked" : "Free"}</em>
+                  <em>{post.locked ? t.locked : t.free}</em>
                 </span>
               </Link>
             ))}
@@ -149,18 +238,18 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>Request her</h3>
-          <span>{live.length} online</span>
+          <h3>{t.request}</h3>
+          <span>{live.length} {t.online}</span>
         </div>
         <div className="lux-calls">
           {live.map((person) => (
             <Link className="lux-call" key={person.id} href={`/call/${person.username}`}>
               <img src={person.photo} alt="" />
               <div>
-                <small>Talk to her</small>
+                <small>{t.talk}</small>
                 <strong>{person.name.split(" ")[0]} <Check /></strong>
-                <p>Tell her the problem. She listens.</p>
-                <span className="red-btn call-now">Call her</span>
+                <p>{t.hears}</p>
+                <span className="red-btn call-now">{t.call}</span>
               </div>
             </Link>
           ))}
@@ -169,29 +258,29 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>If you need to talk</h3>
+          <h3>{t.need}</h3>
         </div>
         <ol className="lux-steps">
-          <li><b>01</b><strong>You have a problem</strong><span>Infidelity, work, a secret. Whatever it is.</span></li>
-          <li><b>02</b><strong>Request her</strong><span>Pick a woman who is online and verified.</span></li>
-          <li><b>03</b><strong>Tell her</strong><span>A private conversation. Nobody else is in it.</span></li>
+          {t.steps.map((item, step) => (
+            <li key={item[0]}><b>0{step + 1}</b><strong>{item[0]}</strong><span>{item[1]}</span></li>
+          ))}
         </ol>
       </section>
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>What you can tell her</h3>
-          <Link href="/talk">All</Link>
+          <h3>{t.topicsTitle}</h3>
+          <Link href="/talk">{t.all}</Link>
         </div>
         <div className="lux-topics">
-          {topics.map((topic) => (
+          {topicCards.map((topic, i) => (
             <Link className="lux-topic" key={topic.href} href={topic.href}>
               <img className="drift" src={topic.img} alt="" />
               <div>
-                <small>{topic.kicker}</small>
-                <strong>{topic.title}</strong>
-                <p>{topic.text}</p>
-                <span className="red-btn">Choose a woman</span>
+                <small>{t.topics[i][0]}</small>
+                <strong>{t.topics[i][1]}</strong>
+                <p>{t.topics[i][2]}</p>
+                <span className="red-btn">{t.choose}</span>
               </div>
             </Link>
           ))}
@@ -200,8 +289,8 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>Open her posts</h3>
-          <Link href="/discover">All</Link>
+          <h3>{t.open}</h3>
+          <Link href="/discover">{t.all}</Link>
         </div>
         <div className="lux-unlock">
           {more.map((person) => (
@@ -209,7 +298,7 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
               <img src={person.photo} alt="" />
               <span>
                 <strong>{person.name.split(" ")[0]} <Check /></strong>
-                <em>See posts</em>
+                <em>{t.see}</em>
               </span>
             </Link>
           ))}
@@ -219,14 +308,14 @@ export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: Lu
       {first ? (
         <Link className="lux-close" href={`/call/${first.username}`}>
           <div>
-            <small>She is online</small>
-            <strong>Tell her the problem.</strong>
+            <small>{t.sheOn}</small>
+            <strong>{t.tell}</strong>
           </div>
-          <span className="red-btn call-now">Call her</span>
+          <span className="red-btn call-now">{t.call}</span>
         </Link>
       ) : null}
 
-      <p className="lux-note">18+ · Private conversation. Not sex.</p>
+      <p className="lux-note">{t.note}</p>
     </div>
   );
 }
