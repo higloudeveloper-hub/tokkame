@@ -310,6 +310,52 @@ button { cursor: pointer; }
 .talk-hero small { color: #ff8b94; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; }
 .talk-hero h1 { margin: 8px 0; font-size: clamp(32px, 4vw, 48px); line-height: 0.98; letter-spacing: -0.04em; }
 .talk-hero p { color: var(--muted); max-width: 460px; }
+@keyframes talk-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.talk-show { display: grid; gap: 18px; }
+.talk-show > * { animation: talk-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.talk-lead { display: grid; gap: 6px; }
+.talk-lead p:first-child { margin: 0; color: #ff8b94; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.talk-lead h1 { margin: 0; font-size: clamp(40px, 5vw, 64px); line-height: 0.92; letter-spacing: -0.045em; }
+.talk-lead p:last-child { margin: 0; max-width: 36ch; color: var(--muted); }
+.talk-stage, .talk-people { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 4px; }
+.talk-stage::-webkit-scrollbar, .talk-people::-webkit-scrollbar { display: none; }
+.talk-slide, .talk-people article {
+  flex: 0 0 min(86%, 460px);
+  scroll-snap-align: center;
+  display: grid;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #16161a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: white;
+}
+.talk-slide img, .talk-people img { width: 100%; height: 320px; object-fit: cover; display: block; }
+.talk-slide div, .talk-people div { display: grid; gap: 8px; padding: 14px 14px 16px; }
+.talk-slide small, .talk-promo small { color: #ff8b94; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.talk-slide strong, .talk-people strong { font-size: 28px; letter-spacing: -0.04em; line-height: 1; }
+.talk-slide p, .talk-promo p { margin: 0; color: #d0d0d6; font-size: 14px; line-height: 1.35; }
+.talk-slide .red-btn, .talk-people .red-btn { min-height: 48px; }
+.talk-dots { display: flex; justify-content: center; gap: 6px; }
+.talk-dots button { width: 7px; height: 7px; min-height: 0; padding: 0; border: 0; border-radius: 99px; background: rgba(255,255,255,0.28); }
+.talk-dots button.on { width: 18px; background: #ff2e3c; }
+.talk-promo {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  min-height: 168px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #16161a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: white;
+}
+.talk-promo img { width: 148px; height: 100%; object-fit: cover; }
+.talk-promo div { display: grid; align-content: center; gap: 6px; padding: 16px; }
+.talk-promo strong { font-size: 26px; letter-spacing: -0.04em; }
+.talk-promo .red-btn { justify-self: start; min-height: 44px; }
+.talk-people { padding-bottom: 8px; }
+.talk-people img { height: 240px; }
+.talk-people span { color: #b7b7c0; font-size: 13px; }
+.talk-people .ghost { justify-self: center; color: #b7b7c0; font-size: 13px; font-weight: 700; }
 .talk-topics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .talk-topic {
   display: grid;
@@ -1680,6 +1726,10 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .trend-row > * { flex: 0 0 74%; scroll-snap-align: start; }
   .tcard:hover, .rcard:hover, .talk-block .talk-card:hover { transform: none; }
 
+  .talk-slide, .talk-people article { flex-basis: 88%; }
+  .talk-slide img { height: 280px; }
+  .talk-people img { height: 210px; }
+  .talk-promo { grid-template-columns: 108px minmax(0, 1fr); }
   .talk-page .talk-hero { gap: 12px; margin-bottom: 8px; }
   .talk-page .talk-hero img { display: block; height: 168px; border-radius: 18px; }
   .talk-page .talk-hero h1 { font-size: 34px; margin: 6px 0; }
