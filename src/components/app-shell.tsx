@@ -27,7 +27,7 @@ const shell = {
   es: {
     home: "Inicio", talk: "Hablar", videos: "Videos", discover: "Descubrir", trending: "Tendencias",
     search: "Buscar creadoras, categorías...", menu: "Abrir menú", close: "Cerrar menú",
-    notes: "Avisos", empty: "Todavía no hay actividad.", account: "Tu cuenta", login: "Entrar",
+    notes: "Notificaciones", empty: "Todavía no hay actividad.", account: "Tu cuenta", login: "Entrar",
     pricing: "Precios", creators: "Para creadoras", premium: "Premium",
     premiumText: "Habla, deja propina o desbloquea su suscripción.", see: "Ver los tres",
     dark: "Modo oscuro", darkToggle: "Cambiar modo oscuro", logout: "Salir",
@@ -113,23 +113,33 @@ export function AppShell({
           <Link href="/discover" className="icon-btn phone-only" aria-label={t.search}>
             <Icon name="search" />
           </Link>
-          <div style={{ position: "relative" }}>
+          <div className="bell-wrap">
             <button className="icon-btn" type="button" aria-label={t.notes} onClick={() => setBell((value) => !value)}>
               <Icon name="bell" />
             </button>
             {bell ? (
-              <div className="bell-pop">
-                {activity.length === 0 ? <p className="soft">{t.empty}</p> : null}
-                {activity.map((item) => (
-                  <Link key={item.id} href={item.username ? `/creator/${item.username}` : "/feed"}>
-                    <img src={item.photo} alt="" />
-                    <span className="grow">
-                      <strong>{item.name}</strong>
-                      <span className="soft" suppressHydrationWarning>{item.line} · {item.time}</span>
-                    </span>
-                  </Link>
-                ))}
-              </div>
+              <>
+                <button className="bell-scrim" type="button" aria-label={t.close} onClick={() => setBell(false)} />
+                <div className="bell-pop" role="dialog" aria-label={t.notes}>
+                  <header>
+                    <strong>{t.notes}</strong>
+                    <button type="button" aria-label={t.close} onClick={() => setBell(false)}>×</button>
+                  </header>
+                  {activity.length === 0 ? <p className="bell-empty">{t.empty}</p> : null}
+                  <div className="bell-list">
+                    {activity.map((item) => (
+                      <Link key={item.id} href={item.username ? `/creator/${item.username}` : "/feed"} onClick={() => setBell(false)}>
+                        <img src={item.photo} alt="" />
+                        <span>
+                          <strong>{item.name}</strong>
+                          <span className="soft">{item.line}</span>
+                        </span>
+                        <time suppressHydrationWarning>{item.time}</time>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </>
             ) : null}
           </div>
           {user ? (

@@ -16,13 +16,14 @@ export default async function SignupPage({
   const es = lang === "es";
   const forCall = next.startsWith("/call/");
   return (
-    <div className="panel form-grid" style={{ maxWidth: 640 }}>
+    <div className={forCall ? "enter-gate" : "panel form-grid"} style={forCall ? undefined : { maxWidth: 640 }}>
       <p className="kicker">{forCall ? (es ? "Para llamarla" : "To call her") : (es ? "Registro" : "Sign up")}</p>
-      <h1 className="display" style={{ fontSize: 48, margin: 0 }}>{forCall ? (es ? "Elige cómo entrar" : "Choose how to enter") : (es ? "Entra a Tokkame" : "Join Tokkame")}</h1>
+      <h1 className="display">{forCall ? (es ? "Elige cómo entrar" : "Choose how to enter") : (es ? "Entra a Tokkame" : "Join Tokkame")}</h1>
+      {forCall ? <p className="call-note-line">{es ? "Si te registras, recibes 13 créditos gratis." : "Register and you get 13 free credits."}</p> : null}
       <ProviderSignIn next={next} lang={lang} bare={forCall} />
       {forCall ? (
         <>
-          <p className="call-note-line">{es ? "Si te registras, recibes 13 créditos gratis." : "Register and you get 13 free credits."}</p>
+          <div className="enter-or"><span>{es ? "o" : "or"}</span></div>
           <form action={continueAsGuest}>
             {next ? <input type="hidden" name="next" value={next} /> : null}
             <button className="ghost-btn guest-go" type="submit">{es ? "Continuar como invitado" : "Continue as guest"}</button>
