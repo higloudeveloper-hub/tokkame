@@ -54,7 +54,7 @@ export default async function CallPage({
       ring={sp.ring === "1"}
       error={sp.error}
       posts={posts}
-      ask={ask ? { status: ask.status, note: ask.note } : null}
+      ask={ask ? { status: ask.status, note: ask.note, createdAt: ask.createdAt } : null}
       lang={lang}
     />
   );

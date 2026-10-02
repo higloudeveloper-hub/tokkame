@@ -380,7 +380,7 @@ export async function sandboxHear(formData: FormData) {
       (item) => item.fanId === me.id && item.creatorId === creator.id && item.status === "pending",
     );
     if (!ask) return;
-    if (Date.now() - new Date(ask.createdAt).getTime() < 4000) return;
+    if (Date.now() - new Date(ask.createdAt).getTime() < 18000) return;
     ask.status = "accepted";
   });
   redirect(back);

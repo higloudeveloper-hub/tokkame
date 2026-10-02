@@ -16,7 +16,11 @@ const copy = {
     rest: "Her profile has the rest.",
     free: "Free",
     reading: "She is reading your note",
-    wait: "She can accept or decline. The hour is not charged until she says yes.",
+    wait: "Nothing is charged while you wait.",
+    steps: ["Note sent", "She reads", "She decides"],
+    until: "Left until she answers",
+    whileYou: "While you wait",
+    sent: "Your note is with her.",
     accepted: "She accepted. Pay for the hour. The call stays on Tokkame.",
     pay: "Pay $13",
     declined: "She said no to that note. Write another if you want to ask again.",
@@ -39,7 +43,11 @@ const copy = {
     rest: "El resto está en su perfil.",
     free: "Gratis",
     reading: "Ella está leyendo tu nota",
-    wait: "Puede aceptar o decir que no. La hora no se cobra hasta que diga que sí.",
+    wait: "Nada se cobra mientras esperas.",
+    steps: ["Nota enviada", "Ella lee", "Ella decide"],
+    until: "Tiempo para que responda",
+    whileYou: "Mientras esperas",
+    sent: "Tu nota ya está con ella.",
     accepted: "Ella aceptó. Paga la hora. La llamada se queda en Tokkame.",
     pay: "Pagar $13",
     declined: "Dijo que no a esa nota. Escribe otra si quieres pedir de nuevo.",
@@ -92,7 +100,7 @@ export function CallRoom({
   ring: boolean;
   error?: string;
   posts: CallPost[];
-  ask: { status: "pending" | "accepted" | "declined" | "closed"; note: string } | null;
+  ask: { status: "pending" | "accepted" | "declined" | "closed"; note: string; createdAt: string } | null;
   lang: Lang;
 }) {
   const t = copy[lang];
@@ -103,17 +111,18 @@ export function CallRoom({
 
   useEffect(() => {
     if (ask?.status !== "pending" || active) return;
+    const ends = new Date(ask.createdAt).getTime() + 20000;
     const poll = setInterval(() => router.refresh(), 2000);
     const hear = setTimeout(() => {
       const data = new FormData();
       data.set("username", username);
       void sandboxHear(data);
-    }, 5200);
+    }, Math.max(0, ends - Date.now()));
     return () => {
       clearInterval(poll);
       clearTimeout(hear);
     };
-  }, [ask?.status, active, router, username]);
+  }, [ask?.status, ask?.createdAt, active, router, username]);
 
   useEffect(() => {
     if (phase !== "ring") return;
@@ -135,23 +144,17 @@ export function CallRoom({
 
   return (
     <section className="call-room">
-      {phase === "pay" ? (
+      {phase === "pay" && ask?.status === "pending" ? (
+        <WaitGuide name={name} photo={photo} note={ask.note} createdAt={ask.createdAt} posts={posts} lang={lang} />
+      ) : null}
+
+      {phase === "pay" && ask?.status !== "pending" ? (
         <div className="call-pay">
           <img src={photo} alt="" />
           <p className="call-kicker">{t.kicker}</p>
           <h1>{name}</h1>
           <strong>$13 <span>{t.hour}</span></strong>
           <HerPosts name={name} username={username} posts={posts} lang={lang} />
-          {ask?.status === "pending" ? (
-            <div className="call-wait">
-              <div className="call-pulse">
-                <img src={photo} alt="" />
-              </div>
-              <h2>{t.reading}</h2>
-              <blockquote>{ask.note}</blockquote>
-              <p>{t.wait}</p>
-            </div>
-          ) : null}
           {ask?.status === "accepted" ? (
             <form action={startCall} className="call-pay-form">
               <input type="hidden" name="username" value={username} />
@@ -201,6 +204,73 @@ export function CallRoom({
         </div>
       ) : null}
     </section>
+  );
+}
+
+function WaitGuide({
+  name,
+  photo,
+  note,
+  createdAt,
+  posts,
+  lang,
+}: {
+  name: string;
+  photo: string;
+  note: string;
+  createdAt: string;
+  posts: CallPost[];
+  lang: Lang;
+}) {
+  const t = copy[lang];
+  const ends = new Date(createdAt).getTime() + 20000;
+  const slides = posts.length ? posts : [{ id: "face", image: photo, caption: name, locked: false, price: "", premium: false }];
+  const [now, setNow] = useState(() => Date.now());
+  const [slide, setSlide] = useState(0);
+  const left = Math.max(0, ends - now);
+  const step = left > 14000 ? 0 : left > 7000 ? 1 : 2;
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 250);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setSlide((value) => (value + 1) % slides.length), 4000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const current = slides[slide % slides.length];
+
+  return (
+    <div className="call-guide">
+      <ol className="call-steps">
+        {t.steps.map((label, index) => (
+          <li key={label} className={index === step ? "on" : index < step ? "done" : ""}>{label}</li>
+        ))}
+      </ol>
+      <div className="call-count">
+        <b suppressHydrationWarning>{clock(left)}</b>
+        <span>{t.until}</span>
+        <i style={{ width: `${Math.min(100, (left / 20000) * 100)}%` }} />
+      </div>
+      <article className="call-promo" key={current.id + slide}>
+        <img src={current.image} alt="" className={current.locked ? "is-locked" : ""} />
+        <div>
+          <small>{t.whileYou}</small>
+          <strong>{current.caption}</strong>
+        </div>
+      </article>
+      <div className="call-promo-dots">
+        {slides.map((item, index) => (
+          <button key={item.id} type="button" className={index === slide % slides.length ? "on" : ""} aria-label={item.caption} onClick={() => setSlide(index)} />
+        ))}
+      </div>
+      <p className="call-guide-now">{name}</p>
+      <p className="call-copy">{step === 0 ? t.sent : step === 1 ? t.reading : t.steps[2]}</p>
+      <blockquote>{note}</blockquote>
+      <p className="call-copy">{t.wait}</p>
+    </div>
   );
 }
 
