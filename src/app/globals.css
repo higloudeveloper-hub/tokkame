@@ -1982,6 +1982,8 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .lux-intro h1 { margin: 0; font-size: 40px; line-height: 0.94; letter-spacing: -0.045em; }
   .lux-intro h1 span { display: block; }
   .lux-intro .lead { color: #d7d7de; font-size: 15px; font-weight: 500; letter-spacing: 0; text-transform: none; line-height: 1.4; max-width: 34ch; }
+  .lux-trust { display: flex; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; }
+  .lux-trust li { padding: 5px 8px; border-radius: 999px; background: #16161a; border: 1px solid rgba(255,255,255,0.1); color: #d7d7de; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
   .lux-stories, .lux-stage, .lux-promos, .lux-unlock { scrollbar-width: none; }
   .lux-stories::-webkit-scrollbar, .lux-stage::-webkit-scrollbar, .lux-promos::-webkit-scrollbar, .lux-unlock::-webkit-scrollbar { display: none; }
   .lux-stories { display: flex; gap: 14px; overflow-x: auto; padding: 10px 16px 0; }
@@ -2003,11 +2005,10 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
     height: 66px;
     padding: 3px;
     border-radius: 50%;
-    background: #3ddc84;
-    box-shadow: 0 0 0 4px rgba(61, 220, 132, 0.22);
-    animation: lux-pulse 2.2s ease-in-out infinite;
+    background: transparent;
+    border: 2px solid #3ddc84;
   }
-  .lux-stories button.on .lux-ring { box-shadow: 0 0 0 4px rgba(255, 46, 60, 0.45); background: #ff2e3c; }
+  .lux-stories button.on .lux-ring { border-color: white; }
   .lux-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #0c0c0e; }
   .lux-check {
     position: absolute;
@@ -2052,11 +2053,35 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
-  .lux-live i { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 4px rgba(61, 220, 132, 0.28); animation: lux-blink 1.4s ease-in-out infinite; }
+  .lux-live i { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; }
   .lux-card .sheet { display: grid; gap: 8px; padding: 14px 14px 16px; }
-  .lux-card h2 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 32px; line-height: 1; letter-spacing: -0.04em; color: white; }
-  .lux-card h2 .lux-check { position: static; width: 20px; height: 20px; }
+  .lux-card .who { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .lux-card h2 { margin: 0; font-size: 30px; line-height: 1; letter-spacing: -0.04em; color: white; }
+  .lux-card .handle { color: #9c9ca6; font-size: 13px; }
   .lux-card p { margin: 0; color: #c8c8d0; font-size: 15px; line-height: 1.35; }
+  .lux-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
+    height: 22px;
+    padding: 0 8px 0 3px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .lux-verified i {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #ff2e3c;
+  }
   .lux-card .call-now { min-height: 52px; border-radius: 14px; font-size: 16px; }
   .lux-card .see { justify-self: center; color: #b7b7c0; font-size: 13px; font-weight: 700; }
   .lux-dots { display: flex; justify-content: center; gap: 6px; margin-top: -6px; }
@@ -2149,5 +2174,4 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   @keyframes lux-drift { from { transform: scale(1); } to { transform: scale(1.06); } }
   @keyframes lux-pulse { 50% { box-shadow: 0 0 0 7px rgba(61, 220, 132, 0.05); } }
   @keyframes lux-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-  @keyframes lux-blink { 50% { opacity: 0.35; } }
 }
