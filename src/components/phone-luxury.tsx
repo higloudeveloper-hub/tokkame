@@ -12,16 +12,16 @@ export type LuxPerson = {
 };
 
 const lines = [
-  "She's here. Say the part you have not said.",
-  "One room. Nobody else is listening.",
-  "After the day ends, she is still on.",
+  "Tell her the problem. She is here for it.",
+  "Request her. One woman, and what you have not said.",
+  "Infidelity, work, a secret. She listens.",
 ];
 
 const topics = [
-  { href: "/talk#infidelity", img: "/talk/infidelity.jpg?v=3", kicker: "Call now", title: "Infidelity", text: "The part you have not said." },
-  { href: "/talk#work", img: "/talk/work.jpg?v=3", kicker: "Call now", title: "Work", text: "When the day will not end." },
-  { href: "/talk#secret", img: "/talk/secret.jpg?v=3", kicker: "Call now", title: "A secret", text: "One person. Nobody else." },
-  { href: "/talk#listen", img: "/talk/listen.jpg?v=3", kicker: "Call now", title: "Just listen", text: "No advice. No judgment." },
+  { href: "/talk#infidelity", img: "/talk/infidelity.jpg?v=3", kicker: "Request her", title: "Infidelity", text: "Tell her the part you have not said." },
+  { href: "/talk#work", img: "/talk/work.jpg?v=3", kicker: "Request her", title: "Work", text: "When the day will not end, tell her." },
+  { href: "/talk#secret", img: "/talk/secret.jpg?v=3", kicker: "Request her", title: "A secret", text: "One woman. Nobody else hears it." },
+  { href: "/talk#listen", img: "/talk/listen.jpg?v=3", kicker: "Request her", title: "Just listen", text: "You talk. She stays with it." },
 ];
 
 function Check() {
@@ -62,9 +62,9 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
   return (
     <div className="lux">
       <header className="lux-intro">
-        <p>Private calls · 18+</p>
-        <h1>Say it.<span>Someone hears it.</span></h1>
-        <p className="lead">Infidelity, work, a secret. Pick who is online and call. A private conversation. You choose who.</p>
+        <p>Talk to a woman · 18+</p>
+        <h1>Got a problem?<span>Tell her.</span></h1>
+        <p className="lead">If you need to talk, request a woman who is online. Infidelity, work, a secret. She listens. You choose who.</p>
       </header>
 
       <div className="lux-stories">
@@ -95,7 +95,7 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
               <div className="sheet">
                 <h2>{person.name.split(" ")[0]} <Check /></h2>
                 <p>{lines[i % lines.length]}</p>
-                <Link className="red-btn call-now" href={`/creator/${person.username}`}>Call now</Link>
+                <Link className="red-btn call-now" href={`/creator/${person.username}`}>Request her</Link>
                 <Link className="see" href={`/creator/${person.username}`}>See her profile</Link>
               </div>
             </article>
@@ -110,7 +110,7 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>Call now</h3>
+          <h3>Request her</h3>
           <span>{live.length} online</span>
         </div>
         <div className="lux-calls">
@@ -118,10 +118,10 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
             <Link className="lux-call" key={person.id} href={`/creator/${person.username}`}>
               <img src={person.photo} alt="" />
               <div>
-                <small>Call now</small>
+                <small>Talk to her</small>
                 <strong>{person.name.split(" ")[0]} <Check /></strong>
-                <p>Verified. She can hear it.</p>
-                <span className="red-btn call-now">Call now</span>
+                <p>Tell her the problem. She listens.</p>
+                <span className="red-btn call-now">Request her</span>
               </div>
             </Link>
           ))}
@@ -130,18 +130,18 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>How a call works</h3>
+          <h3>If you need to talk</h3>
         </div>
         <ol className="lux-steps">
-          <li><b>01</b><strong>Choose who</strong><span>Only verified people who are online.</span></li>
-          <li><b>02</b><strong>Call now</strong><span>A private room. Nobody else is in it.</span></li>
-          <li><b>03</b><strong>Or unlock</strong><span>Open the posts she keeps for later.</span></li>
+          <li><b>01</b><strong>You have a problem</strong><span>Infidelity, work, a secret. Whatever it is.</span></li>
+          <li><b>02</b><strong>Request her</strong><span>Pick a woman who is online and verified.</span></li>
+          <li><b>03</b><strong>Tell her</strong><span>A private conversation. Nobody else is in it.</span></li>
         </ol>
       </section>
 
       <section className="lux-block">
         <div className="lux-head">
-          <h3>What you can say</h3>
+          <h3>What you can tell her</h3>
           <Link href="/talk">All</Link>
         </div>
         <div className="lux-topics">
@@ -152,7 +152,7 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
                 <small>{topic.kicker}</small>
                 <strong>{topic.title}</strong>
                 <p>{topic.text}</p>
-                <span className="red-btn">Call now</span>
+                <span className="red-btn">Choose a woman</span>
               </div>
             </Link>
           ))}
@@ -181,9 +181,9 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
         <Link className="lux-close" href={`/creator/${first.username}`}>
           <div>
             <small>She is online</small>
-            <strong>Start the call.</strong>
+            <strong>Tell her the problem.</strong>
           </div>
-          <span className="red-btn call-now">Call now</span>
+          <span className="red-btn call-now">Request her</span>
         </Link>
       ) : null}
 
