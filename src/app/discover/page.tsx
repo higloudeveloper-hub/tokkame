@@ -129,7 +129,6 @@ function CreatorCard({
     <article className="tcard">
       <Link className="tcard-visual" href={`/creator/${creator.username}`}>
         <img src={photo} alt="" />
-        <span className="heart" aria-hidden>♡</span>
       </Link>
       <div className="tcard-meta">
         <strong>{creator.username.replace(".", "_")}</strong>

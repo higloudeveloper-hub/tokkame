@@ -32,11 +32,10 @@ const pack = {
     ],
     call: "Call her",
     profile: "See her profile",
-    why: "Why you stay",
-    whyItems: [
-      ["She is verified", "You know who is listening."],
-      ["$13 an hour", "You pay, then she can accept."],
-      ["Add time", "The clock is on the call. Buy another hour there."],
+    trust: [
+      ["Verified", "Identity checked before she can charge."],
+      ["Private", "The hour stays on Tokkame."],
+      ["$13 / hour", "You pay only after she accepts."],
     ],
     posts: "Free and locked",
     all: "All",
@@ -78,11 +77,10 @@ const pack = {
     ],
     call: "Llamarla",
     profile: "Ver su perfil",
-    why: "Por qué quedarte",
-    whyItems: [
-      ["Está verificada", "Sabes quién te escucha."],
-      ["$13 la hora", "Pagas y ella puede aceptar."],
-      ["Más tiempo", "El reloj está en la llamada. Ahí compras otra hora."],
+    trust: [
+      ["Verificada", "Identidad revisada antes de cobrar."],
+      ["Privado", "La hora se queda en Tokkame."],
+      ["$13 / hora", "Pagas solo después de que acepte."],
     ],
     posts: "Gratis y bloqueados",
     all: "Todas",
@@ -117,7 +115,7 @@ const pack = {
 function Check() {
   return (
     <i className="lux-check" aria-label="Verified">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="m5 12 5 5L20 7" /></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m5 12 5 5L20 7" /></svg>
     </i>
   );
 }
@@ -182,6 +180,7 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
           <div className="lux-slide" key={person.id}>
             <article className="lux-card">
               <div className="frame">
+                {i === index ? <span className="lux-progress"><b /></span> : null}
                 {person.clip ? (
                   <video src={person.clip} poster={person.photo} autoPlay muted loop playsInline />
                 ) : (
@@ -205,16 +204,15 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
         ))}
       </div>
 
-      <section className="lux-block">
-        <div className="lux-head">
-          <h3>{t.why}</h3>
-        </div>
-        <ol className="lux-steps">
-          {t.whyItems.map((item, step) => (
-            <li key={item[0]}><b>0{step + 1}</b><strong>{item[0]}</strong><span>{item[1]}</span></li>
-          ))}
-        </ol>
-      </section>
+      <ul className="lux-trust">
+        {t.trust.map((item) => (
+          <li key={item[0]}>
+            <Check />
+            <strong>{item[0]}</strong>
+            <span>{item[1]}</span>
+          </li>
+        ))}
+      </ul>
 
       {posts.length ? (
         <section className="lux-block">
