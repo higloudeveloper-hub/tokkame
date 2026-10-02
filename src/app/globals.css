@@ -1804,32 +1804,25 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .phone-only { display: grid; }
 
   .app-top {
-    height: auto;
-    min-height: calc(50px + env(safe-area-inset-top));
-    padding: env(safe-area-inset-top) 12px 8px;
-    gap: 8px;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
-    grid-template-areas: "menu brand bell login" "lang lang lang lang";
+    height: calc(50px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 10px 0;
+    gap: 6px;
+    display: flex;
     align-items: center;
     background: color-mix(in srgb, var(--bg) 94%, transparent);
   }
-  .app-top .menu-btn { grid-area: menu; }
-  .app-top .wordmark { grid-area: brand; min-width: 0; }
-  .app-top .top-right { display: contents; }
-  .app-top .lang-bar { grid-area: lang; display: grid; grid-template-columns: 1fr 1fr; width: 100%; border-radius: 14px; }
-  .app-top .lang-bar button { height: 36px; font-size: 14px; border-radius: 11px; }
-  .app-top .bell-wrap { grid-area: bell; justify-self: end; }
-  .app-top .top-right > .red-btn,
-  .app-top .top-right > .avatar-link { grid-area: login; }
+  .app-top .wordmark { min-width: 0; font-size: 13px; letter-spacing: 0.08em; }
+  .app-top .top-right { display: flex; margin-left: auto; flex: none; align-items: center; gap: 6px; }
+  .app-top .lang-bar { width: auto; flex: none; border-radius: 999px; }
+  .app-top .lang-bar button { height: 30px; padding: 0 8px; font-size: 12px; font-weight: 750; border-radius: 999px; }
   .top-right .phone-only { display: none; }
-  .top-right .red-btn { min-height: 32px; padding: 0 10px; font-size: 12px; }
+  .top-right .red-btn { min-height: 30px; padding: 0 8px; font-size: 12px; }
   .studio .lang-bar { display: none; }
   .wordmark { font-size: 15px; letter-spacing: 0.16em; }
   .wordmark i { width: 16px; height: 16px; box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 5px var(--red); }
   .icon-btn, .avatar-link { width: 36px; height: 36px; }
   .bell-pop {
-    top: calc(104px + env(safe-area-inset-top));
+    top: calc(58px + env(safe-area-inset-top));
     left: 8px;
     right: 8px;
     width: auto;
