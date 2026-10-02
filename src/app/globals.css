@@ -310,7 +310,22 @@ button { cursor: pointer; }
 .talk-hero small { color: #ff8b94; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; }
 .talk-hero h1 { margin: 8px 0; font-size: clamp(32px, 4vw, 48px); line-height: 0.98; letter-spacing: -0.04em; }
 .talk-hero p { color: var(--muted); max-width: 460px; }
-.talk-page .talk-card { min-height: 260px; border-radius: 18px; }
+.talk-topics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.talk-topic {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  min-height: 128px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #16161a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: white;
+}
+.talk-topic img { width: 128px; height: 128px; object-fit: cover; display: block; }
+.talk-topic span { display: grid; align-content: center; gap: 4px; padding: 12px 14px; }
+.talk-topic small { color: #ff8b94; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; }
+.talk-topic strong { font-size: 20px; letter-spacing: -0.03em; }
+.talk-topic em { font-style: normal; color: #d0d0d6; font-size: 13px; line-height: 1.35; }
 .talk-list { display: grid; gap: 8px; }
 .talk-list article {
   display: grid;
@@ -1664,16 +1679,9 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .talk-page .talk-hero img { display: block; height: 168px; border-radius: 18px; }
   .talk-page .talk-hero h1 { font-size: 34px; margin: 6px 0; }
   .talk-page .talk-hero p { font-size: 14px; }
-  .talk-page .talk-grid {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 10px;
-    margin: 0 -14px;
-    padding: 0 14px 6px;
-    scrollbar-width: none;
-  }
-  .talk-page .talk-card { flex: 0 0 74%; min-height: 220px; scroll-snap-align: center; }
+  .talk-topics { grid-template-columns: 1fr; }
+  .talk-topic { grid-template-columns: 104px minmax(0, 1fr); min-height: 104px; }
+  .talk-topic img { width: 104px; height: 104px; }
   .talk-list article { grid-template-columns: 56px minmax(0, 1fr); }
   .talk-list .red-btn { grid-column: 1 / -1; }
 

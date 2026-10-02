@@ -11,14 +11,16 @@ const topics = [
 
 export default function TalkPage() {
   const people = creatorCards(readDb()).sort((a, b) => Number(b.online) - Number(a.online));
+  const online = people.filter((person) => person.online);
+  const rest = people.filter((person) => !person.online);
   return (
     <div className="talk-page">
       <section className="talk-hero">
         <div>
           <small>PRIVATE · 18+</small>
           <h1>Tell her the problem.</h1>
-          <p>Infidelity, work, a secret. Choose a verified woman and request her. A private conversation.</p>
-          <Link className="red-btn" href="#people">Request a woman</Link>
+          <p>Pick what you need to say. Then call a verified woman. The hour is $13, and the call stays here.</p>
+          <Link className="red-btn" href="#people">See who is online</Link>
         </div>
         <img src="/talk/hero.jpg" alt="" />
       </section>
@@ -26,9 +28,9 @@ export default function TalkPage() {
       <div className="section-head">
         <h2>What you can tell her</h2>
       </div>
-      <div className="talk-grid">
+      <div className="talk-topics">
         {topics.map((topic) => (
-          <a key={topic.id} id={topic.id} className="talk-card" href="#people">
+          <a key={topic.id} id={topic.id} className="talk-topic" href="#people">
             <img src={topic.image} alt="" />
             <span>
               <small>{topic.kicker}</small>
@@ -40,21 +42,36 @@ export default function TalkPage() {
       </div>
 
       <div className="section-head" id="people">
-        <h2>Verified women</h2>
+        <h2>Online now</h2>
         <Link href="/discover">All</Link>
       </div>
-      <div className="talk-list">
-        {people.map((person) => (
-          <article key={person.id}>
-            <img src={person.photo} alt="" />
-            <div>
-              <strong>{person.name}</strong>
-              <span>{person.online ? "Online · Verified" : "Verified"}</span>
-            </div>
-            <Link className="red-btn" href={`/call/${person.username}`}>Call her</Link>
-          </article>
-        ))}
-      </div>
+      <People rows={online} />
+
+      {rest.length ? (
+        <>
+          <div className="section-head">
+            <h2>Also verified</h2>
+          </div>
+          <People rows={rest} />
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function People({ rows }: { rows: ReturnType<typeof creatorCards> }) {
+  return (
+    <div className="talk-list">
+      {rows.map((person) => (
+        <article key={person.id}>
+          <img src={person.photo} alt="" />
+          <div>
+            <strong>{person.name}</strong>
+            <span>{person.online ? "Online · Verified" : "Verified"}</span>
+          </div>
+          <Link className="red-btn" href={`/call/${person.username}`}>Call her</Link>
+        </article>
+      ))}
     </div>
   );
 }
