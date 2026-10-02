@@ -14,17 +14,9 @@ export default async function HomePage() {
     <div className="studio solo">
       <div>
         <section className="phone-home">
-          <article className="m-hero">
-            <img src="/talk/hero.jpg" alt="" />
-            <div>
-              <h1>Say it.<span>Someone hears it.</span><span>You choose who.</span></h1>
-              <p>Infidelity, work, a secret. A private conversation. Call her, or unlock her posts.</p>
-              <div className="hero-actions">
-                <a className="red-btn" href="#calls">Call</a>
-                <a className="ghost-btn" href="#unlock">Unlock</a>
-              </div>
-            </div>
-          </article>
+          <div className="hero-row">
+            <HeroBanner />
+          </div>
           <div className="section-head" id="calls">
             <h2>Online now</h2>
             <span>{online.length} verified</span>
