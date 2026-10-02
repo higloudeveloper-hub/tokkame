@@ -65,6 +65,7 @@ export function AppShell({
   const [dark, setDark] = useState(true);
   const [bell, setBell] = useState(false);
   const [dock, setDock] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("tokkame-theme");
@@ -79,6 +80,13 @@ export function AppShell({
     setBell(false);
     setDock(false);
   }, [path]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   function toggleTheme() {
     const next = !dark;
@@ -99,7 +107,7 @@ export function AppShell({
 
   return (
     <div className={`app${open ? " nav-open" : ""}`}>
-      <header className="app-top">
+      <header className={`app-top${scrolled ? " is-scrolled" : ""}`}>
         <button className="icon-btn menu-btn" type="button" aria-label={t.menu} onClick={() => setOpen(true)}>
           <Icon name="menu" />
         </button>

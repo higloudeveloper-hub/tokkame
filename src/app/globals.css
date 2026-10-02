@@ -1643,6 +1643,12 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 }
 .call-wait { display: grid; justify-items: center; gap: 10px; width: 100%; }
 .call-wait h2 { margin: 0; font-size: 22px; letter-spacing: -0.03em; }
+.call-rail { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; width: min(440px, 100%); margin: 4px auto 10px; padding: 0; }
+.call-rail li { text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #8d8d98; padding-top: 8px; border-top: 2px solid rgba(255,255,255,0.14); }
+.call-rail li.on { color: white; border-top-color: #ff2e3c; }
+.call-rail li.done { color: #ff8b94; border-top-color: #ff2e3c; }
+.call-ringing .call-kicker { animation: ring-line 0.45s ease; }
+@keyframes ring-line { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .call-guide { display: grid; justify-items: center; gap: 14px; width: min(440px, 100%); margin: 8px auto 0; text-align: center; }
 .call-steps { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; margin: 0; padding: 0; }
 .call-steps li { min-height: 36px; display: grid; place-items: center; border-radius: 999px; background: #17171b; color: #8d8d98; font-size: 12px; font-weight: 750; border: 1px solid rgba(255,255,255,0.06); }
@@ -1840,6 +1846,7 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .app-top .top-right { display: flex; flex: none; flex-wrap: nowrap; margin-left: auto; align-items: center; gap: 6px; }
   .app-top .lang-bar { width: auto; flex: none; border-radius: 999px; }
   .app-top .lang-bar button { height: 28px; padding: 0 8px; font-size: 12px; font-weight: 750; border-radius: 999px; white-space: nowrap; }
+  .app-top.is-scrolled .lang-bar { display: none; }
   .top-right .phone-only { display: none; }
   .top-right .red-btn { min-height: 30px; padding: 0 8px; font-size: 12px; }
   .studio .lang-bar { display: none; }

@@ -30,6 +30,8 @@ const copy = {
     send: "Send note",
     connecting: "Connecting",
     opening: "Opening the room on Tokkame",
+    connectLines: ["She said yes", "Opening the room", "You are in"],
+    rail: ["Note", "Wait", "Pay", "Room"],
     already: "She already accepted. The call stays on Tokkame.",
     on: "On Tokkame with",
     left: "Time left",
@@ -58,6 +60,8 @@ const copy = {
     send: "Enviar nota",
     connecting: "Conectando",
     opening: "Abriendo la sala en Tokkame",
+    connectLines: ["Ella dijo que sí", "Abriendo la sala", "Ya están dentro"],
+    rail: ["Nota", "Espera", "Pago", "Sala"],
     already: "Ella ya aceptó. La llamada se queda en Tokkame.",
     on: "En Tokkame con",
     left: "Tiempo restante",
@@ -144,8 +148,15 @@ export function CallRoom({
     return () => clearInterval(timer);
   }, [phase, paidUntil]);
 
+  const railAt = phase === "live" || phase === "ring" ? 3 : ask?.status === "accepted" ? 2 : ask?.status === "pending" ? 1 : 0;
+
   return (
     <section className="call-room">
+      <ol className="call-rail">
+        {t.rail.map((label, index) => (
+          <li key={label} className={index === railAt ? "on" : index < railAt ? "done" : ""}>{label}</li>
+        ))}
+      </ol>
       {phase === "pay" && ask?.status === "pending" ? (
         <WaitGuide name={name} photo={photo} note={ask.note} createdAt={ask.createdAt} posts={posts} lang={lang} />
       ) : null}
@@ -182,20 +193,7 @@ export function CallRoom({
         </div>
       ) : null}
 
-      {phase === "ring" ? (
-        <div className="call-ringing">
-          <div className="ring-stage">
-            <span />
-            <span />
-            <span />
-            <img src={photo} alt="" />
-          </div>
-          <p className="call-kicker">{t.connecting}</p>
-          <h1>{name}</h1>
-          <div className="ring-bar" aria-hidden><b /></div>
-          <p>{t.opening}</p>
-        </div>
-      ) : null}
+      {phase === "ring" ? <ConnectShow name={name} photo={photo} lang={lang} /> : null}
 
       {phase === "live" ? (
         <div className="call-live">
@@ -211,6 +209,30 @@ export function CallRoom({
         </div>
       ) : null}
     </section>
+  );
+}
+
+function ConnectShow({ name, photo, lang }: { name: string; photo: string; lang: Lang }) {
+  const lines = copy[lang].connectLines;
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((value) => Math.min(value + 1, lines.length - 1)), 1700);
+    return () => clearInterval(timer);
+  }, [lines.length]);
+
+  return (
+    <div className="call-ringing">
+      <div className="ring-stage">
+        <span />
+        <span />
+        <span />
+        <img src={photo} alt="" />
+      </div>
+      <p className="call-kicker" key={lines[index]}>{lines[index]}</p>
+      <h1>{name}</h1>
+      <div className="ring-bar" aria-hidden><b /></div>
+    </div>
   );
 }
 
