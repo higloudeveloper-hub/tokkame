@@ -64,6 +64,12 @@ const pack = {
     sheOn: "She is online",
     tell: "Tell her the problem.",
     note: "18+ · Private conversation. Not sex.",
+    tonight: "On Tokkame",
+    meter: [
+      ["Verified", "Before she can charge"],
+      ["Private", "The hour stays here"],
+      ["Profile first", "You see her, then you call"],
+    ],
   },
   es: {
     kicker: "Habla con una mujer · 18+",
@@ -109,6 +115,12 @@ const pack = {
     sheOn: "Está en línea",
     tell: "Cuéntale el problema.",
     note: "18+ · Conversación privada. No es sexo.",
+    tonight: "En Tokkame",
+    meter: [
+      ["Verificada", "Antes de poder cobrar"],
+      ["Privada", "La hora se queda aquí"],
+      ["Perfil primero", "La ves, y después llamas"],
+    ],
   },
 } as const;
 
@@ -203,6 +215,18 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
           <button key={person.id} type="button" className={dot === index ? "on" : ""} aria-label={person.name} onClick={() => go(dot)} />
         ))}
       </div>
+
+      <section className="lux-meter">
+        <p>{t.tonight}</p>
+        <div>
+          {t.meter.map((item) => (
+            <article key={item[0]}>
+              <strong>{item[0]}</strong>
+              <span>{item[1]}</span>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <ul className="lux-trust">
         {t.trust.map((item) => (
