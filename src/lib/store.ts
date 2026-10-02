@@ -263,6 +263,7 @@ function seed(): DB {
     messages: [],
     reports: [],
     calls: [],
+    callAsks: [],
   };
 
   const post = (
@@ -590,6 +591,7 @@ function readFile(): DB | null {
     const parsed = JSON.parse(fs.readFileSync(file, "utf8")) as DB;
     if (!parsed || parsed.version !== SEED_VERSION) return null;
     if (!parsed.calls) parsed.calls = [];
+    if (!parsed.callAsks) parsed.callAsks = [];
     return parsed;
   } catch {
     return null;

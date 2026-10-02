@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CopyButton } from "@/components/copy-button";
 import { Flash, Footer } from "@/components/ui";
 import {
+  answerCall,
   becomeCreator,
   createPost,
   deletePost,
@@ -99,6 +100,29 @@ export default async function DashboardPage({
           Invitados: {referred.length}.
         </p>
       </section>
+
+      {db.callAsks?.some((item) => item.creatorId === me.id && item.status === "pending") ? (
+        <section className="panel call-asks" style={{ marginTop: 16 }}>
+          <h2>Notas de llamada</h2>
+          <p className="muted">Lee la nota antes de la hora. Si dices que no, esa llamada no se cobra.</p>
+          {db.callAsks
+            .filter((item) => item.creatorId === me.id && item.status === "pending")
+            .map((item) => {
+              const fan = db.users.find((user) => user.id === item.fanId);
+              return (
+                <article key={item.id}>
+                  <strong>{fan?.displayName ?? "Fan"}</strong>
+                  <p>{item.note}</p>
+                  <form action={answerCall}>
+                    <input type="hidden" name="askId" value={item.id} />
+                    <button className="red-btn" name="decision" value="accepted" type="submit">Aceptar</button>
+                    <button className="quiet" name="decision" value="declined" type="submit">No</button>
+                  </form>
+                </article>
+              );
+            })}
+        </section>
+      ) : null}
 
       <div className="grid-2" style={{ marginTop: 16 }}>
         <form action={createPost} className="panel form-grid">

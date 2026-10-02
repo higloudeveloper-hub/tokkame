@@ -141,6 +141,15 @@ export type CallSession = {
   createdAt: string;
 };
 
+export type CallAsk = {
+  id: string;
+  fanId: string;
+  creatorId: string;
+  note: string;
+  status: "pending" | "accepted" | "declined" | "closed";
+  createdAt: string;
+};
+
 export type DB = {
   version: number;
   users: User[];
@@ -152,6 +161,7 @@ export type DB = {
   messages: DirectMessage[];
   reports: Report[];
   calls: CallSession[];
+  callAsks: CallAsk[];
 };
 
 export type PublicUser = Omit<User, "passwordHash">;

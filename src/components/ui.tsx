@@ -56,6 +56,7 @@ const OK: Record<string, string> = {
   retiro: "Retiro registrado. En producción lo liquida el procesador.",
   moderacion: "Moderación actualizada.",
   listo: "Listo.",
+  llamada: "Respuesta guardada. Si dijiste que no, esa llamada no se cobra.",
 };
 
 export function Flash({ error, ok }: { error?: string; ok?: string }) {

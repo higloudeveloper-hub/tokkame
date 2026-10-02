@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { startCall } from "@/lib/actions";
+import { askCall, sandboxHear, startCall, unlock } from "@/lib/actions";
 import { PayChoices } from "@/components/pay-choices";
 
 function clock(ms: number) {
@@ -14,6 +15,15 @@ function clock(ms: number) {
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
 }
 
+export type CallPost = {
+  id: string;
+  image: string;
+  caption: string;
+  locked: boolean;
+  price: string;
+  premium: boolean;
+};
+
 export function CallRoom({
   name,
   username,
@@ -21,6 +31,8 @@ export function CallRoom({
   paidUntil,
   ring,
   error,
+  posts,
+  ask,
 }: {
   name: string;
   username: string;
@@ -28,10 +40,27 @@ export function CallRoom({
   paidUntil: string | null;
   ring: boolean;
   error?: string;
+  posts: CallPost[];
+  ask: { status: "pending" | "accepted" | "declined" | "closed"; note: string } | null;
 }) {
+  const router = useRouter();
   const active = Boolean(paidUntil && new Date(paidUntil).getTime() > Date.now());
   const [phase, setPhase] = useState<"pay" | "ring" | "live">(active ? (ring ? "ring" : "live") : "pay");
   const [left, setLeft] = useState(0);
+
+  useEffect(() => {
+    if (ask?.status !== "pending" || active) return;
+    const poll = setInterval(() => router.refresh(), 2000);
+    const hear = setTimeout(() => {
+      const data = new FormData();
+      data.set("username", username);
+      void sandboxHear(data);
+    }, 5200);
+    return () => {
+      clearInterval(poll);
+      clearTimeout(hear);
+    };
+  }, [ask?.status, active, router, username]);
 
   useEffect(() => {
     if (phase !== "ring") return;
@@ -54,17 +83,45 @@ export function CallRoom({
   return (
     <section className="call-room">
       {phase === "pay" ? (
-        <form action={startCall} className="call-pay">
-          <input type="hidden" name="username" value={username} />
+        <div className="call-pay">
           <img src={photo} alt="" />
-          <p>Private call · 18+</p>
+          <p className="call-kicker">Private call · 18+</p>
           <h1>{name}</h1>
           <strong>$13 <span>/ hour</span></strong>
-          <p className="call-copy">Pay first. The call stays on Tokkame, with the time on screen. Not sex.</p>
-          {error ? <p className="pay-note">{error}</p> : null}
-          <PayChoices label="Pay $13" />
-          <Link href={`/creator/${username}`}>Back to her profile</Link>
-        </form>
+          <HerPosts name={name} username={username} posts={posts} />
+          {ask?.status === "pending" ? (
+            <div className="call-wait">
+              <div className="call-pulse">
+                <img src={photo} alt="" />
+              </div>
+              <h2>She is reading your note</h2>
+              <blockquote>{ask.note}</blockquote>
+              <p>She can accept or decline. The hour is not charged until she says yes.</p>
+            </div>
+          ) : null}
+          {ask?.status === "accepted" ? (
+            <form action={startCall} className="call-pay-form">
+              <input type="hidden" name="username" value={username} />
+              <p className="call-copy">She accepted. Pay for the hour. The call stays on Tokkame.</p>
+              <blockquote>{ask.note}</blockquote>
+              {error ? <p className="pay-note">{error}</p> : null}
+              <PayChoices label="Pay $13" />
+            </form>
+          ) : null}
+          {ask?.status !== "pending" && ask?.status !== "accepted" ? (
+            <form action={askCall} className="call-pay-form">
+              <input type="hidden" name="username" value={username} />
+              {ask?.status === "declined" ? <p className="pay-note">She said no to that note. Write another if you want to ask again.</p> : null}
+              <label className="call-note">
+                <span>Note for {name}</span>
+                <textarea name="note" required minLength={8} maxLength={240} placeholder="Tell her why you want the hour." />
+              </label>
+              <p className="call-copy">She reads this before the call. She can say yes or no. You pay only if she accepts.</p>
+              {error ? <p className="pay-note">{error}</p> : null}
+              <button className="red-btn" type="submit">Send note</button>
+            </form>
+          ) : null}
+        </div>
       ) : null}
 
       {phase === "ring" ? (
@@ -73,7 +130,7 @@ export function CallRoom({
             <img src={photo} alt="" />
           </div>
           <h1>Connecting with {name}</h1>
-          <p>Waiting for her to accept. The call stays on Tokkame.</p>
+          <p>She already accepted. The call stays on Tokkame.</p>
         </div>
       ) : null}
 
@@ -91,5 +148,36 @@ export function CallRoom({
         </div>
       ) : null}
     </section>
+  );
+}
+
+function HerPosts({ name, username, posts }: { name: string; username: string; posts: CallPost[] }) {
+  return (
+    <div className="call-extra">
+      <div className="call-extra-head">
+        <strong>More of {name}</strong>
+        <Link href={`/creator/${username}`}>See her profile</Link>
+      </div>
+      {posts.length ? (
+        <div className="call-shots">
+          {posts.map((post) => (
+            <article key={post.id} className={post.locked ? "is-locked" : ""}>
+              <img src={post.image} alt="" />
+              <span>{post.caption}</span>
+              {post.locked && !post.premium ? (
+                <form action={unlock}>
+                  <input type="hidden" name="postId" value={post.id} />
+                  <button className="red-btn" type="submit">Unlock {post.price}</button>
+                </form>
+              ) : null}
+              {post.premium ? <Link className="red-btn" href={`/creator/${username}?tab=premium`}>Unlock</Link> : null}
+              {!post.locked ? <em>Free</em> : null}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="call-copy">Her profile has the rest.</p>
+      )}
+    </div>
   );
 }
