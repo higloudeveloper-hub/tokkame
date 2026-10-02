@@ -14,7 +14,10 @@ export default async function MessagesPage({
 }) {
   const sp = await searchParams;
   const me = await getSessionUser();
-  if (!me) redirect("/login");
+  if (!me) {
+    const back = sp.with ? `/messages?with=${sp.with}` : "/messages";
+    redirect(`/signup?next=${encodeURIComponent(back)}`);
+  }
   const db = readDb();
   const related = db.messages.filter((item) => item.fromId === me.id || item.toId === me.id);
   const ids = new Set<string>();

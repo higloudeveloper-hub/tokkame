@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { ChatRoom, OpenChat } from "@/components/chat-room";
+import { Decide } from "@/components/decide";
 import { PayChoices, PaySheet } from "@/components/pay-choices";
 import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/copy-button";
 import { Flash } from "@/components/ui";
 import { follow, subscribe, tip, unlock } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
-import { compact, money } from "@/lib/format";
+import { ago, compact, money } from "@/lib/format";
 import { photoAt } from "@/lib/studio";
 import {
   activeSub,
@@ -26,7 +28,7 @@ export default async function CreatorPage({
   searchParams,
 }: {
   params: Promise<{ username: string }>;
-  searchParams: Promise<{ tab?: string; error?: string; ok?: string }>;
+  searchParams: Promise<{ tab?: string; error?: string; ok?: string; chat?: string }>;
 }) {
   const { username } = await params;
   const sp = await searchParams;
@@ -47,13 +49,52 @@ export default async function CreatorPage({
   const poster = photoAt(slot);
 
   const canPay = creator.verified === "verified" && viewer?.id !== creator.id;
+  const profilePath = `/creator/${creator.username}`;
+  const lines = viewer
+    ? db.messages
+        .filter((item) => (item.fromId === viewer.id && item.toId === creator.id) || (item.fromId === creator.id && item.toId === viewer.id))
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        .map((item) => ({
+          id: item.id,
+          mine: item.fromId === viewer.id,
+          body: item.body,
+          time: ago(item.createdAt),
+        }))
+    : [];
 
   const shots = tab === "posts" ? cards : [];
+  const faces = [0, 1, 2, 3].map((step) => photoAt(slot + step));
 
   return (
-    <>
+    <ChatRoom
+      startOpen={sp.chat === "1"}
+      signedIn={Boolean(viewer)}
+      following={following}
+      profilePath={profilePath}
+      creator={{ id: creator.id, name: creator.displayName, username: creator.username, photo: poster }}
+      lines={lines}
+      priceLabel={creator.messagePrice > 0 ? `${money(creator.messagePrice)} a message. Private. Not sex.` : ""}
+    >
       <Flash error={sp.error} ok={sp.ok} />
       <div className="profile-screen">
+      <div className="face-slides">
+        <div className="face-track">
+          {faces.map((src, index) => (
+            <figure key={src + index}>
+              <img src={src} alt="" />
+              {index === 0 ? (
+                <figcaption>
+                  <b>{creator.displayName}</b>
+                  <span>{creator.verified === "verified" ? "Verified" : "In review"} · Private</span>
+                </figcaption>
+              ) : (
+                <figcaption><span>{index === 3 ? "Locked" : "Closer"}</span></figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+        <p>{creator.bio}</p>
+      </div>
       <section className="profile-stage">
         <div className="profile-hero">
           <video src={cover} poster={poster} autoPlay muted loop playsInline />
@@ -124,13 +165,24 @@ export default async function CreatorPage({
         </div>
       </section>
 
+      {creator.verified === "verified" && viewer?.id !== creator.id ? (
+        <Decide
+          name={creator.displayName.split(" ")[0]}
+          photo={poster}
+          callPrice={creator.messagePrice > 0 ? money(creator.messagePrice) : "Free"}
+          unlockPrice={money(lowestPrice(creator))}
+          unlockHref={`/creator/${creator.username}?tab=premium`}
+          signedIn={Boolean(viewer)}
+          profilePath={profilePath}
+        />
+      ) : null}
       <div className="pay-board slim">
         <article className="pay-card">
           <img src="/talk/listen.jpg" alt="" />
           <small>TALK</small>
           <strong>{creator.messagePrice > 0 ? money(creator.messagePrice) : "—"}</strong>
           <em>per message</em>
-          {canPay ? <Link className="red-btn" href={`/messages?with=${creator.id}`}>Talk</Link> : null}
+          {canPay ? <OpenChat className="red-btn">Talk</OpenChat> : null}
         </article>
         <article className="pay-card" id="tip">
           <img src="/talk/secret.jpg" alt="" />
@@ -157,7 +209,7 @@ export default async function CreatorPage({
         </article>
       </div>
       </div>
-    </>
+    </ChatRoom>
   );
 }
 

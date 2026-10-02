@@ -6,15 +6,17 @@ import { login } from "@/lib/actions";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; ok?: string }>;
+  searchParams: Promise<{ error?: string; ok?: string; next?: string }>;
 }) {
   const sp = await searchParams;
+  const next = sp.next?.startsWith("/") && !sp.next.startsWith("//") ? sp.next : "";
   return (
     <div className="grid-2">
-      <form action={login} className="panel form-grid">
+      <div className="panel form-grid">
         <p className="kicker">Entrar</p>
         <h1 className="display" style={{ fontSize: 48, margin: 0 }}>Tu cuenta</h1>
-        <ProviderSignIn />
+        <ProviderSignIn next={next} />
+        <form action={login} className="form-grid">
         <Flash error={sp.error} ok={sp.ok} />
         <label className="stack">Correo o usuario
           <input name="login" autoComplete="username" required />
@@ -23,8 +25,9 @@ export default async function LoginPage({
           <input name="password" type="password" autoComplete="current-password" required />
         </label>
         <button className="btn" type="submit">Entrar</button>
-        <Link href="/signup">Crear cuenta</Link>
-      </form>
+        <Link href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"}>Crear cuenta</Link>
+        </form>
+      </div>
       <aside className="panel">
         <h2>Cuentas de demostración</h2>
         <p className="tiny muted">Contraseña para las tres: demo1234. El dinero es saldo de prueba.</p>

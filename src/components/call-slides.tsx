@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 
-export type SlidePerson = { id: string; name: string; photo: string; talk: string };
+export type SlidePerson = { id: string; name: string; username: string; photo: string; talk: string };
 
 const copy = [
-  { kicker: "Private call", title: "She's on the line.", text: "One conversation. You pay for the time." },
+  { kicker: "Private call", title: "She's on the line.", text: "One conversation. Nobody else is here." },
   { kicker: "Say it now", title: "The part you have not said.", text: "Infidelity, work, a secret. She listens." },
-  { kicker: "You choose", title: "Nobody else in the room.", text: "If she's online, start the call." },
+  { kicker: "You choose", title: "Nobody else in the room.", text: "If she's online, she can hear it." },
 ];
 
 export function CallSlides({ people }: { people: SlidePerson[] }) {
@@ -36,7 +36,7 @@ export function CallSlides({ people }: { people: SlidePerson[] }) {
                 <small>{line.kicker}</small>
                 <strong>{line.title}</strong>
                 <p>{person.name.split(" ")[0]}. {line.text}</p>
-                <Link className="red-btn" href={`/messages?with=${person.id}`}>Call · {person.talk}</Link>
+                <Link className="red-btn" href={`/creator/${person.username}`}>She's here</Link>
               </div>
             </article>
           );

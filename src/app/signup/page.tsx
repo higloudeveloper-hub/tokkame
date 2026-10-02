@@ -1,18 +1,24 @@
+import Link from "next/link";
+import { ProviderSignIn } from "@/components/provider-sign-in";
 import { Flash } from "@/components/ui";
 import { signup } from "@/lib/actions";
 
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; ok?: string; ref?: string; as?: string }>;
+  searchParams: Promise<{ error?: string; ok?: string; ref?: string; as?: string; next?: string }>;
 }) {
   const sp = await searchParams;
   const asCreator = sp.as === "creator";
+  const next = sp.next?.startsWith("/") && !sp.next.startsWith("//") ? sp.next : "";
   return (
-    <form action={signup} className="panel form-grid" style={{ maxWidth: 640 }}>
+    <div className="panel form-grid" style={{ maxWidth: 640 }}>
       <p className="kicker">Registro</p>
       <h1 className="display" style={{ fontSize: 48, margin: 0 }}>Entra a Tokkame</h1>
+      <ProviderSignIn next={next} />
+      <form action={signup} className="form-grid">
       <Flash error={sp.error} ok={sp.ok} />
+      {next ? <input type="hidden" name="next" value={next} /> : null}
       {sp.ref ? <p className="tiny">Invitación de @{sp.ref}</p> : null}
       <input type="hidden" name="ref" value={sp.ref || ""} />
       <label className="stack">Nombre público
@@ -39,6 +45,8 @@ export default async function SignupPage({
       </label>
       <button className="btn" type="submit">Crear cuenta</button>
       <p className="tiny muted">La cuenta nueva recibe $100 de saldo de prueba. Los cobros reales se conectan después con un procesador que acepte este modelo.</p>
-    </form>
+      <Link href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}>Ya tengo cuenta</Link>
+      </form>
+    </div>
   );
 }

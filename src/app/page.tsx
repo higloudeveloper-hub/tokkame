@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { CallSlides } from "@/components/call-slides";
 import { HeroBanner } from "@/components/hero-banner";
-import { ProviderSignIn } from "@/components/provider-sign-in";
 import { VideoRail } from "@/components/video-rail";
-import { getSessionUser } from "@/lib/auth";
 import { CLIPS, creatorCards } from "@/lib/studio";
 import { readDb } from "@/lib/store";
 
@@ -11,37 +9,30 @@ export default async function HomePage() {
   const cards = creatorCards(readDb());
   const featured = cards[0];
   const online = cards.filter((creator) => creator.online);
-  const user = await getSessionUser();
 
   return (
     <div className="studio solo">
       <div>
         <section className="phone-home">
-          <div className="not-sex">
-            <b>NOT SEX</b>
-            <span>Private conversation. Adults only. You pay to call, to tip, or to unlock her posts.</span>
-          </div>
-          {user ? null : <ProviderSignIn />}
-          <Link className="see-prices" href="/pricing">See the three prices</Link>
-          <div className="two-ways">
-            <a className="way" href="#calls">
-              <small>Call</small>
-              <strong>Talk to her</strong>
-              <span>She is online. You pay for the time.</span>
-            </a>
-            <a className="way" href="#unlock">
-              <small>Unlock</small>
-              <strong>Open her posts</strong>
-              <span>Premium photos. Still not sex.</span>
-            </a>
-          </div>
+          <article className="m-hero">
+            <img src="/talk/hero.jpg" alt="" />
+            <div>
+              <span className="age-pill"><b>18+</b> NOT SEX</span>
+              <h1>Say it.<span>Someone hears it.</span><span>You choose who.</span></h1>
+              <p>Infidelity, work, a secret. A private conversation. Call her, or unlock her posts.</p>
+              <div className="hero-actions">
+                <a className="red-btn" href="#calls">Call</a>
+                <a className="ghost-btn" href="#unlock">Unlock</a>
+              </div>
+            </div>
+          </article>
           <div className="section-head" id="calls">
             <h2>Online now</h2>
             <span>{online.length} verified</span>
           </div>
           <div className="online-row">
             {online.map((creator) => (
-              <Link key={creator.id} href={`/messages?with=${creator.id}`}>
+              <Link key={creator.id} href={`/creator/${creator.username}`}>
                 <span className="online-face">
                   <img src={creator.photo} alt="" />
                   <i className="verified-badge" aria-label="Verified">
@@ -49,21 +40,52 @@ export default async function HomePage() {
                   </i>
                 </span>
                 <strong>{creator.name.split(" ")[0]}</strong>
-                <span>Call {creator.talk}</span>
+                <span>Online</span>
               </Link>
             ))}
           </div>
           <CallSlides people={online} />
+          <section className="talk-block">
+            <div className="section-head">
+              <div>
+                <p className="kicker">Private · 18+</p>
+                <h2>Talk about it</h2>
+              </div>
+              <Link href="/talk">Choose who</Link>
+            </div>
+            <div className="talk-grid">
+              <Link className="talk-card" href="/talk#infidelity">
+                <img src="/talk/infidelity.jpg?v=3" alt="" />
+                <b>01</b>
+                <span><small>Infidelity</small><strong>The part you<br />have not said.</strong></span>
+              </Link>
+              <Link className="talk-card" href="/talk#work">
+                <img src="/talk/work.jpg?v=3" alt="" />
+                <b>02</b>
+                <span><small>Work</small><strong>When the day<br />will not end.</strong></span>
+              </Link>
+              <Link className="talk-card" href="/talk#secret">
+                <img src="/talk/secret.jpg?v=3" alt="" />
+                <b>03</b>
+                <span><small>A secret</small><strong>One person.<br />Nobody else.</strong></span>
+              </Link>
+              <Link className="talk-card" href="/talk#listen">
+                <img src="/talk/listen.jpg?v=3" alt="" />
+                <b>04</b>
+                <span><small>Just listen</small><strong>No advice.<br />No judgment.</strong></span>
+              </Link>
+            </div>
+          </section>
           <div className="section-head" id="unlock">
-            <h2>Unlock</h2>
+            <h2>Unlock her posts</h2>
             <Link href="/discover">All</Link>
           </div>
           <div className="unlock-row">
             {cards.slice(0, 4).map((creator) => (
-              <Link key={creator.id} href={`/creator/${creator.username}?tab=premium`}>
+              <Link key={creator.id} href={`/creator/${creator.username}`}>
                 <img src={creator.photo} alt="" />
                 <strong>{creator.name.split(" ")[0]}</strong>
-                <span>Unlock {creator.price}</span>
+                <span>See her</span>
               </Link>
             ))}
           </div>

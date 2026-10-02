@@ -113,7 +113,7 @@ export async function signInProvider(formData: FormData) {
   if (!user) await bounce({ error: "No hay una cuenta de demostración." });
   await confirmAgeCookie();
   await setSession(user!.id);
-  redirect("/");
+  redirect(safeNext(String(formData.get("next") || "")) || "/");
 }
 
 export async function signup(formData: FormData) {
@@ -168,7 +168,13 @@ export async function signup(formData: FormData) {
   });
   if ("error" in result && result.error) await bounce({ error: result.error });
   await setSession(result.id!);
-  redirect(result.creator ? "/dashboard?ok=cuenta" : "/feed?ok=cuenta");
+  const next = safeNext(String(formData.get("next") || ""));
+  redirect(result.creator ? "/dashboard?ok=cuenta" : next || "/feed?ok=cuenta");
+}
+
+function safeNext(value: string) {
+  if (!value.startsWith("/") || value.startsWith("//") || value.includes("://")) return "";
+  return value;
 }
 
 export async function follow(formData: FormData) {
