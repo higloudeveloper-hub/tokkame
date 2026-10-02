@@ -11,6 +11,14 @@ export type LuxPerson = {
   clip?: string;
 };
 
+export type LuxPost = {
+  id: string;
+  name: string;
+  username: string;
+  photo: string;
+  locked: boolean;
+};
+
 const lines = [
   "Tell her the problem. She is here for it.",
   "Request her. One woman, and what you have not said.",
@@ -32,7 +40,7 @@ function Check() {
   );
 }
 
-export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson[] }) {
+export function PhoneLuxury({ live, more, posts }: { live: LuxPerson[]; more: LuxPerson[]; posts: LuxPost[] }) {
   const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const count = live.length;
@@ -107,6 +115,37 @@ export function PhoneLuxury({ live, more }: { live: LuxPerson[]; more: LuxPerson
           <button key={person.id} type="button" className={dot === index ? "on" : ""} aria-label={person.name} onClick={() => go(dot)} />
         ))}
       </div>
+
+      <section className="lux-block">
+        <div className="lux-head">
+          <h3>Why you stay</h3>
+        </div>
+        <ol className="lux-steps">
+          <li><b>01</b><strong>She is verified</strong><span>You know who is listening.</span></li>
+          <li><b>02</b><strong>$13 an hour</strong><span>You pay, then she can accept.</span></li>
+          <li><b>03</b><strong>Add time</strong><span>The clock is on the call. Buy another hour there.</span></li>
+        </ol>
+      </section>
+
+      {posts.length ? (
+        <section className="lux-block">
+          <div className="lux-head">
+            <h3>Free and locked</h3>
+            <Link href="/discover">All</Link>
+          </div>
+          <div className="lux-feed">
+            {posts.map((post) => (
+              <Link key={post.id} className={post.locked ? "locked" : ""} href={`/creator/${post.username}`}>
+                <img src={post.photo} alt="" />
+                <span>
+                  <strong>{post.name.split(" ")[0]}</strong>
+                  <em>{post.locked ? "Locked" : "Free"}</em>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="lux-block">
         <div className="lux-head">

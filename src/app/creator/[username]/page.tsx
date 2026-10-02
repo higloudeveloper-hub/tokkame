@@ -143,25 +143,38 @@ export default async function CreatorPage({
             </section>
           ) : null}
           {shots.length === 0 && tab === "posts" ? <p className="muted">Nothing here yet.</p> : null}
-          {shots.length > 0 ? <div className="profile-mosaic">
-          {shots.map((item, index) => (
-            <article key={item.post.id} className="shot">
-              <img src={photoAt(slot + index)} alt="" />
-              <span>
-                <strong>{item.post.caption.split(".").slice(0, 1).join("").slice(0, 42)}</strong>
-                {!item.visible ? <em>{item.lock === "ppv" ? money(item.post.price) : "Premium"}</em> : <em>Open</em>}
-              </span>
-              {!item.visible && item.lock === "ppv" && viewer ? (
-                <form action={unlock}>
-                  <input type="hidden" name="postId" value={item.post.id} />
-                  <button className="red-btn" type="submit">Unlock</button>
-                </form>
-              ) : !item.visible ? (
-                <Link className="red-btn" href={viewer ? `/creator/${creator.username}?tab=premium` : "/login"}>Unlock</Link>
-              ) : null}
-            </article>
-          ))}
-          </div> : null}
+          {shots.length > 0 ? (
+            <div className="post-groups">
+              {(["free", "locked"] as const).map((kind) => {
+                const group = shots.filter((item) => (kind === "locked" ? !item.visible : item.visible));
+                if (!group.length) return null;
+                return (
+                  <section key={kind} className="post-group">
+                    <h3>{kind === "free" ? "Free" : "Locked"}</h3>
+                    <div className="profile-mosaic">
+                      {group.map((item) => (
+                        <article key={item.post.id} className={`shot${item.visible ? " is-free" : " is-paid"}`}>
+                          <img src={item.post.image || photoAt(slot + shots.indexOf(item))} alt="" />
+                          <span>
+                            <strong>{item.post.caption.split(".").slice(0, 1).join("").slice(0, 42)}</strong>
+                            <em>{item.visible ? "Free" : item.lock === "ppv" ? money(item.post.price) : "Premium"}</em>
+                          </span>
+                          {!item.visible && item.lock === "ppv" && viewer ? (
+                            <form action={unlock}>
+                              <input type="hidden" name="postId" value={item.post.id} />
+                              <button className="red-btn" type="submit">Unlock</button>
+                            </form>
+                          ) : !item.visible ? (
+                            <Link className="red-btn" href={viewer ? `/creator/${creator.username}?tab=premium` : "/login"}>Unlock</Link>
+                          ) : null}
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </section>
 

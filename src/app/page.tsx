@@ -2,13 +2,29 @@ import Link from "next/link";
 import { HeroBanner } from "@/components/hero-banner";
 import { PhoneLuxury } from "@/components/phone-luxury";
 import { VideoRail } from "@/components/video-rail";
-import { CLIPS, creatorCards } from "@/lib/studio";
-import { readDb } from "@/lib/store";
+import { CLIPS, creatorCards, photoAt } from "@/lib/studio";
+import { isDropLocked, readDb } from "@/lib/store";
 
 export default async function HomePage() {
-  const cards = creatorCards(readDb());
+  const db = readDb();
+  const cards = creatorCards(db);
   const featured = cards[0];
   const online = cards.filter((creator) => creator.online);
+  const posts = db.posts
+    .filter((post) => !isDropLocked(post))
+    .slice(0, 8)
+    .map((post, index) => {
+      const creator = cards.find((item) => item.id === post.creatorId);
+      if (!creator) return null;
+      return {
+        id: post.id,
+        name: creator.name,
+        username: creator.username,
+        photo: post.image || photoAt(index + 2),
+        locked: post.visibility !== "public",
+      };
+    })
+    .filter((post) => post !== null);
 
   return (
     <div className="studio solo">
@@ -28,6 +44,7 @@ export default async function HomePage() {
               username: creator.username,
               photo: creator.photo,
             }))}
+            posts={posts}
           />
         </section>
         <div className="desk-home">
