@@ -20,7 +20,7 @@ export function AgeGate() {
         ) : (
           <>
             <p className="lead">
-              Conversación privada para adultos. Infidelidad, trabajo, un secreto, lo que sea. Eliges con quién. No está permitida ninguna cuenta ni contenido que involucre a menores.
+              Conversación privada para adultos. No es sexo. Infidelidad, trabajo, un secreto, lo que sea. Eliges con quién. No está permitida ninguna cuenta ni contenido que involucre a menores.
             </p>
             <div className="row">
               <form action={confirmAge}>

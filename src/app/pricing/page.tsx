@@ -36,6 +36,35 @@ export default function PricingPage() {
       <p className="kicker">How she gets paid</p>
       <h1>Talk. Tip. Unlock.</h1>
       <p className="lead">Three charges. She keeps 80% in this demo. Tokkame keeps 20%.</p>
+      <section className="price-simple">
+        <p className="price-plain">Not sex. You pay for a call, a tip, or to unlock her posts.</p>
+        {lanes.map((lane) => (
+          <article key={lane.kicker} className="price-row">
+            <img src={lane.image} alt="" />
+            <div>
+              <small>{lane.kicker}</small>
+              <strong>{lane.price}</strong>
+              <p>{lane.unit}. {lane.text}</p>
+            </div>
+            <Link className="red-btn" href={lane.href}>{lane.cta}</Link>
+          </article>
+        ))}
+        <h2>Unlock plans</h2>
+        <article className="plan-row">
+          <div><small>Inner</small><p>Locked posts and closer photos.</p></div>
+          <b>$5.99<span>/mo</span></b>
+        </article>
+        <article className="plan-row lead">
+          <div><small>VIP · most chosen</small><p>New sets first, and a longer conversation.</p></div>
+          <b>$19.99<span>/mo</span></b>
+        </article>
+        <article className="plan-row">
+          <div><small>Elite</small><p>The full archive and the closest access.</p></div>
+          <b>$49.99<span>/mo</span></b>
+        </article>
+        <p className="price-plain">She keeps 80%. Tokkame keeps 20%.</p>
+        <Link className="red-btn" href="/discover">Choose who to unlock</Link>
+      </section>
       <div className="price-lanes">
         {lanes.map((lane) => (
           <article key={lane.kicker} className="price-lane">

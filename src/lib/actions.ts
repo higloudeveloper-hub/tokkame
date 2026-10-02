@@ -105,6 +105,17 @@ export async function login(formData: FormData) {
   redirect(user!.role === "creator" ? "/dashboard" : "/feed");
 }
 
+export async function signInProvider(formData: FormData) {
+  const provider = String(formData.get("provider") || "");
+  if (provider !== "google" && provider !== "apple") await bounce({ error: "Elige Google o Apple." });
+  const db = readDb();
+  const user = db.users.find((item) => item.email === "sofia@tokkame.app" && !item.suspended);
+  if (!user) await bounce({ error: "No hay una cuenta de demostración." });
+  await confirmAgeCookie();
+  await setSession(user!.id);
+  redirect("/");
+}
+
 export async function signup(formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const username = String(formData.get("username") || "").trim().toLowerCase();

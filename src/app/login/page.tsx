@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProviderSignIn } from "@/components/provider-sign-in";
 import { Flash } from "@/components/ui";
 import { login } from "@/lib/actions";
 
@@ -13,6 +14,7 @@ export default async function LoginPage({
       <form action={login} className="panel form-grid">
         <p className="kicker">Entrar</p>
         <h1 className="display" style={{ fontSize: 48, margin: 0 }}>Tu cuenta</h1>
+        <ProviderSignIn />
         <Flash error={sp.error} ok={sp.ok} />
         <label className="stack">Correo o usuario
           <input name="login" autoComplete="username" required />
