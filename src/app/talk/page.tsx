@@ -3,54 +3,55 @@ import { creatorCards } from "@/lib/studio";
 import { readDb } from "@/lib/store";
 
 const topics = [
-  { id: "infidelity", kicker: "Infidelity", title: ["The part you", "have not said."], text: "A ring. A message. Say it to one person.", image: "/talk/infidelity.jpg?v=3" },
-  { id: "work", kicker: "Work", title: ["When the day", "will not end."], text: "The job, the boss, the money.", image: "/talk/work.jpg?v=3" },
-  { id: "secret", kicker: "A secret", title: ["One person.", "Nobody else."], text: "You choose who is in the room.", image: "/talk/secret.jpg?v=3" },
-  { id: "listen", kicker: "Just listen", title: ["No advice.", "No judgment."], text: "You want to be heard.", image: "/talk/listen.jpg?v=3" },
+  { id: "infidelity", kicker: "01", title: "Infidelity", text: "The part you have not said.", image: "/talk/infidelity.jpg?v=3" },
+  { id: "work", kicker: "02", title: "Work", text: "When the day will not end.", image: "/talk/work.jpg?v=3" },
+  { id: "secret", kicker: "03", title: "A secret", text: "One woman. Nobody else.", image: "/talk/secret.jpg?v=3" },
+  { id: "listen", kicker: "04", title: "Just listen", text: "You talk. She stays with it.", image: "/talk/listen.jpg?v=3" },
 ];
 
 export default function TalkPage() {
-  const people = creatorCards(readDb());
+  const people = creatorCards(readDb()).sort((a, b) => Number(b.online) - Number(a.online));
   return (
     <div className="talk-page">
       <section className="talk-hero">
-        <img src="/talk/hero.jpg" alt="" />
         <div>
-          <small>18+ · PRIVATE CONVERSATION</small>
-          <h1>Talk about whatever it is. Connect with who you want.</h1>
-          <p>Infidelity, work, stress, a secret. This is not a clinic and it is not a performance. You pick the person. They listen. You pay for the time.</p>
-          <Link className="red-btn" href="#people">Choose someone</Link>
+          <small>PRIVATE · 18+</small>
+          <h1>Tell her the problem.</h1>
+          <p>Infidelity, work, a secret. Choose a verified woman and request her. A private conversation.</p>
+          <Link className="red-btn" href="#people">Request a woman</Link>
         </div>
+        <img src="/talk/hero.jpg" alt="" />
       </section>
 
+      <div className="section-head">
+        <h2>What you can tell her</h2>
+      </div>
       <div className="talk-grid">
         {topics.map((topic) => (
-          <article key={topic.id} id={topic.id} className="talk-card">
+          <a key={topic.id} id={topic.id} className="talk-card" href="#people">
             <img src={topic.image} alt="" />
             <span>
               <small>{topic.kicker}</small>
-              <strong>{topic.title.map((line) => <span key={line}>{line}</span>)}</strong>
+              <strong>{topic.title}</strong>
               <em>{topic.text}</em>
             </span>
-          </article>
+          </a>
         ))}
       </div>
 
       <div className="section-head" id="people">
-        <h2>Who will hear it</h2>
-        <Link href="/discover">See everyone</Link>
+        <h2>Verified women</h2>
+        <Link href="/discover">All</Link>
       </div>
-      <div className="catalog">
-        {people.slice(0, 4).map((person) => (
-          <article key={person.id} className="tcard">
-            <Link className="tcard-visual" href={`/creator/${person.username}`}>
-              <img src={person.photo} alt="" />
-            </Link>
-            <div className="tcard-meta">
+      <div className="talk-list">
+        {people.map((person) => (
+          <article key={person.id}>
+            <img src={person.photo} alt="" />
+            <div>
               <strong>{person.name}</strong>
-              <span>Talk {person.talk} · Unlock {person.price}</span>
+              <span>{person.online ? "Online · Verified" : "Verified"}</span>
             </div>
-            <Link className="red-btn block" href={`/messages?with=${person.id}`}>Talk</Link>
+            <Link className="red-btn" href={`/creator/${person.username}`}>Request her</Link>
           </article>
         ))}
       </div>

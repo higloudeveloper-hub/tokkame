@@ -310,7 +310,23 @@ button { cursor: pointer; }
 .talk-hero small { color: #ff8b94; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; }
 .talk-hero h1 { margin: 8px 0; font-size: clamp(32px, 4vw, 48px); line-height: 0.98; letter-spacing: -0.04em; }
 .talk-hero p { color: var(--muted); max-width: 460px; }
-.talk-page .talk-card { min-height: 420px; border-radius: 22px; }
+.talk-page .talk-card { min-height: 260px; border-radius: 18px; }
+.talk-list { display: grid; gap: 8px; }
+.talk-list article {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 84px;
+  padding: 10px;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.talk-list img { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; }
+.talk-list strong { display: block; font-size: 16px; }
+.talk-list span { color: var(--muted); font-size: 13px; }
+.talk-list .red-btn { min-height: 40px; }
 .talk-page .talk-card:nth-child(1) img { object-position: center 58%; }
 .talk-page .talk-card:nth-child(2) img { object-position: center 22%; }
 .talk-page .talk-card:nth-child(3) img { object-position: center 35%; }
@@ -1627,12 +1643,22 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   .trend-row > * { flex: 0 0 74%; scroll-snap-align: start; }
   .tcard:hover, .rcard:hover, .talk-block .talk-card:hover { transform: none; }
 
-  .talk-page .talk-hero { gap: 8px; margin-bottom: 12px; }
-  .talk-page .talk-hero img { display: none; }
-  .talk-page .talk-hero h1 { font-size: 30px; margin: 6px 0; }
+  .talk-page .talk-hero { gap: 12px; margin-bottom: 8px; }
+  .talk-page .talk-hero img { display: block; height: 168px; border-radius: 18px; }
+  .talk-page .talk-hero h1 { font-size: 34px; margin: 6px 0; }
   .talk-page .talk-hero p { font-size: 14px; }
-  .talk-page .talk-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-  .talk-page .talk-card { min-height: 300px; }
+  .talk-page .talk-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+    margin: 0 -14px;
+    padding: 0 14px 6px;
+    scrollbar-width: none;
+  }
+  .talk-page .talk-card { flex: 0 0 74%; min-height: 220px; scroll-snap-align: center; }
+  .talk-list article { grid-template-columns: 56px minmax(0, 1fr); }
+  .talk-list .red-btn { grid-column: 1 / -1; }
 
   .profile-screen { display: flex; flex-direction: column; }
   .profile-stage { display: contents; }
