@@ -266,6 +266,7 @@ function seed(): DB {
     callAsks: [],
     seats: [],
     cuts: [],
+    lines: [],
   };
 
   const post = (
@@ -596,6 +597,7 @@ function readFile(): DB | null {
     if (!parsed.callAsks) parsed.callAsks = [];
     if (!parsed.seats) parsed.seats = [];
     if (!parsed.cuts) parsed.cuts = [];
+    if (!parsed.lines) parsed.lines = [];
     return parsed;
   } catch {
     return null;
@@ -816,6 +818,7 @@ export function plusActive(user: { plusUntil?: string | null } | null | undefine
 }
 
 export const PLUS_PRICE = 6.99;
+export const CHAIR_PRICE = 2;
 
 export const LINE_GOAL = 24;
 export const SEAT_PRICE = 2;

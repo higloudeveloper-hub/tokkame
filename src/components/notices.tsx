@@ -29,6 +29,8 @@ const OK: Record<"en" | "es", Record<string, string>> = {
     puesto: "Seat saved. You are in the line.",
     plus: "Tokkame Plus is on for 30 days.",
     corte: "Your cut is in the program.",
+    linea: "Your line is on tonight's page.",
+    silla: "Your name is on tonight's edition.",
     abierto: "Opened. The file is yours.",
   },
   es: {
@@ -58,6 +60,8 @@ const OK: Record<"en" | "es", Record<string, string>> = {
     puesto: "Puesto guardado. Ya estás en la fila.",
     plus: "Tokkame Plus quedó activo por 30 días.",
     corte: "Tu corte ya está en el programa.",
+    linea: "Tu línea ya está en la página de esta noche.",
+    silla: "Tu nombre quedó en la edición de esta noche.",
     abierto: "Abierto. El archivo es tuyo.",
   },
 };

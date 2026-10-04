@@ -14,15 +14,15 @@ export function AgeGate({ lang = "en" }: { lang?: "en" | "es" }) {
         <h1 className="display" style={{ fontSize: 64, lineHeight: 0.9, margin: "8px 0" }}>
           TOKKAME
         </h1>
-        <p className="tagline" style={{ marginTop: 0 }}>{lang === "es" ? "Compra el drop. Ábrelo cuando quieras." : "Buy the drop. Open it when you want."}</p>
+        <p className="tagline" style={{ marginTop: 0 }}>{lang === "es" ? "Una página. Una noche. Todos en la misma." : "One page. One night. Everyone on it."}</p>
         {blocked ? (
           <p>{lang === "es" ? "Tokkame es solo para personas de 18 años o más. Esta puerta no se abre." : "Tokkame is only for people 18 or older. This door stays shut."}</p>
         ) : (
           <>
             <p className="lead">
               {lang === "es"
-                ? "Archivo privado para adultos. No es sexo y no hay sala en vivo. Compras drops y suscripciones. No está permitida ninguna cuenta ni contenido que involucre a menores."
-                : "A private archive for adults. Not sex, and there is no live room. You buy drops and subscriptions. No account or content involving minors is allowed."}
+                ? "Una edición nocturna para adultos. Lees y dejas una línea. No es sexo y no hay sala en vivo. No está permitida ninguna cuenta ni contenido que involucre a menores."
+                : "A nightly edition for adults. You read and leave one line. Not sex, and there is no live room. No account or content involving minors is allowed."}
             </p>
             <div className="row">
               <form action={confirmAge}>

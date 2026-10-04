@@ -142,6 +142,15 @@ export type CallSession = {
   createdAt: string;
 };
 
+export type NightLine = {
+  id: string;
+  userId: string;
+  night: string;
+  text: string;
+  named: boolean;
+  createdAt: string;
+};
+
 export type Cut = {
   id: string;
   userId: string;
@@ -180,6 +189,7 @@ export type DB = {
   callAsks: CallAsk[];
   seats: Seat[];
   cuts: Cut[];
+  lines: NightLine[];
 };
 
 export type PublicUser = Omit<User, "passwordHash">;

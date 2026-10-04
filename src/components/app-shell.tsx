@@ -13,28 +13,28 @@ type Online = { id: string; name: string; username: string; photo: string };
 
 const shell = {
   en: {
-    home: "Home", talk: "Studio", videos: "Videos", discover: "Plus", trending: "Trending",
-    search: "Search creators, drops...", menu: "Open menu", close: "Close menu",
-    notes: "Notifications", empty: "Nothing yet.", emptyHint: "When you buy a drop or a subscription, the receipt shows up here.", done: "Done", account: "Your account", login: "Log in",
-    pricing: "Pricing", creators: "For Creators", premium: "Premium",
-    premiumText: "Unlock a drop or subscribe. No live room.", see: "See the three",
+    home: "Tonight", talk: "Nights", videos: "Videos", discover: "Plus", trending: "Trending",
+    search: "Search the edition...", menu: "Open menu", close: "Close menu",
+    notes: "Notifications", empty: "Nothing yet.", emptyHint: "When you put your name on a night, the receipt shows up here.", done: "Done", account: "Your account", login: "Log in",
+    pricing: "Pricing", creators: "For Creators", premium: "The chair",
+    premiumText: "Reading is free. $2 puts your name on tonight's page.", see: "Open tonight",
     dark: "Dark mode", darkToggle: "Toggle dark mode", logout: "Log out",
     about: "About", terms: "Terms", privacy: "Privacy", help: "Help",
     rights: "© 2026 Tokkame. All rights reserved.",
     online: "New drops", onlineClose: "Close", verified: "Verified · For sale", who: "See new drops",
-    ticker: ["WATCH FREE", "ONE PROGRAM", "PUBLISH A CUT", "PLUS $6.99", "NO UNLOCK", "THE NEXT ONE STARTS"],
+    ticker: ["ONE PAGE", "SAME QUESTION", "READING IS FREE", "YOUR NAME $2", "A NEW NIGHT", "EVERYONE TOGETHER"],
   },
   es: {
-    home: "Inicio", talk: "Estudio", videos: "Videos", discover: "Plus", trending: "Tendencias",
-    search: "Buscar creadoras, drops...", menu: "Abrir menú", close: "Cerrar menú",
-    notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando compras un drop o una suscripción, el recibo aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
-    pricing: "Precios", creators: "Para creadoras", premium: "Premium",
-    premiumText: "Desbloquea un drop o suscríbete. No hay sala en vivo.", see: "Ver los tres",
+    home: "Esta noche", talk: "Noches", videos: "Videos", discover: "Plus", trending: "Tendencias",
+    search: "Buscar en la edición...", menu: "Abrir menú", close: "Cerrar menú",
+    notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando pones tu nombre en una noche, el recibo aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
+    pricing: "Precios", creators: "Para creadoras", premium: "La silla",
+    premiumText: "Leer es gratis. $2 pone tu nombre en la página de esta noche.", see: "Abrir esta noche",
     dark: "Modo oscuro", darkToggle: "Cambiar modo oscuro", logout: "Salir",
     about: "Acerca de", terms: "Términos", privacy: "Privacidad", help: "Ayuda",
     rights: "© 2026 Tokkame. Todos los derechos reservados.",
     online: "Drops nuevos", onlineClose: "Cerrar", verified: "Verificada · En venta", who: "Ver drops nuevos",
-    ticker: ["VER ES GRATIS", "UN PROGRAMA", "PUBLICA UN CORTE", "PLUS $6.99", "SIN DESBLOQUEO", "EL SIGUIENTE EMPIEZA"],
+    ticker: ["UNA PÁGINA", "LA MISMA PREGUNTA", "LEER ES GRATIS", "TU NOMBRE $2", "UNA NOCHE NUEVA", "TODOS JUNTOS"],
   },
 } as const;
 
@@ -42,7 +42,6 @@ export function AppShell({
   lang,
   user,
   activity,
-  online,
   children,
 }: {
   lang: Lang;
@@ -54,9 +53,7 @@ export function AppShell({
   const t = shell[lang];
   const mainLinks = [
     { href: "/", label: t.home, icon: "home" },
-    { href: "/studio", label: t.talk, icon: "play" },
-    { href: "/videos", label: t.videos, icon: "play" },
-    { href: "/plus", label: t.discover, icon: "crown" },
+    { href: "/noches", label: t.talk, icon: "compass" },
     { href: "/trending", label: t.trending, icon: "flame" },
   ];
   const path = usePathname();
@@ -64,7 +61,6 @@ export function AppShell({
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(true);
   const [bell, setBell] = useState(false);
-  const [dock, setDock] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -78,7 +74,6 @@ export function AppShell({
   useEffect(() => {
     setOpen(false);
     setBell(false);
-    setDock(false);
   }, [path]);
 
   useEffect(() => {
@@ -184,7 +179,7 @@ export function AppShell({
             <Icon name="crown" />
             <strong>{t.premium}</strong>
             <p>{t.premiumText}</p>
-            <Link className="red-btn block" href="/pricing">{t.see}</Link>
+            <Link className="red-btn block" href="/">{t.see}</Link>
           </div>
           <div className="theme-row">
             {t.dark}
@@ -213,31 +208,6 @@ export function AppShell({
         </div>
         <small>{t.rights}</small>
       </footer>
-      {path.startsWith("/call/") ? null : (
-        <div className={`online-dock${dock ? " open" : ""}`}>
-          {dock ? (
-            <section className="online-panel" aria-label={t.online}>
-              <header>
-                <strong>{t.online}</strong>
-                <button type="button" aria-label={t.onlineClose} onClick={() => setDock(false)}>×</button>
-              </header>
-              {online.map((person) => (
-                <Link key={person.id} href={`/creator/${person.username}?tab=premium`}>
-                  <img src={person.photo} alt="" />
-                  <span>
-                    <b>{person.name.split(" ")[0]}</b>
-                    <em>{t.verified}</em>
-                  </span>
-                </Link>
-              ))}
-            </section>
-          ) : null}
-          <button className="online-fab" type="button" aria-label={t.who} onClick={() => setDock((value) => !value)}>
-            <Icon name="chat" />
-            <i />
-          </button>
-        </div>
-      )}
       <nav className="tabbar" aria-label="App">
         {mainLinks.map((link) => (
           <Link key={link.href} href={link.href} className={active(link.href) ? "on" : ""}>

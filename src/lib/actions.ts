@@ -9,12 +9,13 @@ import { clearSession, confirmAgeCookie, getSessionUser, setSession } from "./au
 import { hashPassword, uid, verifyPassword } from "./password";
 import { CATEGORIES, cents, REGIONS } from "./format";
 import { getLang } from "./lang";
-import { CLIPS } from "./studio";
+import { nightKey } from "./nights";
 import { cleanText, SAFETY_ERROR, violatesSafety } from "./safety";
 import {
   activeSub,
   addTopup,
   canViewPost,
+  CHAIR_PRICE,
   chargePlatform,
   DEFAULT_TIERS,
   earnings,
@@ -25,8 +26,6 @@ import {
   lineSeats,
   mutate,
   OPEN_PRICE,
-  PLUS_PRICE,
-  plusActive,
   readDb,
   SEAT_PRICE,
   spend,
@@ -862,43 +861,43 @@ export async function adminDismiss(formData: FormData) {
   await bounce({ ok: "moderacion" });
 }
 
-export async function buyPlus() {
+export async function leaveLine(formData: FormData) {
   const me = await getSessionUser();
-  if (!me) redirect("/signup?next=/plus");
+  if (!me) redirect("/signup?next=/");
   const es = (await getLang()) === "es";
+  const text = cleanText(String(formData.get("text") || ""), 140);
+  if (text.length < 3) redirect(`/?error=${encodeURIComponent(es ? "Escribe una línea." : "Write one line.")}`);
+  if (violatesSafety(text)) redirect(`/?error=${encodeURIComponent(SAFETY_ERROR)}`);
+  const night = nightKey();
   const result = await mutate((db) => {
-    const user = db.users.find((item) => item.id === me!.id)!;
-    const paid = chargePlatform(db, user, PLUS_PRICE, "Tokkame Plus");
-    if (!paid.ok) return { error: es ? "No alcanza el saldo de prueba." : "Not enough sandbox balance." };
-    const start = Math.max(Date.now(), user.plusUntil ? new Date(user.plusUntil).getTime() : 0);
-    user.plusUntil = new Date(start + 30 * 24 * 60 * 60 * 1000).toISOString();
+    if (!db.lines) db.lines = [];
+    if (db.lines.some((item) => item.userId === me!.id && item.night === night)) {
+      return { error: es ? "Esta noche ya dejaste tu línea." : "You already left your line tonight." };
+    }
+    db.lines.push({ id: uid("line"), userId: me!.id, night, text, named: false, createdAt: new Date().toISOString() });
     return { ok: true as const };
   });
-  if ("error" in result && result.error) redirect(`/plus?error=${encodeURIComponent(result.error)}`);
-  redirect("/plus?ok=plus");
+  if ("error" in result && result.error) redirect(`/?error=${encodeURIComponent(result.error)}`);
+  redirect("/?ok=linea");
 }
 
-export async function publishCut(formData: FormData) {
+export async function takeChair() {
   const me = await getSessionUser();
-  if (!me) redirect("/signup?next=/studio");
+  if (!me) redirect("/signup?next=/");
   const es = (await getLang()) === "es";
-  const caption = cleanText(String(formData.get("caption") || ""), 80);
-  const clipId = String(formData.get("clipId") || "");
-  if (!CLIPS.some((clip) => clip.id === clipId)) redirect(`/studio?error=${encodeURIComponent(es ? "Elige un video." : "Pick a video.")}`);
-  if (caption.length < 3) redirect(`/studio?error=${encodeURIComponent(es ? "Escribe una línea." : "Write one line.")}`);
-  if (violatesSafety(caption)) redirect(`/studio?error=${encodeURIComponent(SAFETY_ERROR)}`);
+  const night = nightKey();
   const result = await mutate((db) => {
     const user = db.users.find((item) => item.id === me!.id)!;
-    if (!db.cuts) db.cuts = [];
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    const today = db.cuts.filter((item) => item.userId === user.id && new Date(item.createdAt).getTime() >= start.getTime()).length;
-    if (!plusActive(user) && today >= 1) return { error: es ? "Hoy ya publicaste el corte gratis. Plus quita el límite." : "You already published today's free cut. Plus removes the limit." };
-    db.cuts.push({ id: uid("cut"), userId: user.id, clipId, caption, createdAt: new Date().toISOString() });
+    const line = (db.lines || []).find((item) => item.userId === user.id && item.night === night);
+    if (!line) return { error: es ? "Primero deja tu línea." : "Leave your line first." };
+    if (line.named) return { error: es ? "Tu nombre ya está en esta edición." : "Your name is already on this edition." };
+    const paid = chargePlatform(db, user, CHAIR_PRICE, "Silla en la edición");
+    if (!paid.ok) return { error: es ? "No alcanza el saldo de prueba." : "Not enough sandbox balance." };
+    line.named = true;
     return { ok: true as const };
   });
-  if ("error" in result && result.error) redirect(`/studio?error=${encodeURIComponent(result.error)}`);
-  redirect("/?ok=corte");
+  if ("error" in result && result.error) redirect(`/?error=${encodeURIComponent(result.error)}`);
+  redirect("/?ok=silla");
 }
 
 export async function ensureCreatorLink(username: string) {
