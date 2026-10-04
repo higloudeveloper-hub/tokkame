@@ -1,5 +1,4 @@
 export const TRACKS = [
-  { id: "pulso", es: "Pulso", en: "Pulse", notes: [220, 277, 330], rate: 520 },
   { id: "noche", es: "Noche", en: "Night", notes: [174, 220, 262], rate: 740 },
   { id: "brillo", es: "Brillo", en: "Shine", notes: [392, 494, 587], rate: 420 },
   { id: "calle", es: "Calle", en: "Street", notes: [147, 196, 247], rate: 640 },

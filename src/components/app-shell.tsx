@@ -53,9 +53,8 @@ export function AppShell({
   const t = shell[lang];
   const mainLinks = [
     { href: "/", label: t.home, icon: "home", create: false },
-    { href: "/retos", label: t.discover, icon: "flame", create: false },
-    { href: "/crear", label: t.talk, icon: "plus", create: true },
     { href: "/discover", label: t.explore, icon: "compass", create: false },
+    { href: "/crear", label: t.talk, icon: "plus", create: true },
     { href: user ? `/p/${user.username}` : "/login", label: t.trending, icon: "user", create: false },
   ];
   const path = usePathname();

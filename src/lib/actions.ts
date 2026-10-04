@@ -464,17 +464,22 @@ export async function unlock(formData: FormData) {
 
 export async function likePost(formData: FormData) {
   const me = await getSessionUser();
-  if (!me) await bounce({ error: "Entra para marcar me gusta." });
+  if (!me) redirect("/login");
   const postId = String(formData.get("postId") || "");
+  const mode = String(formData.get("mode") || "toggle");
   await mutate((db) => {
     const post = db.posts.find((item) => item.id === postId);
-    const viewer = db.users.find((user) => user.id === me!.id) ?? null;
-    if (!post || !canViewPost(db, viewer, post)) return;
-    post.likes = post.likes.includes(me!.id)
-      ? post.likes.filter((id) => id !== me!.id)
-      : [...post.likes, me!.id];
+    if (!post) return;
+    const has = post.likes.includes(me!.id);
+    if (mode === "add") {
+      if (!has) post.likes.push(me!.id);
+    } else if (has) {
+      post.likes = post.likes.filter((id) => id !== me!.id);
+    } else {
+      post.likes.push(me!.id);
+    }
   });
-  await bounce();
+  revalidatePath("/");
 }
 
 export async function comment(formData: FormData) {

@@ -1920,7 +1920,7 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
     right: 0;
     bottom: 0;
     z-index: 50;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     height: calc(58px + env(safe-area-inset-bottom));
     padding: 6px 6px env(safe-area-inset-bottom);
     background: color-mix(in srgb, var(--bg) 88%, transparent);
@@ -2707,6 +2707,22 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 .ig-grid a { position: relative; aspect-ratio: 1; overflow: hidden; background: #111; }
 .ig-grid img { width: 100%; height: 100%; object-fit: cover; }
 .ig-grid b { position: absolute; left: 6px; bottom: 6px; background: white; color: #111; border-radius: 999px; padding: 2px 6px; font-size: 11px; }
+.ig-block { border-top: 1px solid #24242b; padding-bottom: 8px; }
+.ig-block .ig-row a { display: inline-flex; align-items: center; gap: 8px; color: inherit; font-weight: 800; }
+.ig-block .ig-row img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.promo-row { display: flex; gap: 10px; overflow-x: auto; padding: 4px 12px 14px; scroll-snap-type: x mandatory; }
+.promo-card { flex: 0 0 168px; scroll-snap-align: start; display: grid; gap: 8px; }
+.promo-shot { position: relative; aspect-ratio: 3 / 4; border-radius: 18px; overflow: hidden; background: #111; }
+.promo-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.promo-card.is-locked .promo-shot img { filter: blur(14px); transform: scale(1.08); }
+.promo-shot button { position: absolute; left: 8px; bottom: 8px; z-index: 2; border: 0; border-radius: 999px; background: rgba(0,0,0,.55); color: white; min-height: 30px; padding: 0 10px; font-weight: 800; }
+.promo-shot button.is-on { color: #ff2d55; }
+.promo-options { display: grid; gap: 6px; }
+.promo-options button { width: 100%; border: 0; border-radius: 999px; min-height: 34px; background: white; color: #111; font-weight: 800; }
+.brand-burst { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 3; }
+.brand-burst.is-screen { position: fixed; z-index: 80; }
+.brand-burst b { color: #ff2d55; font-size: 34px; font-weight: 900; letter-spacing: -0.05em; animation: brand-pop 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes brand-pop { 0% { opacity: 0; transform: scale(0.35) translateY(14px); } 40% { opacity: 1; transform: scale(1.08) translateY(0); } 100% { opacity: 0; transform: scale(1.25) translateY(-18px); } }
 .ig-reto-card { margin: 14px; padding: 14px; border-radius: 18px; background: #141418; display: grid; gap: 8px; }
 .ig-reto-card h2 { margin: 0; }
 .ig-cam { padding-bottom: 20px; }

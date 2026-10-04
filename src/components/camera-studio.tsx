@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type PointerEvent } from "react";
 import { createPost } from "@/lib/actions";
-import { FILTERS, RETOS, TRACKS } from "@/lib/kit";
+import { FILTERS, TRACKS } from "@/lib/kit";
 
 const STAMPS = [
   { id: "ahora", es: "Ahora", en: "Right now" },
@@ -23,7 +23,7 @@ function putFile(input: HTMLInputElement, blob: Blob, name: string) {
   input.files = data.files;
 }
 
-export function CameraStudio({ canCharge, lang, reto = "" }: { canCharge: boolean; lang: "en" | "es"; reto?: string }) {
+export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "en" | "es" }) {
   const es = lang === "es";
   const videoRef = useRef<HTMLVideoElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -230,18 +230,6 @@ export function CameraStudio({ canCharge, lang, reto = "" }: { canCharge: boolea
               <label key={track.id} className="cam-pick">
                 <input type="radio" name="track" value={track.id} defaultChecked={track.id === TRACKS[0].id} />
                 {es ? track.es : track.en}
-              </label>
-            ))}
-          </div>
-          <div className="cam-filters">
-            <label className="cam-pick">
-              <input type="radio" name="challenge" value="" defaultChecked={!RETOS.some((item) => item.id === reto)} />
-              {es ? "Sin reto" : "No challenge"}
-            </label>
-            {RETOS.map((item) => (
-              <label key={item.id} className="cam-pick">
-                <input type="radio" name="challenge" value={item.id} defaultChecked={item.id === reto} />
-                {es ? item.es : item.en}
               </label>
             ))}
           </div>

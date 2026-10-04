@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Flash } from "@/components/notices";
+import { PromoCard } from "@/components/promo-card";
 import { ShareSheet } from "@/components/share-sheet";
-import { TrackButton } from "@/components/track-button";
-import { follow, likePost, unlock } from "@/lib/actions";
+import { follow } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
-import { ago, money } from "@/lib/format";
+import { money } from "@/lib/format";
 import { getLang } from "@/lib/lang";
-import { retoFor, trackFor } from "@/lib/kit";
 import { photoAt } from "@/lib/studio";
-import { creators, isDropLocked, readDb } from "@/lib/store";
+import { isDropLocked, readDb } from "@/lib/store";
 import { presentPost } from "@/lib/view";
 
 function face(username: string) {
@@ -22,13 +21,16 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const es = lang === "es";
   const db = readDb();
   const viewer = await getSessionUser();
-  const people = creators(db).filter((user) => user.verified === "verified");
   const cards = db.posts
     .filter((post) => !isDropLocked(post))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 24)
     .map((post) => presentPost(db, post, viewer))
     .filter((item) => item !== null);
+
+  const groups = [...new Set(cards.map((item) => item.creator.id))].map((id) => {
+    const posts = cards.filter((item) => item.creator.id === id).slice(0, 8);
+    return { creator: posts[0]!.creator, following: posts[0]!.following, posts };
+  });
 
   return (
     <div className="ig">
@@ -40,77 +42,54 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </div>
         <Link href="/crear">{es ? "Crear" : "Create"}</Link>
       </header>
-      <div className="ig-stories">
-        {people.map((person) => (
-          <Link key={person.id} href={`/p/${person.username}`}>
-            <img src={face(person.username)} alt="" />
-            <span>{person.displayName.split(" ")[0]}</span>
-          </Link>
-        ))}
-      </div>
-      {cards.map((item) => {
-        const reto = retoFor(item.post);
-        const track = trackFor(item.post);
-        const photo = (item.visible && item.post.image ? `/media/${item.post.image}` : "") || (item.post.cover ? `/media/${item.post.cover}` : "") || face(item.creator.username);
-        const clipN = [...item.creator.username].reduce((sum, char) => sum + char.charCodeAt(0), 0);
-        const clip = item.post.format === "clip" && item.visible ? `/look/v${(clipN % 6) + 1}.mp4?v=2` : "";
-        const paid = !item.visible && item.lock === "ppv";
-        const curtained = Boolean(item.post.cover) && paid;
-        return (
-          <article key={item.post.id} id={item.post.id} className="ig-post">
-            <header>
-              <Link href={`/p/${item.creator.username}`}>
-                <img src={face(item.creator.username)} alt="" />
-                <span>
-                  <b>{item.creator.username}</b>
-                  <small suppressHydrationWarning>{ago(item.post.createdAt)}</small>
-                </span>
+      {groups.map((group) => (
+        <section key={group.creator.id} className="ig-block">
+          <header className="ig-post">
+            <div className="ig-row" style={{ paddingTop: 12 }}>
+              <Link href={`/p/${group.creator.username}`}>
+                <img src={face(group.creator.username)} alt="" />
+                <b>{group.creator.username}</b>
               </Link>
-              {viewer && viewer.id !== item.creator.id ? (
+              {viewer && viewer.id !== group.creator.id ? (
                 <form action={follow}>
-                  <input type="hidden" name="creatorId" value={item.creator.id} />
-                  <button type="submit">{item.following ? (es ? "Siguiendo" : "Following") : (es ? "Seguir" : "Follow")}</button>
+                  <input type="hidden" name="creatorId" value={group.creator.id} />
+                  <button type="submit">{group.following ? (es ? "Siguiendo" : "Following") : (es ? "Seguir" : "Follow")}</button>
                 </form>
               ) : null}
-            </header>
-            <div className={`ig-photo${paid && !curtained ? " is-paid" : ""}`}>
-              {clip ? <video src={clip} poster={photo} autoPlay muted loop playsInline /> : <img src={photo} alt="" />}
-              {paid ? (
-                <div className="ig-pay">
-                  {viewer ? (
-                    <form action={unlock}>
-                      <input type="hidden" name="postId" value={item.post.id} />
-                      <button type="submit">{es ? "Abrir" : "Open"} {money(item.post.price)}</button>
-                    </form>
-                  ) : (
-                    <Link href="/login">{es ? "Entra para abrir" : "Log in to open"} {money(item.post.price)}</Link>
-                  )}
-                </div>
-              ) : null}
-              {!item.visible && !paid ? (
-                <div className="ig-pay">
-                  <Link href={viewer ? `/p/${item.creator.username}` : "/login"}>{es ? "Ver en el perfil" : "See on the profile"}</Link>
-                </div>
-              ) : null}
-            </div>
-            <div className="ig-row">
-              <form action={likePost}>
-                <input type="hidden" name="postId" value={item.post.id} />
-                <button type="submit">{item.liked ? "♥" : "♡"} {item.post.likes.length}</button>
-              </form>
-              <TrackButton track={track} lang={lang} />
               <ShareSheet
                 lang={lang}
-                path={`/p/${item.creator.username}`}
-                title={item.creator.displayName}
-                text={es ? `Mira el feed de @${item.creator.username} en Tokkame` : `Watch @${item.creator.username} on Tokkame`}
+                path={`/p/${group.creator.username}`}
+                title={group.creator.displayName}
+                text={es ? `Mira el feed de @${group.creator.username} en Tokkame` : `Watch @${group.creator.username} on Tokkame`}
               />
             </div>
-            {reto ? <Link className="ig-reto" href={`/retos#${reto.id}`}>{es ? reto.es : reto.en}</Link> : null}
-            {item.visible ? <p className="ig-caption"><b>{item.creator.username}</b> {item.post.caption}</p> : <p className="ig-caption">{es ? "Post de pago. Se abre con saldo de prueba." : "Paid post. It opens with sandbox balance."}</p>}
-          </article>
-        );
-      })}
+          </header>
+          <div className="promo-row">
+            {group.posts.map((item) => {
+              const photo = (item.visible && item.post.image ? `/media/${item.post.image}` : "") || (item.post.cover ? `/media/${item.post.cover}` : "") || face(item.creator.username);
+              const locked = !item.visible;
+              const tier = item.creator.tiers.find((entry) => entry.id === (item.post.minTier || "inner")) || item.creator.tiers[0];
+              const options = !locked ? [] : item.post.visibility === "ppv"
+                ? [{ kind: "ppv" as const, postId: item.post.id, label: `${es ? "Abrir" : "Open"} · ${money(item.post.price)}` }]
+                : tier
+                  ? [{ kind: "sub" as const, creatorId: item.creator.id, tier: tier.id, label: `${tier.name} · ${money(tier.price)}` }]
+                  : [];
+              return (
+                <PromoCard
+                  key={`${item.post.id}-${item.liked}-${item.post.likes.length}`}
+                  postId={item.post.id}
+                  photo={photo}
+                  locked={locked && !item.post.cover}
+                  liked={item.liked}
+                  count={item.post.likes.length}
+                  signedIn={Boolean(viewer)}
+                  options={options}
+                />
+              );
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
