@@ -16,32 +16,42 @@ function putFile(input: HTMLInputElement, blob: Blob, name: string) {
   input.files = data.files;
 }
 
-function frameOf(video: HTMLVideoElement, filter: string, light: number, zoom: number, mirror: boolean, soft: number) {
-  const portrait = window.innerHeight >= window.innerWidth;
-  const rotate = portrait && video.videoWidth > video.videoHeight;
+const LOOKS = [
+  { id: "normal", es: "Original", en: "Original", soft: 0, mark: "Or" },
+  { id: "piel", es: "Piel", en: "Skin", soft: 8, mark: "Pi" },
+  { id: "belleza", es: "Belleza", en: "Beauty", soft: 12, mark: "Be" },
+  { id: "porcelana", es: "Porcelana", en: "Porcelain", soft: 16, mark: "Po" },
+  { id: "glow", es: "Glow", en: "Glow", soft: 4, mark: "Gl" },
+  { id: "estudio", es: "Estudio", en: "Studio", soft: 0, mark: "Es" },
+  { id: "calido", es: "Cálido", en: "Warm", soft: 0, mark: "Ca" },
+  { id: "noir", es: "Noir", en: "Noir", soft: 0, mark: "No" },
+] as const;
+
+function frameOf(video: HTMLVideoElement, filter: string, mirror: boolean, soft: number) {
   const canvas = document.createElement("canvas");
+  const ratio = 4 / 5;
+  let sw = video.videoWidth;
+  let sh = video.videoHeight;
+  let sx = 0;
+  let sy = 0;
+  if (sw / sh > ratio) {
+    sw = sh * ratio;
+    sx = (video.videoWidth - sw) / 2;
+  } else {
+    sh = sw / ratio;
+    sy = (video.videoHeight - sh) / 2;
+  }
   canvas.width = 1080;
   canvas.height = 1350;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   ctx.save();
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  if (rotate) ctx.rotate(Math.PI / 2);
-  if (mirror) ctx.scale(-1, 1);
-  const dw = rotate ? canvas.height : canvas.width;
-  const dh = rotate ? canvas.width : canvas.height;
-  const destRatio = dw / dh;
-  let cropW = video.videoWidth;
-  let cropH = video.videoHeight;
-  if (cropW / cropH > destRatio) cropW = cropH * destRatio;
-  else cropH = cropW / destRatio;
-  const zw = cropW / zoom;
-  const zh = cropH / zoom;
-  const sx = (video.videoWidth - zw) / 2;
-  const sy = (video.videoHeight - zh) / 2;
-  const bright = `brightness(${(1 + light).toFixed(2)})`;
-  ctx.filter = filter === "none" ? bright : `${filter} ${bright}`;
-  ctx.drawImage(video, sx, sy, zw, zh, -dw / 2, -dh / 2, dw, dh);
+  if (mirror) {
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.filter = filter === "none" ? "none" : filter;
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
   ctx.restore();
   ctx.filter = "none";
   if (soft > 0) {
@@ -78,10 +88,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   const drawTimer = useRef<number>(0);
   const [facing, setFacing] = useState<"user" | "environment">("user");
   const [mode, setMode] = useState<"foto" | "video">("foto");
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("normal");
-  const [light, setLight] = useState(0);
-  const [zoom, setZoom] = useState(1);
-  const [grid, setGrid] = useState(false);
+  const [filter, setFilter] = useState<(typeof LOOKS)[number]["id"]>("normal");
   const [timer, setTimer] = useState(0);
   const [count, setCount] = useState(0);
   const [shot, setShot] = useState("");
@@ -94,17 +101,17 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   const [ownMusic, setOwnMusic] = useState(false);
   const [error, setError] = useState("");
   const [posting, setPosting] = useState(false);
+  const look = LOOKS.find((item) => item.id === filter) ?? LOOKS[0];
   const css = FILTERS.find((item) => item.id === filter)?.css || "none";
-  const soft = filter === "porcelana" ? 14 : filter === "piel" ? 8 : 0;
-  const preview = `${css === "none" ? "" : css} brightness(${(1 + light).toFixed(2)})`;
-  const [turned, setTurned] = useState(false);
+  const soft = look.soft;
+  const preview = css === "none" ? "none" : css;
 
   useEffect(() => {
     let stream: MediaStream | null = null;
     let gone = false;
     if (!shot && !clipUrl) {
       navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: facing, width: { ideal: 1080 }, height: { ideal: 1440 }, aspectRatio: { ideal: 0.75 } }, audio: false })
+        .getUserMedia({ video: { facingMode: facing }, audio: false })
         .then(async (next) => {
           if (gone) {
             next.getTracks().forEach((item) => item.stop());
@@ -133,7 +140,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   function paintFrame() {
     const video = videoRef.current;
     if (!video?.videoWidth) return null;
-    const canvas = frameOf(video, css, light, zoom, facing === "user", soft);
+    const canvas = frameOf(video, css, facing === "user", soft);
     if (canvas) sharpRef.current = canvas;
     return canvas;
   }
@@ -186,7 +193,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const draw = () => {
-      const frame = frameOf(video, css, light, zoom, facing === "user", soft);
+      const frame = frameOf(video, css, facing === "user", soft);
       if (frame) {
         sharpRef.current = frame;
         ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
@@ -247,7 +254,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.filter = preview;
-      ctx.drawImage(img, sx, sy, sw / zoom, sh / zoom, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
       sharpRef.current = canvas;
       setShot(canvas.toDataURL("image/jpeg", 0.92));
     };
@@ -306,43 +313,32 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
             playsInline
             muted
             autoPlay
-            onLoadedMetadata={(event) => {
-              const node = event.currentTarget;
-              setTurned(window.innerHeight > window.innerWidth && node.videoWidth > node.videoHeight);
-            }}
-            style={{
-              filter: preview,
-              transform: `${turned ? "rotate(90deg) " : ""}${facing === "user" ? "scaleX(-1) " : ""}scale(${turned ? zoom * 1.35 : zoom})`,
-            }}
+            style={{ filter: preview, transform: facing === "user" ? "scaleX(-1)" : undefined }}
           />
         )}
         {soft > 0 && !reviewing ? <div className="cam-skin" /> : null}
-        {grid && !reviewing ? <div className="cam-grid" /> : null}
+        {!reviewing ? (
+          <div className="cam-rail">
+            <button type="button" onClick={() => setFacing((value) => (value === "user" ? "environment" : "user"))}>
+              <i>↺</i>
+              <span>{es ? "Girar" : "Flip"}</span>
+            </button>
+            {LOOKS.map((item) => (
+              <button key={item.id} type="button" className={filter === item.id ? "on" : ""} onClick={() => setFilter(item.id)}>
+                <i>{item.mark}</i>
+                <span>{es ? item.es : item.en}</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
         {count > 0 ? <b className="cam-count">{count}</b> : null}
         {recording ? <b className="cam-rec">0:{String(Math.min(seconds, 8)).padStart(2, "0")}</b> : null}
       </div>
 
       {!reviewing ? (
         <>
-          <div className="cam-filters">
-            {FILTERS.map((item) => (
-              <button key={item.id} type="button" className={filter === item.id ? "on" : ""} onClick={() => setFilter(item.id)}>
-                {es ? item.es : item.en}
-              </button>
-            ))}
-          </div>
-          <label className="cam-slider">{es ? "Luz" : "Light"}
-            <input type="range" min={-0.35} max={0.45} step={0.05} value={light} onChange={(event) => setLight(Number(event.target.value))} />
-          </label>
-          <label className="cam-slider">{es ? "Zoom" : "Zoom"}
-            <input type="range" min={1} max={2.2} step={0.1} value={zoom} onChange={(event) => setZoom(Number(event.target.value))} />
-          </label>
-          <div className="cam-filters">
-            <button type="button" className={grid ? "on" : ""} onClick={() => setGrid((value) => !value)}>{es ? "Guía" : "Grid"}</button>
-            <button type="button" className={timer ? "on" : ""} onClick={() => setTimer((value) => (value ? 0 : 3))}>{timer ? "3s" : (es ? "Tiempo" : "Timer")}</button>
-          </div>
           <div className="cam-shutter-row">
-            <button type="button" className="cam-flip" onClick={() => setFacing((value) => (value === "user" ? "environment" : "user"))}>{es ? "Girar" : "Flip"}</button>
+            <button type="button" className="cam-flip" onClick={() => setTimer((value) => (value ? 0 : 3))}>{timer ? "3s" : (es ? "Tiempo" : "Timer")}</button>
             {mode === "foto" ? (
               <button type="button" className="cam-shutter" onClick={shutter} aria-label={es ? "Tomar foto" : "Take photo"} />
             ) : (
