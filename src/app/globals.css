@@ -2705,6 +2705,17 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
 .cam-count, .cam-rec { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); color: white; font-size: 28px; }
 .cam-rec { color: #ff2d55; }
 .promo-shot video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.promo-card.is-wide { flex: none; width: 100%; }
+.promo-card.is-wide .promo-shot { aspect-ratio: 4 / 5; border-radius: 0; }
+.promo-shot img, .promo-shot video { opacity: 0; transition: opacity 0.4s ease; }
+.promo-shot.is-ready img, .promo-shot.is-ready video { opacity: 1; }
+.shot-shimmer { position: absolute; inset: 0; background: linear-gradient(100deg, #17171c 20%, #2c2c34 45%, #17171c 70%); background-size: 200% 100%; animation: shot-shimmer 1.1s ease infinite; }
+.feed-in { animation: feed-in 0.45s ease both; }
+.cam-stage video { object-fit: cover; transform-origin: center; }
+.cam-skin { position: absolute; inset: 0; pointer-events: none; backdrop-filter: blur(3px) saturate(1.2); background: rgba(255, 220, 200, 0.08); }
+.red-btn:disabled { opacity: 0.65; }
+@keyframes shot-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes feed-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 .promo-music { left: auto !important; right: 8px; background: white !important; color: #111 !important; }
 .promo-music.on { background: #ff2d55 !important; color: white !important; }
 .cam-flip { border: 0; background: transparent; color: white; font-weight: 750; position: relative; }

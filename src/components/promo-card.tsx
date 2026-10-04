@@ -53,6 +53,7 @@ export function PromoCard({
   liked,
   count,
   signedIn,
+  wide = false,
   options,
 }: {
   postId: string;
@@ -60,6 +61,7 @@ export function PromoCard({
   clip?: string;
   audio?: string;
   track?: string;
+  wide?: boolean;
   locked: boolean;
   liked: boolean;
   count: number;
@@ -71,6 +73,7 @@ export function PromoCard({
   const [total, setTotal] = useState(count);
   const [burst, setBurst] = useState(false);
   const [sound, setSound] = useState(false);
+  const [ready, setReady] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [, start] = useTransition();
 
@@ -113,9 +116,10 @@ export function PromoCard({
   }
 
   return (
-    <article className={`promo-card${locked ? " is-locked" : ""}`}>
-      <div className="promo-shot" onDoubleClick={() => like("add")}>
-        {clip ? <video src={clip} poster={photo} playsInline muted loop autoPlay /> : <img src={photo} alt="" />}
+    <article className={`promo-card${wide ? " is-wide" : ""}${locked ? " is-locked" : ""}`}>
+      <div className={`promo-shot${ready ? " is-ready" : ""}`} onDoubleClick={() => like("add")}>
+        {clip ? <video src={clip} poster={photo} playsInline muted loop autoPlay onLoadedData={() => setReady(true)} /> : <img src={photo} alt="" onLoad={() => setReady(true)} />}
+        {ready ? null : <span className="shot-shimmer" />}
         <BrandBurst on={burst} />
         {audio || track ? (
           <button type="button" className={`promo-music${sound ? " on" : ""}`} onClick={(event) => { event.stopPropagation(); toggleMusic(); }}>♪</button>

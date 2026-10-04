@@ -16,32 +16,49 @@ function putFile(input: HTMLInputElement, blob: Blob, name: string) {
   input.files = data.files;
 }
 
-function frameOf(video: HTMLVideoElement, filter: string, light: number, zoom: number) {
+function frameOf(video: HTMLVideoElement, filter: string, light: number, zoom: number, mirror: boolean, soft: number) {
+  const portrait = window.innerHeight >= window.innerWidth;
+  const rotate = portrait && video.videoWidth > video.videoHeight;
   const canvas = document.createElement("canvas");
-  const ratio = 4 / 5;
-  let sw = video.videoWidth;
-  let sh = video.videoHeight;
-  let sx = 0;
-  let sy = 0;
-  if (sw / sh > ratio) {
-    sw = sh * ratio;
-    sx = (video.videoWidth - sw) / 2;
-  } else {
-    sh = sw / ratio;
-    sy = (video.videoHeight - sh) / 2;
-  }
-  const zw = sw / zoom;
-  const zh = sh / zoom;
-  sx += (sw - zw) / 2;
-  sy += (sh - zh) / 2;
   canvas.width = 1080;
   canvas.height = 1350;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
+  ctx.save();
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  if (rotate) ctx.rotate(Math.PI / 2);
+  if (mirror) ctx.scale(-1, 1);
+  const dw = rotate ? canvas.height : canvas.width;
+  const dh = rotate ? canvas.width : canvas.height;
+  const destRatio = dw / dh;
+  let cropW = video.videoWidth;
+  let cropH = video.videoHeight;
+  if (cropW / cropH > destRatio) cropW = cropH * destRatio;
+  else cropH = cropW / destRatio;
+  const zw = cropW / zoom;
+  const zh = cropH / zoom;
+  const sx = (video.videoWidth - zw) / 2;
+  const sy = (video.videoHeight - zh) / 2;
   const bright = `brightness(${(1 + light).toFixed(2)})`;
   ctx.filter = filter === "none" ? bright : `${filter} ${bright}`;
-  ctx.drawImage(video, sx, sy, zw, zh, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(video, sx, sy, zw, zh, -dw / 2, -dh / 2, dw, dh);
+  ctx.restore();
   ctx.filter = "none";
+  if (soft > 0) {
+    const blur = document.createElement("canvas");
+    blur.width = canvas.width;
+    blur.height = canvas.height;
+    const bctx = blur.getContext("2d");
+    if (bctx) {
+      bctx.filter = `blur(${soft}px)`;
+      bctx.drawImage(canvas, 0, 0);
+      ctx.globalAlpha = soft > 10 ? 0.55 : 0.4;
+      ctx.drawImage(blur, 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "rgba(255, 214, 196, 0.08)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  }
   return canvas;
 }
 
@@ -57,6 +74,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
   const sending = useRef(false);
+  const counting = useRef(false);
   const drawTimer = useRef<number>(0);
   const [facing, setFacing] = useState<"user" | "environment">("user");
   const [mode, setMode] = useState<"foto" | "video">("foto");
@@ -75,15 +93,18 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   const [track, setTrack] = useState("");
   const [ownMusic, setOwnMusic] = useState(false);
   const [error, setError] = useState("");
+  const [posting, setPosting] = useState(false);
   const css = FILTERS.find((item) => item.id === filter)?.css || "none";
+  const soft = filter === "porcelana" ? 14 : filter === "piel" ? 8 : 0;
   const preview = `${css === "none" ? "" : css} brightness(${(1 + light).toFixed(2)})`;
+  const [turned, setTurned] = useState(false);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
     let gone = false;
     if (!shot && !clipUrl) {
       navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: facing, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false })
+        .getUserMedia({ video: { facingMode: facing, width: { ideal: 1080 }, height: { ideal: 1440 }, aspectRatio: { ideal: 0.75 } }, audio: false })
         .then(async (next) => {
           if (gone) {
             next.getTracks().forEach((item) => item.stop());
@@ -112,7 +133,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   function paintFrame() {
     const video = videoRef.current;
     if (!video?.videoWidth) return null;
-    const canvas = frameOf(video, css, light, zoom);
+    const canvas = frameOf(video, css, light, zoom, facing === "user", soft);
     if (canvas) sharpRef.current = canvas;
     return canvas;
   }
@@ -128,7 +149,9 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   }
 
   function shutter() {
+    if (counting.current || recording) return;
     if (timer > 0) {
+      counting.current = true;
       setCount(timer);
       let left = timer;
       const id = window.setInterval(() => {
@@ -136,6 +159,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
         setCount(left);
         if (left <= 0) {
           window.clearInterval(id);
+          counting.current = false;
           takePhoto();
         }
       }, 1000);
@@ -162,7 +186,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const draw = () => {
-      const frame = frameOf(video, css, light, zoom);
+      const frame = frameOf(video, css, light, zoom, facing === "user", soft);
       if (frame) {
         sharpRef.current = frame;
         ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
@@ -233,8 +257,10 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     if (sending.current) return;
     event.preventDefault();
+    setPosting(true);
     const sharp = sharpRef.current;
     if (!sharp || !fileRef.current || !fullRef.current || !clipRef.current || !formRef.current) {
+      setPosting(false);
       setError(es ? "Toma la foto o el video primero." : "Take the photo or the video first.");
       return;
     }
@@ -250,7 +276,10 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
     }
     const coverBlob = await blobOf(paid ? cover : sharp);
     const fullBlob = paid && !clipUrl ? await blobOf(sharp) : null;
-    if (!coverBlob) return;
+    if (!coverBlob) {
+      setPosting(false);
+      return;
+    }
     putFile(fileRef.current, coverBlob, "cover.jpg");
     if (fullBlob) putFile(fullRef.current, fullBlob, "full.jpg");
     if (clipUrl && chunks.current.length && clipRef.current) {
@@ -272,8 +301,22 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
       </div>
       <div className="cam-stage">
         {clipUrl ? <video src={clipUrl} poster={shot} playsInline controls /> : shot ? <img src={shot} alt="" /> : (
-          <video ref={videoRef} playsInline muted autoPlay style={{ filter: preview, transform: `scale(${zoom})` }} />
+          <video
+            ref={videoRef}
+            playsInline
+            muted
+            autoPlay
+            onLoadedMetadata={(event) => {
+              const node = event.currentTarget;
+              setTurned(window.innerHeight > window.innerWidth && node.videoWidth > node.videoHeight);
+            }}
+            style={{
+              filter: preview,
+              transform: `${turned ? "rotate(90deg) " : ""}${facing === "user" ? "scaleX(-1) " : ""}scale(${turned ? zoom * 1.35 : zoom})`,
+            }}
+          />
         )}
+        {soft > 0 && !reviewing ? <div className="cam-skin" /> : null}
         {grid && !reviewing ? <div className="cam-grid" /> : null}
         {count > 0 ? <b className="cam-count">{count}</b> : null}
         {recording ? <b className="cam-rec">0:{String(Math.min(seconds, 8)).padStart(2, "0")}</b> : null}
@@ -368,7 +411,7 @@ export function CameraStudio({ canCharge, lang }: { canCharge: boolean; lang: "e
           </label>
           <div className="cam-shutter-row">
             <button type="button" className="cam-flip" onClick={() => { setShot(""); setClipUrl(""); sharpRef.current = null; chunks.current = []; }}>{es ? "Otra" : "Retake"}</button>
-            <button className="red-btn" type="submit">{es ? "Publicar" : "Post"}</button>
+            <button className="red-btn" type="submit" disabled={posting}>{posting ? (es ? "Publicando…" : "Posting…") : (es ? "Publicar" : "Post")}</button>
           </div>
         </form>
       )}

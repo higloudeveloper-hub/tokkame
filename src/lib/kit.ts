@@ -24,6 +24,8 @@ export const FILTERS = [
   { id: "estudio", es: "Estudio", en: "Studio", css: "contrast(1.18) saturate(1.05) brightness(1.04)" },
   { id: "glow", es: "Glow", en: "Glow", css: "saturate(1.25) contrast(0.95) brightness(1.12)" },
   { id: "dorado", es: "Dorado", en: "Gold", css: "sepia(0.45) saturate(1.4) contrast(1.08) brightness(1.05)" },
+  { id: "piel", es: "Piel", en: "Skin", css: "saturate(1.04) contrast(0.96) brightness(1.05)" },
+  { id: "porcelana", es: "Porcelana", en: "Porcelain", css: "saturate(0.9) contrast(0.92) brightness(1.08)" },
 ] as const;
 
 export type Track = (typeof TRACKS)[number];

@@ -4,15 +4,32 @@ import { PromoCard } from "@/components/promo-card";
 import { ShareSheet } from "@/components/share-sheet";
 import { follow } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
-import { money } from "@/lib/format";
+import { ago, money } from "@/lib/format";
 import { getLang } from "@/lib/lang";
 import { photoAt } from "@/lib/studio";
 import { isDropLocked, readDb } from "@/lib/store";
-import { presentPost } from "@/lib/view";
+import { presentPost, type PresentedPost } from "@/lib/view";
 
 function face(username: string) {
   const n = [...username].reduce((sum, char) => sum + char.charCodeAt(0), 0);
   return photoAt(n);
+}
+
+function mediaOf(item: PresentedPost) {
+  const clip = item.post.format === "clip" && item.visible && item.post.image ? `/media/${item.post.image}` : "";
+  const photo = item.post.cover
+    ? `/media/${item.post.cover}`
+    : item.visible && item.post.image && item.post.format !== "clip"
+      ? `/media/${item.post.image}`
+      : face(item.creator.username);
+  const locked = !item.visible;
+  const tier = item.creator.tiers.find((entry) => entry.id === (item.post.minTier || "inner")) || item.creator.tiers[0];
+  const options = !locked ? [] : item.post.visibility === "ppv"
+    ? [{ kind: "ppv" as const, postId: item.post.id, label: `${money(item.post.price)}` }]
+    : tier
+      ? [{ kind: "sub" as const, creatorId: item.creator.id, tier: tier.id, label: `${tier.name} · ${money(tier.price)}` }]
+      : [];
+  return { clip, photo, options, locked: locked && !item.post.cover };
 }
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
@@ -24,13 +41,22 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const cards = db.posts
     .filter((post) => !isDropLocked(post))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 30)
     .map((post) => presentPost(db, post, viewer))
     .filter((item) => item !== null);
 
-  const groups = [...new Set(cards.map((item) => item.creator.id))].map((id) => {
-    const posts = cards.filter((item) => item.creator.id === id).slice(0, 8);
-    return { creator: posts[0]!.creator, following: posts[0]!.following, posts };
-  });
+  const blocks: Array<{ kind: "post"; item: PresentedPost } | { kind: "strip"; items: PresentedPost[] }> = [];
+  for (let i = 0; i < cards.length;) {
+    blocks.push({ kind: "post", item: cards[i]! });
+    i += 1;
+    if (blocks.filter((block) => block.kind === "post").length % 3 === 0 && i < cards.length) {
+      const items = cards.slice(i, i + 3);
+      if (items.length) {
+        blocks.push({ kind: "strip", items });
+        i += items.length;
+      }
+    }
+  }
 
   return (
     <div className="ig">
@@ -42,62 +68,75 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </div>
         <Link href="/crear">{es ? "Crear" : "Create"}</Link>
       </header>
-      {groups.map((group) => (
-        <section key={group.creator.id} className="ig-block">
-          <header className="ig-post">
-            <div className="ig-row" style={{ paddingTop: 12 }}>
-              <Link href={`/p/${group.creator.username}`}>
-                <img src={face(group.creator.username)} alt="" />
-                <b>{group.creator.username}</b>
+      {blocks.map((block) => {
+        if (block.kind === "strip") {
+          return (
+            <div key={block.items.map((item) => item.post.id).join("-")} className="promo-row">
+              {block.items.map((item) => {
+                const media = mediaOf(item);
+                return (
+                  <PromoCard
+                    key={item.post.id}
+                    postId={item.post.id}
+                    photo={media.photo}
+                    clip={media.clip}
+                    audio={item.post.audio ? `/media/${item.post.audio}` : ""}
+                    track={item.post.track || ""}
+                    locked={media.locked}
+                    liked={item.liked}
+                    count={item.post.likes.length}
+                    signedIn={Boolean(viewer)}
+                    options={media.options.map((option) => ({ ...option, label: `${es ? "Abrir" : "Open"} · ${option.label}` }))}
+                  />
+                );
+              })}
+            </div>
+          );
+        }
+        const item = block.item;
+        const media = mediaOf(item);
+        return (
+          <article key={item.post.id} id={item.post.id} className="ig-post feed-in">
+            <header>
+              <Link href={`/p/${item.creator.username}`}>
+                <img src={face(item.creator.username)} alt="" />
+                <span>
+                  <b>{item.creator.username}</b>
+                  <small suppressHydrationWarning>{ago(item.post.createdAt)}</small>
+                </span>
               </Link>
-              {viewer && viewer.id !== group.creator.id ? (
+              {viewer && viewer.id !== item.creator.id ? (
                 <form action={follow}>
-                  <input type="hidden" name="creatorId" value={group.creator.id} />
-                  <button type="submit">{group.following ? (es ? "Siguiendo" : "Following") : (es ? "Seguir" : "Follow")}</button>
+                  <input type="hidden" name="creatorId" value={item.creator.id} />
+                  <button type="submit">{item.following ? (es ? "Siguiendo" : "Following") : (es ? "Seguir" : "Follow")}</button>
                 </form>
               ) : null}
+            </header>
+            <PromoCard
+              wide
+              postId={item.post.id}
+              photo={media.photo}
+              clip={media.clip}
+              audio={item.post.audio ? `/media/${item.post.audio}` : ""}
+              track={item.post.track || ""}
+              locked={media.locked}
+              liked={item.liked}
+              count={item.post.likes.length}
+              signedIn={Boolean(viewer)}
+              options={media.options.map((option) => ({ ...option, label: `${es ? "Abrir" : "Open"} · ${option.label}` }))}
+            />
+            <div className="ig-row">
               <ShareSheet
                 lang={lang}
-                path={`/p/${group.creator.username}`}
-                title={group.creator.displayName}
-                text={es ? `Mira el feed de @${group.creator.username} en Tokkame` : `Watch @${group.creator.username} on Tokkame`}
+                path={`/p/${item.creator.username}`}
+                title={item.creator.displayName}
+                text={es ? `Mira el feed de @${item.creator.username} en Tokkame` : `Watch @${item.creator.username} on Tokkame`}
               />
             </div>
-          </header>
-          <div className="promo-row">
-            {group.posts.map((item) => {
-              const clip = item.post.format === "clip" && item.visible && item.post.image ? `/media/${item.post.image}` : "";
-              const photo = item.post.cover
-                ? `/media/${item.post.cover}`
-                : item.visible && item.post.image && item.post.format !== "clip"
-                  ? `/media/${item.post.image}`
-                  : face(item.creator.username);
-              const locked = !item.visible;
-              const tier = item.creator.tiers.find((entry) => entry.id === (item.post.minTier || "inner")) || item.creator.tiers[0];
-              const options = !locked ? [] : item.post.visibility === "ppv"
-                ? [{ kind: "ppv" as const, postId: item.post.id, label: `${es ? "Abrir" : "Open"} · ${money(item.post.price)}` }]
-                : tier
-                  ? [{ kind: "sub" as const, creatorId: item.creator.id, tier: tier.id, label: `${tier.name} · ${money(tier.price)}` }]
-                  : [];
-              return (
-                <PromoCard
-                  key={`${item.post.id}-${item.liked}-${item.post.likes.length}`}
-                  postId={item.post.id}
-                  photo={photo}
-                  clip={clip}
-                  audio={item.post.audio ? `/media/${item.post.audio}` : ""}
-                  track={item.post.track || ""}
-                  locked={locked && !item.post.cover}
-                  liked={item.liked}
-                  count={item.post.likes.length}
-                  signedIn={Boolean(viewer)}
-                  options={options}
-                />
-              );
-            })}
-          </div>
-        </section>
-      ))}
+            <p className="ig-caption"><b>{item.creator.username}</b> {item.visible ? item.post.caption : (es ? "Post de pago." : "Paid post.")}</p>
+          </article>
+        );
+      })}
     </div>
   );
 }
