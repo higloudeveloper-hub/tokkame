@@ -66,7 +66,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           </header>
           <div className="promo-row">
             {group.posts.map((item) => {
-              const photo = (item.visible && item.post.image ? `/media/${item.post.image}` : "") || (item.post.cover ? `/media/${item.post.cover}` : "") || face(item.creator.username);
+              const clip = item.post.format === "clip" && item.visible && item.post.image ? `/media/${item.post.image}` : "";
+              const photo = item.post.cover
+                ? `/media/${item.post.cover}`
+                : item.visible && item.post.image && item.post.format !== "clip"
+                  ? `/media/${item.post.image}`
+                  : face(item.creator.username);
               const locked = !item.visible;
               const tier = item.creator.tiers.find((entry) => entry.id === (item.post.minTier || "inner")) || item.creator.tiers[0];
               const options = !locked ? [] : item.post.visibility === "ppv"
@@ -79,6 +84,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                   key={`${item.post.id}-${item.liked}-${item.post.likes.length}`}
                   postId={item.post.id}
                   photo={photo}
+                  clip={clip}
+                  audio={item.post.audio ? `/media/${item.post.audio}` : ""}
+                  track={item.post.track || ""}
                   locked={locked && !item.post.cover}
                   liked={item.liked}
                   count={item.post.likes.length}

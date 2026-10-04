@@ -1,9 +1,43 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { likePost, subscribe, unlock } from "@/lib/actions";
+import { TRACKS } from "@/lib/kit";
 import { BrandBurst } from "./brand-burst";
+
+let stopTune: (() => void) | null = null;
+
+function playTune(track: string) {
+  stopTune?.();
+  const piece = TRACKS.find((item) => item.id === track);
+  if (!piece) return;
+  const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  const ctx = new AudioCtx();
+  const master = ctx.createGain();
+  master.gain.value = 0.04;
+  master.connect(ctx.destination);
+  let step = 0;
+  const timer = window.setInterval(() => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = piece.notes[step % piece.notes.length];
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.8, ctx.currentTime + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+    step += 1;
+  }, 280);
+  stopTune = () => {
+    window.clearInterval(timer);
+    ctx.close();
+    stopTune = null;
+  };
+}
 
 type Option =
   | { kind: "ppv"; postId: string; label: string }
@@ -12,6 +46,9 @@ type Option =
 export function PromoCard({
   postId,
   photo,
+  clip = "",
+  audio = "",
+  track = "",
   locked,
   liked,
   count,
@@ -20,6 +57,9 @@ export function PromoCard({
 }: {
   postId: string;
   photo: string;
+  clip?: string;
+  audio?: string;
+  track?: string;
   locked: boolean;
   liked: boolean;
   count: number;
@@ -30,7 +70,26 @@ export function PromoCard({
   const [on, setOn] = useState(liked);
   const [total, setTotal] = useState(count);
   const [burst, setBurst] = useState(false);
+  const [sound, setSound] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [, start] = useTransition();
+
+  function toggleMusic() {
+    if (sound) {
+      audioRef.current?.pause();
+      stopTune?.();
+      setSound(false);
+      return;
+    }
+    if (audio) {
+      const player = audioRef.current || new Audio(audio);
+      audioRef.current = player;
+      player.play().catch(() => undefined);
+    } else if (track) {
+      playTune(track);
+    }
+    setSound(true);
+  }
 
   function flash() {
     setBurst(true);
@@ -56,8 +115,11 @@ export function PromoCard({
   return (
     <article className={`promo-card${locked ? " is-locked" : ""}`}>
       <div className="promo-shot" onDoubleClick={() => like("add")}>
-        <img src={photo} alt="" />
+        {clip ? <video src={clip} poster={photo} playsInline muted loop autoPlay /> : <img src={photo} alt="" />}
         <BrandBurst on={burst} />
+        {audio || track ? (
+          <button type="button" className={`promo-music${sound ? " on" : ""}`} onClick={(event) => { event.stopPropagation(); toggleMusic(); }}>♪</button>
+        ) : null}
         <button type="button" className={on ? "is-on" : ""} onClick={() => like("toggle")} aria-label="Like">
           {on ? "♥" : "♡"} {total}
         </button>

@@ -68,6 +68,7 @@ export type Post = {
   dropAt: string | null;
   dropKind: DropKind | null;
   track?: string | null;
+  audio?: string | null;
   challenge?: string | null;
   filter?: string | null;
   createdAt: string;

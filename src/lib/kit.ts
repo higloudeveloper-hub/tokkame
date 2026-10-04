@@ -20,6 +20,10 @@ export const FILTERS = [
   { id: "noir", es: "Noir", en: "Noir", css: "grayscale(1) contrast(1.25)" },
   { id: "fade", es: "Fade", en: "Fade", css: "contrast(0.9) brightness(1.08) saturate(0.7)" },
   { id: "vivo", es: "Vivo", en: "Vivid", css: "saturate(1.65) contrast(1.12)" },
+  { id: "suave", es: "Suave", en: "Soft", css: "contrast(0.92) saturate(0.9) brightness(1.06)" },
+  { id: "estudio", es: "Estudio", en: "Studio", css: "contrast(1.18) saturate(1.05) brightness(1.04)" },
+  { id: "glow", es: "Glow", en: "Glow", css: "saturate(1.25) contrast(0.95) brightness(1.12)" },
+  { id: "dorado", es: "Dorado", en: "Gold", css: "sepia(0.45) saturate(1.4) contrast(1.08) brightness(1.05)" },
 ] as const;
 
 export type Track = (typeof TRACKS)[number];

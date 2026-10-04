@@ -505,18 +505,21 @@ export async function comment(formData: FormData) {
   await bounce({ ok: "comentario" });
 }
 
-async function readImage(formData: FormData, field = "file") {
+async function readMedia(formData: FormData, field: string, allowed: Record<string, string>, max: number, label: string) {
   const file = formData.get(field);
   if (!(file instanceof File) || file.size === 0) return { id: null as string | null };
-  if (file.size > 1_500_000) return { error: "La imagen supera 1.5 MB." };
-  const ext =
-    file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "";
-  if (!ext) return { error: "Usa JPG, PNG o WebP." };
+  if (file.size > max) return { error: `${label} supera el tamaño permitido.` };
+  const ext = allowed[file.type];
+  if (!ext) return { error: `${label} usa un formato no aceptado.` };
   const id = `${uid("media")}.${ext}`;
   const dir = uploadDir();
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, id), Buffer.from(await file.arrayBuffer()));
   return { id };
+}
+
+async function readImage(formData: FormData, field = "file") {
+  return readMedia(formData, field, { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" }, 3_000_000, "La imagen");
 }
 
 export async function createPost(formData: FormData) {
@@ -559,6 +562,20 @@ export async function createPost(formData: FormData) {
   if ("error" in image && image.error) await bounce({ error: image.error });
   const full = await readImage(formData, "full");
   if ("error" in full && full.error) await bounce({ error: full.error });
+  const clip = await readMedia(formData, "clip", { "video/webm": "webm", "video/mp4": "mp4" }, 4_000_000, "El video");
+  if ("error" in clip && clip.error) await bounce({ error: clip.error });
+  const audio = await readMedia(formData, "audio", {
+    "audio/mpeg": "mp3",
+    "audio/mp3": "mp3",
+    "audio/wav": "wav",
+    "audio/x-wav": "wav",
+    "audio/mp4": "m4a",
+    "audio/aac": "aac",
+  }, 2_500_000, "La música");
+  if ("error" in audio && audio.error) await bounce({ error: audio.error });
+  if (audio.id && formData.get("musicOk") !== "on") {
+    await bounce({ error: "Confirma que la música es tuya o que puedes usarla." });
+  }
 
   await mutate((db) => {
     const creator = db.users.find((user) => user.id === me!.id)!;
@@ -572,10 +589,10 @@ export async function createPost(formData: FormData) {
         motif: ["orbit", "bloom", "grid", "wave", "prism"].includes(motif) ? motif : "orbit",
         label: visibility === "public" ? "Público" : "Circle",
       },
-      image: full.id ?? image.id ?? null,
-      cover: full.id ? image.id ?? null : null,
+      image: clip.id ?? full.id ?? image.id ?? null,
+      cover: clip.id || full.id ? image.id ?? null : null,
       curtain: full.id ? curtain : null,
-      format: format === "clip" || format === "post" ? format : "foto",
+      format: clip.id ? "clip" : format === "clip" || format === "post" ? format : "foto",
       visibility,
       minTier: visibility === "circle" && ["inner", "vip", "elite"].includes(minTier) ? minTier : visibility === "circle" ? "inner" : null,
       price: visibility === "ppv" ? price : 0,
@@ -584,6 +601,7 @@ export async function createPost(formData: FormData) {
       dropAt,
       dropKind: dropAt && ["contenido", "coleccion", "conversacion", "acceso"].includes(dropKind) ? dropKind : dropAt ? "contenido" : null,
       track: TRACKS.some((item) => item.id === track) ? track : null,
+      audio: audio.id,
       challenge: RETOS.some((item) => item.id === challenge) ? challenge : null,
       filter: FILTERS.some((item) => item.id === filter) ? filter : null,
       createdAt: new Date().toISOString(),
