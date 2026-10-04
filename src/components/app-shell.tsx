@@ -13,7 +13,7 @@ type Online = { id: string; name: string; username: string; photo: string };
 
 const shell = {
   en: {
-    home: "Feed", talk: "Create", videos: "Videos", discover: "Challenges", trending: "Profile",
+    home: "Feed", talk: "Create", videos: "Videos", discover: "Challenges", trending: "Profile", explore: "Explore",
     search: "Search profiles...", menu: "Open menu", close: "Close menu",
     notes: "Notifications", empty: "Nothing yet.", emptyHint: "When someone opens a paid post, the receipt shows up here.", done: "Done", account: "Your account", login: "Log in",
     pricing: "Pricing", creators: "For Creators", premium: "Your feed",
@@ -25,7 +25,7 @@ const shell = {
     ticker: ["KEEP SCROLLING", "FREE POSTS", "PAID POSTS BLUR", "YOU KEEP 80%", "SHARE YOUR FEED", "CAMERA AND FILTERS"],
   },
   es: {
-    home: "Feed", talk: "Crear", videos: "Videos", discover: "Retos", trending: "Perfil",
+    home: "Feed", talk: "Crear", videos: "Videos", discover: "Retos", trending: "Perfil", explore: "Explorar",
     search: "Buscar perfiles...", menu: "Abrir menú", close: "Cerrar menú",
     notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando alguien abre un post de pago, el recibo aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
     pricing: "Precios", creators: "Para creadoras", premium: "Tu feed",
@@ -52,10 +52,11 @@ export function AppShell({
 }) {
   const t = shell[lang];
   const mainLinks = [
-    { href: "/", label: t.home, icon: "home" },
-    { href: "/crear", label: t.talk, icon: "plus" },
-    { href: "/retos", label: t.discover, icon: "flame" },
-    { href: user ? `/p/${user.username}` : "/login", label: t.trending, icon: "user" },
+    { href: "/", label: t.home, icon: "home", create: false },
+    { href: "/retos", label: t.discover, icon: "flame", create: false },
+    { href: "/crear", label: t.talk, icon: "plus", create: true },
+    { href: "/discover", label: t.explore, icon: "compass", create: false },
+    { href: user ? `/p/${user.username}` : "/login", label: t.trending, icon: "user", create: false },
   ];
   const path = usePathname();
   const sp = useSearchParams();
@@ -102,7 +103,7 @@ export function AppShell({
   }
 
   return (
-    <div className={`app${open ? " nav-open" : ""}`}>
+    <div className={`app${open ? " nav-open" : ""}${path.startsWith("/crear") ? " is-cam" : ""}`}>
       <header className={`app-top${scrolled ? " is-scrolled" : ""}`}>
         <button className="icon-btn menu-btn" type="button" aria-label={t.menu} onClick={() => setOpen(true)}>
           <Icon name="menu" />
@@ -211,8 +212,8 @@ export function AppShell({
       </footer>
       <nav className="tabbar" aria-label="App">
         {mainLinks.map((link) => (
-          <Link key={link.href} href={link.href} className={active(link.href) ? "on" : ""}>
-            <Icon name={link.icon} />
+          <Link key={link.href} href={link.href} className={`${active(link.href) ? "on" : ""}${link.create ? " tab-create" : ""}`}>
+            {link.create ? <i><Icon name={link.icon} /></i> : <Icon name={link.icon} />}
             <span>{link.label}</span>
           </Link>
         ))}

@@ -51,10 +51,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       {cards.map((item) => {
         const reto = retoFor(item.post);
         const track = trackFor(item.post);
-        const photo = item.post.image && item.visible ? `/media/${item.post.image}` : face(item.creator.username);
+        const photo = (item.visible && item.post.image ? `/media/${item.post.image}` : "") || (item.post.cover ? `/media/${item.post.cover}` : "") || face(item.creator.username);
         const clipN = [...item.creator.username].reduce((sum, char) => sum + char.charCodeAt(0), 0);
         const clip = item.post.format === "clip" && item.visible ? `/look/v${(clipN % 6) + 1}.mp4?v=2` : "";
         const paid = !item.visible && item.lock === "ppv";
+        const curtained = Boolean(item.post.cover) && paid;
         return (
           <article key={item.post.id} id={item.post.id} className="ig-post">
             <header>
@@ -72,7 +73,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                 </form>
               ) : null}
             </header>
-            <div className={`ig-photo${item.visible ? "" : " is-paid"}`}>
+            <div className={`ig-photo${paid && !curtained ? " is-paid" : ""}`}>
               {clip ? <video src={clip} poster={photo} autoPlay muted loop playsInline /> : <img src={photo} alt="" />}
               {paid ? (
                 <div className="ig-pay">

@@ -500,8 +500,8 @@ export async function comment(formData: FormData) {
   await bounce({ ok: "comentario" });
 }
 
-async function readImage(formData: FormData) {
-  const file = formData.get("file");
+async function readImage(formData: FormData, field = "file") {
+  const file = formData.get(field);
   if (!(file instanceof File) || file.size === 0) return { id: null as string | null };
   if (file.size > 1_500_000) return { error: "La imagen supera 1.5 MB." };
   const ext =
@@ -548,8 +548,12 @@ export async function createPost(formData: FormData) {
     if (Number.isNaN(when.getTime())) await bounce({ error: "La hora del drop no es válida." });
     dropAt = when.toISOString();
   }
-  const image = await readImage(formData);
+  const curtainRaw = Number(formData.get("curtain") || 100);
+  const curtain = Number.isFinite(curtainRaw) ? Math.max(0, Math.min(100, Math.round(curtainRaw))) : 100;
+  const image = await readImage(formData, "file");
   if ("error" in image && image.error) await bounce({ error: image.error });
+  const full = await readImage(formData, "full");
+  if ("error" in full && full.error) await bounce({ error: full.error });
 
   await mutate((db) => {
     const creator = db.users.find((user) => user.id === me!.id)!;
@@ -563,7 +567,9 @@ export async function createPost(formData: FormData) {
         motif: ["orbit", "bloom", "grid", "wave", "prism"].includes(motif) ? motif : "orbit",
         label: visibility === "public" ? "Público" : "Circle",
       },
-      image: image.id ?? null,
+      image: full.id ?? image.id ?? null,
+      cover: full.id ? image.id ?? null : null,
+      curtain: full.id ? curtain : null,
       format: format === "clip" || format === "post" ? format : "foto",
       visibility,
       minTier: visibility === "circle" && ["inner", "vip", "elite"].includes(minTier) ? minTier : visibility === "circle" ? "inner" : null,

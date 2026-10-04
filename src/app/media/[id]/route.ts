@@ -11,9 +11,10 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     return new Response("No encontrado", { status: 404 });
   }
   const db = readDb();
-  const post = db.posts.find((item) => item.image === id);
+  const post = db.posts.find((item) => item.image === id || item.cover === id);
   const viewer = await getSessionUser();
-  if (!post || !canViewPost(db, viewer, post)) {
+  const cover = post?.cover === id;
+  if (!post || (!cover && !canViewPost(db, viewer, post))) {
     return new Response("No disponible", { status: 403 });
   }
   const target = path.join(uploadDir(), path.basename(id));

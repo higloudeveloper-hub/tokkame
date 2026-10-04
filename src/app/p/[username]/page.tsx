@@ -7,7 +7,7 @@ import { getSessionUser } from "@/lib/auth";
 import { money } from "@/lib/format";
 import { getLang } from "@/lib/lang";
 import { photoAt } from "@/lib/studio";
-import { earnings, followerCount, isDropLocked, readDb } from "@/lib/store";
+import { earnings, followerCount, isDropLocked, isFollowing, readDb } from "@/lib/store";
 import { presentPost } from "@/lib/view";
 
 function face(username: string) {
@@ -20,7 +20,7 @@ export default async function ProfilePage({
   searchParams,
 }: {
   params: Promise<{ username: string }>;
-  searchParams: Promise<{ ok?: string; error?: string }>;
+  searchParams: Promise<{ ok?: string; error?: string; tab?: string }>;
 }) {
   const { username } = await params;
   const sp = await searchParams;
@@ -31,56 +31,76 @@ export default async function ProfilePage({
   if (!person) notFound();
   const viewer = await getSessionUser();
   const mine = viewer?.id === person.id;
+  const following = isFollowing(db, viewer?.id, person.id);
+  const tab = sp.tab === "gratis" || sp.tab === "pago" ? sp.tab : "todo";
   const posts = db.posts
     .filter((post) => post.creatorId === person.id && !isDropLocked(post))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const cards = posts.map((post) => presentPost(db, post, viewer)).filter((item) => item !== null);
+  const shown = cards.filter((item) => {
+    if (tab === "gratis") return item.post.visibility === "public";
+    if (tab === "pago") return item.post.visibility === "ppv";
+    return true;
+  });
   const made = earnings(db, person.id);
+  const tabs = [
+    { id: "todo", es: "Todo", en: "All" },
+    { id: "gratis", es: "Gratis", en: "Free" },
+    { id: "pago", es: "De pago", en: "Paid" },
+  ];
 
   return (
     <section className="ig ig-profile">
       <Flash ok={sp.ok} error={sp.error} />
-      <header>
+      <header className="prof-head">
         <img src={face(person.username)} alt="" />
         <div>
           <h1>{person.displayName}</h1>
           <p>@{person.username}</p>
-          <ul>
-            <li><b>{cards.length}</b> {es ? "posts" : "posts"}</li>
-            <li><b>{followerCount(db, person.id)}</b> {es ? "seguidores" : "followers"}</li>
-            <li><b>{money(made)}</b> {es ? "ganado" : "earned"}</li>
-          </ul>
+          <em>{person.verified === "verified" ? (es ? "Verificado · 80% de cada post de pago" : "Verified · 80% of each paid post") : (es ? "Posts gratis activos" : "Free posts are on")}</em>
         </div>
       </header>
-      <p className="ig-bio">{person.bio || (es ? "Todavía sin bio." : "No bio yet.")}</p>
-      <p className="ig-note">{person.verified === "verified" ? (es ? "Verificado. Cada post de pago deja el 80% en este perfil." : "Verified. Each paid post leaves 80% on this profile.") : (es ? "Los posts gratis ya se ven. Cobrar se activa con la verificación." : "Free posts are already visible. Charging turns on after verification.")}</p>
-      <div className="ig-profile-actions">
+      <div className="prof-stats">
+        <div><b>{cards.length}</b><span>{es ? "posts" : "posts"}</span></div>
+        <div><b>{followerCount(db, person.id)}</b><span>{es ? "seguidores" : "followers"}</span></div>
+        <div><b>{money(made)}</b><span>{es ? "ganado" : "earned"}</span></div>
+      </div>
+      <p className="prof-bio">{person.bio || (es ? "Todavía sin bio." : "No bio yet.")}</p>
+      <div className="prof-actions">
         {mine ? <Link className="red-btn" href="/crear">{es ? "Crear" : "Create"}</Link> : viewer ? (
           <form action={follow}>
             <input type="hidden" name="creatorId" value={person.id} />
-            <button className="red-btn" type="submit">{es ? "Seguir" : "Follow"}</button>
+            <button className="red-btn" type="submit">{following ? (es ? "Siguiendo" : "Following") : (es ? "Seguir" : "Follow")}</button>
           </form>
         ) : <Link className="red-btn" href={`/login?next=/p/${person.username}`}>{es ? "Seguir" : "Follow"}</Link>}
         <ShareSheet
           lang={lang}
           path={`/p/${person.username}`}
           title={person.displayName}
-          text={es ? `Entra a mi perfil en Tokkame` : `Come to my Tokkame profile`}
-          label={es ? "Compartir feed" : "Share feed"}
+          text={es ? "Entra a mi perfil en Tokkame" : "Come to my Tokkame profile"}
+          label={es ? "Compartir" : "Share"}
         />
       </div>
+      <nav className="prof-tabs">
+        {tabs.map((item) => (
+          <Link key={item.id} href={item.id === "todo" ? `/p/${person.username}` : `/p/${person.username}?tab=${item.id}`} className={tab === item.id ? "on" : ""}>
+            {es ? item.es : item.en}
+          </Link>
+        ))}
+      </nav>
       <div className="ig-grid">
-        {cards.map((item) => {
-          const photo = item.post.image && item.visible ? `/media/${item.post.image}` : face(person.username);
+        {shown.map((item) => {
+          const photo = item.post.cover ? `/media/${item.post.cover}` : item.post.image && item.visible ? `/media/${item.post.image}` : face(person.username);
+          const locked = !item.visible && !item.post.cover;
           return (
-            <Link key={item.post.id} href={`/#${item.post.id}`} className={item.visible ? "" : "is-paid"}>
+            <Link key={item.post.id} href={`/#${item.post.id}`} className={locked ? "is-paid" : ""}>
               <img src={photo} alt="" />
-              {!item.visible && item.post.visibility === "ppv" ? <b>{money(item.post.price)}</b> : null}
+              {item.post.visibility === "ppv" ? <b>{money(item.post.price)}</b> : null}
             </Link>
           );
         })}
       </div>
-      {cards.length === 0 ? <p className="ig-note">{es ? "Este feed todavía está vacío." : "This feed is still empty."}</p> : null}
+      {shown.length === 0 ? <p className="ig-note">{es ? "Nada en esta pestaña." : "Nothing in this tab."}</p> : null}
     </section>
   );
 }

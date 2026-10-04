@@ -57,6 +57,8 @@ export type Post = {
   caption: string;
   media: Media;
   image: string | null;
+  cover?: string | null;
+  curtain?: number | null;
   format: "foto" | "clip" | "post";
   visibility: Visibility;
   minTier: TierId | null;
