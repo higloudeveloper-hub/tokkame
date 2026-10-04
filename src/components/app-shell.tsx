@@ -13,28 +13,28 @@ type Online = { id: string; name: string; username: string; photo: string };
 
 const shell = {
   en: {
-    home: "Home", talk: "Talk", videos: "Videos", discover: "Discover", trending: "Trending",
-    search: "Search creators, categories...", menu: "Open menu", close: "Close menu",
-    notes: "Notifications", empty: "Nothing yet.", emptyHint: "When she accepts the hour, or someone writes, it shows up here.", done: "Done", account: "Your account", login: "Log in",
+    home: "Home", talk: "Drops", videos: "Videos", discover: "Discover", trending: "Trending",
+    search: "Search creators, drops...", menu: "Open menu", close: "Close menu",
+    notes: "Notifications", empty: "Nothing yet.", emptyHint: "When you buy a drop or a subscription, the receipt shows up here.", done: "Done", account: "Your account", login: "Log in",
     pricing: "Pricing", creators: "For Creators", premium: "Premium",
-    premiumText: "Talk, tip, or unlock her subscription.", see: "See the three",
+    premiumText: "Unlock a drop or subscribe. No live room.", see: "See the three",
     dark: "Dark mode", darkToggle: "Toggle dark mode", logout: "Log out",
     about: "About", terms: "Terms", privacy: "Privacy", help: "Help",
     rights: "© 2026 Tokkame. All rights reserved.",
-    online: "Online now", onlineClose: "Close", verified: "Verified · Online", who: "See who is online",
-    ticker: ["18+ ADULTS ONLY", "SAY IT HERE", "INFIDELITY", "WORK", "A SECRET", "YOU CHOOSE WHO"],
+    online: "New drops", onlineClose: "Close", verified: "Verified · For sale", who: "See new drops",
+    ticker: ["18+ ADULTS ONLY", "BUY THE DROP", "NO LIVE ROOM", "SUBSCRIBE", "UNLOCK", "80% TO HER"],
   },
   es: {
-    home: "Inicio", talk: "Hablar", videos: "Videos", discover: "Descubrir", trending: "Tendencias",
-    search: "Buscar creadoras, categorías...", menu: "Abrir menú", close: "Cerrar menú",
-    notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando ella acepte la hora, o alguien escriba, aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
+    home: "Inicio", talk: "Drops", videos: "Videos", discover: "Descubrir", trending: "Tendencias",
+    search: "Buscar creadoras, drops...", menu: "Abrir menú", close: "Cerrar menú",
+    notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando compras un drop o una suscripción, el recibo aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
     pricing: "Precios", creators: "Para creadoras", premium: "Premium",
-    premiumText: "Habla, deja propina o desbloquea su suscripción.", see: "Ver los tres",
+    premiumText: "Desbloquea un drop o suscríbete. No hay sala en vivo.", see: "Ver los tres",
     dark: "Modo oscuro", darkToggle: "Cambiar modo oscuro", logout: "Salir",
     about: "Acerca de", terms: "Términos", privacy: "Privacidad", help: "Ayuda",
     rights: "© 2026 Tokkame. Todos los derechos reservados.",
-    online: "En línea ahora", onlineClose: "Cerrar", verified: "Verificada · En línea", who: "Ver quién está en línea",
-    ticker: ["SOLO ADULTOS 18+", "DILO AQUÍ", "INFIDELIDAD", "TRABAJO", "UN SECRETO", "TÚ ELIGES QUIÉN"],
+    online: "Drops nuevos", onlineClose: "Cerrar", verified: "Verificada · En venta", who: "Ver drops nuevos",
+    ticker: ["SOLO ADULTOS 18+", "COMPRA EL DROP", "SIN SALA EN VIVO", "SUSCRÍBETE", "DESBLOQUEA", "80% PARA ELLA"],
   },
 } as const;
 
@@ -54,7 +54,7 @@ export function AppShell({
   const t = shell[lang];
   const mainLinks = [
     { href: "/", label: t.home, icon: "home" },
-    { href: "/talk", label: t.talk, icon: "chat" },
+    { href: "/drops", label: t.talk, icon: "play" },
     { href: "/videos", label: t.videos, icon: "play" },
     { href: "/discover", label: t.discover, icon: "compass" },
     { href: "/trending", label: t.trending, icon: "flame" },
@@ -222,7 +222,7 @@ export function AppShell({
                 <button type="button" aria-label={t.onlineClose} onClick={() => setDock(false)}>×</button>
               </header>
               {online.map((person) => (
-                <Link key={person.id} href={`/creator/${person.username}`}>
+                <Link key={person.id} href={`/creator/${person.username}?tab=premium`}>
                   <img src={person.photo} alt="" />
                   <span>
                     <b>{person.name.split(" ")[0]}</b>

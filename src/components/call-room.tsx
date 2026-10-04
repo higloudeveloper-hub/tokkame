@@ -177,7 +177,7 @@ export function CallRoom({
               <PayChoices lang={lang} label={t.pay} />
             </form>
           ) : null}
-          {ask?.status !== "pending" && ask?.status !== "accepted" ? (
+          {ask?.status !== "accepted" ? (
             <form action={askCall} className="call-pay-form">
               <input type="hidden" name="username" value={username} />
               {ask?.status === "declined" ? <p className="pay-note">{t.declined}</p> : null}

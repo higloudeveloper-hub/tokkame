@@ -8,36 +8,36 @@ const slides = {
     {
       kicker: "18+",
       pill: "ADULTS ONLY",
-      title: ["Say it.", "Someone hears it.", "You choose who."],
-      text: "Infidelity. Work. A secret. Whatever you cannot say out loud. Pick the person and start the conversation.",
-      primary: "Start talking",
-      secondary: "Choose who",
+      title: ["Buy the drop.", "Open it when", "you want."],
+      text: "No live room. Verified adults sell photos and clips. You pay once, or for the month.",
+      primary: "See drops",
+      secondary: "See plans",
     },
     {
       kicker: "18+",
       pill: "ADULTS ONLY",
-      title: ["Not a clinic.", "A conversation.", "On your terms."],
-      text: "Adults only. You pay for time and attention. The rest of the room stays out of it.",
-      primary: "Start talking",
-      secondary: "Choose who",
+      title: ["Not a live room.", "A file.", "With a price."],
+      text: "Adults only. She keeps 80%. Tokkame keeps 20%. The receipt stays in your wallet.",
+      primary: "See drops",
+      secondary: "See plans",
     },
   ],
   es: [
     {
       kicker: "18+",
       pill: "SOLO ADULTOS",
-      title: ["Dilo.", "Alguien lo escucha.", "Tú eliges quién."],
-      text: "Infidelidad. Trabajo. Un secreto. Lo que no puedes decir en voz alta. Elige a la persona y empieza.",
-      primary: "Empezar a hablar",
-      secondary: "Elegir quién",
+      title: ["Compra el drop.", "Ábrelo cuando", "quieras."],
+      text: "No hay sala en vivo. Adultos verificados venden fotos y clips. Pagas una vez, o el mes.",
+      primary: "Ver drops",
+      secondary: "Ver planes",
     },
     {
       kicker: "18+",
       pill: "SOLO ADULTOS",
-      title: ["No es una clínica.", "Es una conversación.", "A tu manera."],
-      text: "Solo adultos. Pagas por el tiempo y la atención. El resto de la sala se queda afuera.",
-      primary: "Empezar a hablar",
-      secondary: "Elegir quién",
+      title: ["No es una sala.", "Es un archivo.", "Con precio."],
+      text: "Solo adultos. Ella se queda con el 80%. Tokkame con el 20%. El recibo queda en tu billetera.",
+      primary: "Ver drops",
+      secondary: "Ver planes",
     },
   ],
 };
@@ -61,8 +61,8 @@ export function HeroBanner({ lang }: { lang: "en" | "es" }) {
           </h1>
           <p>{slide.text}</p>
           <div className="hero-actions">
-            <Link className="red-btn" href="/talk">{slide.primary}</Link>
-            <Link className="ghost-btn" href="/discover">{slide.secondary}</Link>
+            <Link className="red-btn" href="/drops">{slide.primary}</Link>
+            <Link className="ghost-btn" href="/pricing">{slide.secondary}</Link>
           </div>
         </div>
       </div>

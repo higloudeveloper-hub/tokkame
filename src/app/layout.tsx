@@ -22,10 +22,10 @@ const fraunces = Fraunces({
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getLang();
   return {
-    title: lang === "es" ? "TOKKAME — Dilo. Elige quién lo escucha." : "TOKKAME — Say it. Choose who hears it.",
+    title: lang === "es" ? "TOKKAME — Compra el drop." : "TOKKAME — Buy the drop.",
     description: lang === "es"
-      ? "Adultos hablan en privado. Infidelidad, trabajo, un secreto, lo que sea. Tú eliges a la persona."
-      : "Adults talk in private. Infidelity, work, a secret, or whatever it is. You choose the person.",
+      ? "Archivo premium para adultos. Drops y suscripciones. Sin sala en vivo."
+      : "A premium archive for adults. Drops and subscriptions. No live room.",
     applicationName: "TOKKAME",
     appleWebApp: { capable: true, title: "TOKKAME", statusBarStyle: "black-translucent" },
   };

@@ -107,7 +107,7 @@ export default async function CreatorPage({
         <p>{creator.bio}</p>
         <div className="profile-facts">
           <div><b>{compact(followerCount(db, creator.id))}</b><span>{es ? "Seguidores" : "Followers"}</span></div>
-          <div><b>$13</b><span>{es ? "La hora" : "The hour"}</span></div>
+          <div><b>{money(lowestPrice(creator))}</b><span>{es ? "Desde" : "From"}</span></div>
           <div><b>{cards.length}</b><span>{es ? "Posts" : "Posts"}</span></div>
         </div>
         {cards.length ? (
@@ -122,7 +122,7 @@ export default async function CreatorPage({
         ) : null}
         <div className="profile-hook">
           <strong>{es ? "Quédate con ella" : "Stay with her"}</strong>
-          <span>{es ? "Mira lo gratis. Lo borroso se abre si lo desbloqueas. La llamada empieza con una nota." : "Look at what is free. The blur opens if you unlock it. The call starts with a note."}</span>
+          <span>{es ? "Mira lo gratis. Lo borroso se abre si lo compras. No hay sala en vivo." : "Look at what is free. The blur opens if you buy it. There is no live room."}</span>
         </div>
         {creator.verified === "verified" && viewer?.id !== creator.id ? (
           <Decide
@@ -222,10 +222,10 @@ export default async function CreatorPage({
       <div className="pay-board slim">
         <article className="pay-card">
           <img src="/talk/listen.jpg" alt="" />
-          <small>TALK</small>
-          <strong>{creator.messagePrice > 0 ? money(creator.messagePrice) : "—"}</strong>
-          <em>{es ? "por mensaje" : "per message"}</em>
-          {canPay ? <Link className="red-btn" href={viewer ? `/call/${creator.username}` : `/signup?next=${encodeURIComponent(`/call/${creator.username}`)}`}>{es ? "Llamarla" : "Call her"}</Link> : null}
+          <small>DROP</small>
+          <strong>{money(lowestPrice(creator))}</strong>
+          <em>{es ? "para abrir el mes" : "to open the month"}</em>
+          {canPay ? <Link className="red-btn" href={viewer ? `/creator/${creator.username}?tab=premium` : `/signup?next=${encodeURIComponent(`/creator/${creator.username}?tab=premium`)}`}>{es ? "Suscribirme" : "Subscribe"}</Link> : null}
         </article>
         <article className="pay-card" id="tip">
           <img src="/talk/secret.jpg" alt="" />
