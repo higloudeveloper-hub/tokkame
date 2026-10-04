@@ -65,6 +65,9 @@ export type Post = {
   remixOf: string | null;
   dropAt: string | null;
   dropKind: DropKind | null;
+  track?: string | null;
+  challenge?: string | null;
+  filter?: string | null;
   createdAt: string;
   likes: string[];
   comments: Comment[];

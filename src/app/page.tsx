@@ -1,70 +1,115 @@
+import Link from "next/link";
 import { Flash } from "@/components/notices";
-import { leaveLine, takeChair } from "@/lib/actions";
+import { ShareSheet } from "@/components/share-sheet";
+import { TrackButton } from "@/components/track-button";
+import { follow, likePost, unlock } from "@/lib/actions";
 import { getSessionUser } from "@/lib/auth";
+import { ago, money } from "@/lib/format";
 import { getLang } from "@/lib/lang";
-import { nightKey, tonightPrompt } from "@/lib/nights";
-import { CHAIR_PRICE, readDb } from "@/lib/store";
+import { retoFor, trackFor } from "@/lib/kit";
+import { photoAt } from "@/lib/studio";
+import { creators, isDropLocked, readDb } from "@/lib/store";
+import { presentPost } from "@/lib/view";
+
+function face(username: string) {
+  const n = [...username].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return photoAt(n);
+}
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
   const sp = await searchParams;
   const lang = await getLang();
   const es = lang === "es";
-  const night = nightKey();
   const db = readDb();
-  const session = await getSessionUser();
-  const rows = (db.lines || [])
-    .filter((item) => item.night === night)
-    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
-    .map((item) => {
-      const user = db.users.find((person) => person.id === item.userId);
-      return { id: item.id, text: item.text, name: item.named ? user?.displayName || (es ? "Con nombre" : "Named") : (es ? "Anónimo" : "Anonymous"), named: item.named };
-    });
-  const mine = session ? (db.lines || []).find((item) => item.userId === session.id && item.night === night) : null;
-  const date = new Date(`${night}T00:00:00.000Z`).toLocaleDateString(es ? "es" : "en", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+  const viewer = await getSessionUser();
+  const people = creators(db).filter((user) => user.verified === "verified");
+  const cards = db.posts
+    .filter((post) => !isDropLocked(post))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 24)
+    .map((post) => presentPost(db, post, viewer))
+    .filter((item) => item !== null);
 
   return (
-    <section className="edition">
+    <div className="ig">
       <Flash ok={sp.ok} error={sp.error} />
-      <p className="edition-kicker">{es ? "Una sola página para todos" : "One page for everyone"}</p>
-      <time dateTime={night}>{date}</time>
-      <h1>{tonightPrompt(lang)}</h1>
-      <p className="edition-meta">
-        {rows.length} {es ? (rows.length === 1 ? "línea" : "líneas") : (rows.length === 1 ? "line" : "lines")}
-        {" · "}
-        {es ? "leer es gratis" : "reading is free"}
-      </p>
-      {rows.length === 0 ? (
-        <p className="edition-empty">{es ? "Esta noche todavía está en blanco. La primera línea abre la página." : "Tonight is still blank. The first line opens the page."}</p>
-      ) : (
-        <ol className="edition-list">
-          {rows.map((row, index) => (
-            <li key={row.id} className={row.named ? "is-named" : ""}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <strong>{row.name}</strong>
-                <p>{row.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
-      {mine?.named ? (
-        <p className="edition-mine">{es ? "Tu nombre ya quedó en esta edición." : "Your name is already on this edition."}</p>
-      ) : mine ? (
-        <form action={takeChair} className="edition-chair">
-          <p>{es ? "Tu línea está en la página, sin nombre." : "Your line is on the page, without a name."}</p>
-          <button className="red-btn" type="submit">{es ? `Poner mi nombre · $${CHAIR_PRICE}` : `Put my name on it · $${CHAIR_PRICE}`}</button>
-        </form>
-      ) : (
-        <form action={leaveLine} className="edition-write">
-          <label>
-            <span>{es ? "Tu línea de esta noche" : "Your line tonight"}</span>
-            <textarea name="text" required minLength={3} maxLength={140} placeholder={es ? "Una frase. Se lee gratis." : "One sentence. Reading is free."} />
-          </label>
-          <button className="red-btn" type="submit">{es ? "Dejar mi línea" : "Leave my line"}</button>
-        </form>
-      )}
-      <p className="edition-foot">{es ? `La silla son $${CHAIR_PRICE} del saldo de prueba y solo pone tu nombre. No abre nada. La tarjeta no se guarda.` : `The chair is $${CHAIR_PRICE} from sandbox balance and only puts your name on the page. It opens nothing. The card is not stored.`}</p>
-    </section>
+      <header className="ig-top">
+        <div>
+          <p>{es ? "Para ti" : "For you"}</p>
+          <strong>{es ? "Sigue bajando." : "Keep going."}</strong>
+        </div>
+        <Link href="/crear">{es ? "Crear" : "Create"}</Link>
+      </header>
+      <div className="ig-stories">
+        {people.map((person) => (
+          <Link key={person.id} href={`/p/${person.username}`}>
+            <img src={face(person.username)} alt="" />
+            <span>{person.displayName.split(" ")[0]}</span>
+          </Link>
+        ))}
+      </div>
+      {cards.map((item) => {
+        const reto = retoFor(item.post);
+        const track = trackFor(item.post);
+        const photo = item.post.image && item.visible ? `/media/${item.post.image}` : face(item.creator.username);
+        const clipN = [...item.creator.username].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+        const clip = item.post.format === "clip" && item.visible ? `/look/v${(clipN % 6) + 1}.mp4?v=2` : "";
+        const paid = !item.visible && item.lock === "ppv";
+        return (
+          <article key={item.post.id} id={item.post.id} className="ig-post">
+            <header>
+              <Link href={`/p/${item.creator.username}`}>
+                <img src={face(item.creator.username)} alt="" />
+                <span>
+                  <b>{item.creator.username}</b>
+                  <small suppressHydrationWarning>{ago(item.post.createdAt)}</small>
+                </span>
+              </Link>
+              {viewer && viewer.id !== item.creator.id ? (
+                <form action={follow}>
+                  <input type="hidden" name="creatorId" value={item.creator.id} />
+                  <button type="submit">{item.following ? (es ? "Siguiendo" : "Following") : (es ? "Seguir" : "Follow")}</button>
+                </form>
+              ) : null}
+            </header>
+            <div className={`ig-photo${item.visible ? "" : " is-paid"}`}>
+              {clip ? <video src={clip} poster={photo} autoPlay muted loop playsInline /> : <img src={photo} alt="" />}
+              {paid ? (
+                <div className="ig-pay">
+                  {viewer ? (
+                    <form action={unlock}>
+                      <input type="hidden" name="postId" value={item.post.id} />
+                      <button type="submit">{es ? "Abrir" : "Open"} {money(item.post.price)}</button>
+                    </form>
+                  ) : (
+                    <Link href="/login">{es ? "Entra para abrir" : "Log in to open"} {money(item.post.price)}</Link>
+                  )}
+                </div>
+              ) : null}
+              {!item.visible && !paid ? (
+                <div className="ig-pay">
+                  <Link href={viewer ? `/p/${item.creator.username}` : "/login"}>{es ? "Ver en el perfil" : "See on the profile"}</Link>
+                </div>
+              ) : null}
+            </div>
+            <div className="ig-row">
+              <form action={likePost}>
+                <input type="hidden" name="postId" value={item.post.id} />
+                <button type="submit">{item.liked ? "♥" : "♡"} {item.post.likes.length}</button>
+              </form>
+              <TrackButton track={track} lang={lang} />
+              <ShareSheet
+                lang={lang}
+                path={`/p/${item.creator.username}`}
+                title={item.creator.displayName}
+                text={es ? `Mira el feed de @${item.creator.username} en Tokkame` : `Watch @${item.creator.username} on Tokkame`}
+              />
+            </div>
+            {reto ? <Link className="ig-reto" href={`/retos#${reto.id}`}>{es ? reto.es : reto.en}</Link> : null}
+            {item.visible ? <p className="ig-caption"><b>{item.creator.username}</b> {item.post.caption}</p> : <p className="ig-caption">{es ? "Post de pago. Se abre con saldo de prueba." : "Paid post. It opens with sandbox balance."}</p>}
+          </article>
+        );
+      })}
+    </div>
   );
 }

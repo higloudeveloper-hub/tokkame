@@ -13,28 +13,28 @@ type Online = { id: string; name: string; username: string; photo: string };
 
 const shell = {
   en: {
-    home: "Tonight", talk: "Nights", videos: "Videos", discover: "Plus", trending: "Trending",
-    search: "Search the edition...", menu: "Open menu", close: "Close menu",
-    notes: "Notifications", empty: "Nothing yet.", emptyHint: "When you put your name on a night, the receipt shows up here.", done: "Done", account: "Your account", login: "Log in",
-    pricing: "Pricing", creators: "For Creators", premium: "The chair",
-    premiumText: "Reading is free. $2 puts your name on tonight's page.", see: "Open tonight",
+    home: "Feed", talk: "Create", videos: "Videos", discover: "Challenges", trending: "Profile",
+    search: "Search profiles...", menu: "Open menu", close: "Close menu",
+    notes: "Notifications", empty: "Nothing yet.", emptyHint: "When someone opens a paid post, the receipt shows up here.", done: "Done", account: "Your account", login: "Log in",
+    pricing: "Pricing", creators: "For Creators", premium: "Your feed",
+    premiumText: "Free posts stay open. Paid posts stay blurred until someone pays. You keep 80%.", see: "Create",
     dark: "Dark mode", darkToggle: "Toggle dark mode", logout: "Log out",
     about: "About", terms: "Terms", privacy: "Privacy", help: "Help",
     rights: "© 2026 Tokkame. All rights reserved.",
     online: "New drops", onlineClose: "Close", verified: "Verified · For sale", who: "See new drops",
-    ticker: ["ONE PAGE", "SAME QUESTION", "READING IS FREE", "YOUR NAME $2", "A NEW NIGHT", "EVERYONE TOGETHER"],
+    ticker: ["KEEP SCROLLING", "FREE POSTS", "PAID POSTS BLUR", "YOU KEEP 80%", "SHARE YOUR FEED", "CAMERA AND FILTERS"],
   },
   es: {
-    home: "Esta noche", talk: "Noches", videos: "Videos", discover: "Plus", trending: "Tendencias",
-    search: "Buscar en la edición...", menu: "Abrir menú", close: "Cerrar menú",
-    notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando pones tu nombre en una noche, el recibo aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
-    pricing: "Precios", creators: "Para creadoras", premium: "La silla",
-    premiumText: "Leer es gratis. $2 pone tu nombre en la página de esta noche.", see: "Abrir esta noche",
+    home: "Feed", talk: "Crear", videos: "Videos", discover: "Retos", trending: "Perfil",
+    search: "Buscar perfiles...", menu: "Abrir menú", close: "Cerrar menú",
+    notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando alguien abre un post de pago, el recibo aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
+    pricing: "Precios", creators: "Para creadoras", premium: "Tu feed",
+    premiumText: "Lo gratis se ve. Lo de pago queda borroso hasta que alguien pague. Te quedas con el 80%.", see: "Crear",
     dark: "Modo oscuro", darkToggle: "Cambiar modo oscuro", logout: "Salir",
     about: "Acerca de", terms: "Términos", privacy: "Privacidad", help: "Ayuda",
     rights: "© 2026 Tokkame. Todos los derechos reservados.",
     online: "Drops nuevos", onlineClose: "Cerrar", verified: "Verificada · En venta", who: "Ver drops nuevos",
-    ticker: ["UNA PÁGINA", "LA MISMA PREGUNTA", "LEER ES GRATIS", "TU NOMBRE $2", "UNA NOCHE NUEVA", "TODOS JUNTOS"],
+    ticker: ["SIGUE BAJANDO", "POSTS GRATIS", "DE PAGO CON BLUR", "TE QUEDAS EL 80%", "COMPARTE TU FEED", "CÁMARA Y FILTROS"],
   },
 } as const;
 
@@ -53,8 +53,9 @@ export function AppShell({
   const t = shell[lang];
   const mainLinks = [
     { href: "/", label: t.home, icon: "home" },
-    { href: "/noches", label: t.talk, icon: "compass" },
-    { href: "/trending", label: t.trending, icon: "flame" },
+    { href: "/crear", label: t.talk, icon: "plus" },
+    { href: "/retos", label: t.discover, icon: "flame" },
+    { href: user ? `/p/${user.username}` : "/login", label: t.trending, icon: "user" },
   ];
   const path = usePathname();
   const sp = useSearchParams();
@@ -179,7 +180,7 @@ export function AppShell({
             <Icon name="crown" />
             <strong>{t.premium}</strong>
             <p>{t.premiumText}</p>
-            <Link className="red-btn block" href="/">{t.see}</Link>
+            <Link className="red-btn block" href="/crear">{t.see}</Link>
           </div>
           <div className="theme-row">
             {t.dark}
@@ -231,5 +232,7 @@ function Icon({ name }: { name: string }) {
   if (name === "bell") return <svg {...common}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>;
   if (name === "menu") return <svg {...common}><path d="M4 7h16M4 12h16M4 17h16" /></svg>;
   if (name === "crown") return <svg {...common}><path d="M11.6 3.4a.5.5 0 0 1 .8 0l2.4 3.6 4.2-1.2a.5.5 0 0 1 .6.6L18 14H6L4.4 6.4a.5.5 0 0 1 .6-.6l4.2 1.2z" /><path d="M6 18h12" /></svg>;
+  if (name === "plus") return <svg {...common}><path d="M12 5v14M5 12h14" /></svg>;
+  if (name === "user") return <svg {...common}><circle cx="12" cy="8" r="3.2" /><path d="M5 19.2a7 7 0 0 1 14 0" /></svg>;
   return <svg {...common}><circle cx="12" cy="12" r="3" /></svg>;
 }

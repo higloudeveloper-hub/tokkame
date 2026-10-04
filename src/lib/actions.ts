@@ -9,6 +9,7 @@ import { clearSession, confirmAgeCookie, getSessionUser, setSession } from "./au
 import { hashPassword, uid, verifyPassword } from "./password";
 import { CATEGORIES, cents, REGIONS } from "./format";
 import { getLang } from "./lang";
+import { FILTERS, RETOS, TRACKS } from "./kit";
 import { nightKey } from "./nights";
 import { cleanText, SAFETY_ERROR, violatesSafety } from "./safety";
 import {
@@ -27,6 +28,7 @@ import {
   mutate,
   OPEN_PRICE,
   readDb,
+  uploadDir,
   SEAT_PRICE,
   spend,
 } from "./store";
@@ -237,7 +239,7 @@ export async function follow(formData: FormData) {
   if (!me) await bounce({ error: "Entra para seguir creadores." });
   const creatorId = String(formData.get("creatorId") || "");
   const result = await mutate((db) => {
-    const creator = db.users.find((user) => user.id === creatorId && user.role === "creator");
+    const creator = db.users.find((user) => user.id === creatorId && !user.suspended);
     if (!creator || creator.id === me!.id) return { error: "No se puede seguir ese perfil." };
     const existing = db.follows.find((item) => item.userId === me!.id && item.creatorId === creatorId);
     if (existing) {
@@ -506,7 +508,7 @@ async function readImage(formData: FormData) {
     file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "";
   if (!ext) return { error: "Usa JPG, PNG o WebP." };
   const id = `${uid("media")}.${ext}`;
-  const dir = path.join(process.cwd(), "data", "uploads");
+  const dir = uploadDir();
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, id), Buffer.from(await file.arrayBuffer()));
   return { id };
@@ -514,9 +516,7 @@ async function readImage(formData: FormData) {
 
 export async function createPost(formData: FormData) {
   const me = await getSessionUser();
-  if (!me || (me.role !== "creator" && me.role !== "admin")) {
-    await bounce({ error: "Solo un creador puede publicar." });
-  }
+  if (!me) await bounce({ error: "Entra para publicar." });
   if (me!.suspended) await bounce({ error: "Esta cuenta está suspendida." });
   const caption = cleanText(String(formData.get("caption") || ""), 500);
   const visibility = String(formData.get("visibility") || "public") as Visibility;
@@ -525,6 +525,10 @@ export async function createPost(formData: FormData) {
   const allowRemix = formData.get("allowRemix") === "on" && visibility === "public";
   const format = String(formData.get("format") || "foto");
   const motif = String(formData.get("motif") || "orbit") as Motif;
+  const track = String(formData.get("track") || "");
+  const challenge = String(formData.get("challenge") || "");
+  const filter = String(formData.get("filter") || "");
+  const back = safeNext(String(formData.get("back") || ""));
   const dropRaw = String(formData.get("dropAt") || "");
   const dropKind = String(formData.get("dropKind") || "") as DropKind;
   const consent = formData.get("consent") === "on";
@@ -568,11 +572,15 @@ export async function createPost(formData: FormData) {
       remixOf: null,
       dropAt,
       dropKind: dropAt && ["contenido", "coleccion", "conversacion", "acceso"].includes(dropKind) ? dropKind : dropAt ? "contenido" : null,
+      track: TRACKS.some((item) => item.id === track) ? track : null,
+      challenge: RETOS.some((item) => item.id === challenge) ? challenge : null,
+      filter: FILTERS.some((item) => item.id === filter) ? filter : null,
       createdAt: new Date().toISOString(),
       likes: [],
       comments: [],
     });
   });
+  if (back) redirect(`${back}${back.includes("?") ? "&" : "?"}ok=publicado`);
   await bounce({ ok: "publicado" });
 }
 
