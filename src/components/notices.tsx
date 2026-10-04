@@ -27,6 +27,8 @@ const OK: Record<"en" | "es", Record<string, string>> = {
     listo: "Done.",
     llamada: "Answer saved. If you said no, that call is not charged.",
     puesto: "Seat saved. You are in the line.",
+    plus: "Tokkame Plus is on for 30 days.",
+    corte: "Your cut is in the program.",
     abierto: "Opened. The file is yours.",
   },
   es: {
@@ -54,6 +56,8 @@ const OK: Record<"en" | "es", Record<string, string>> = {
     listo: "Listo.",
     llamada: "Respuesta guardada. Si dijiste que no, esa llamada no se cobra.",
     puesto: "Puesto guardado. Ya estás en la fila.",
+    plus: "Tokkame Plus quedó activo por 30 días.",
+    corte: "Tu corte ya está en el programa.",
     abierto: "Abierto. El archivo es tuyo.",
   },
 };

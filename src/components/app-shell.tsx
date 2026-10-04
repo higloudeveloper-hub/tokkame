@@ -13,7 +13,7 @@ type Online = { id: string; name: string; username: string; photo: string };
 
 const shell = {
   en: {
-    home: "Home", talk: "Drops", videos: "Videos", discover: "Discover", trending: "Trending",
+    home: "Home", talk: "Studio", videos: "Videos", discover: "Plus", trending: "Trending",
     search: "Search creators, drops...", menu: "Open menu", close: "Close menu",
     notes: "Notifications", empty: "Nothing yet.", emptyHint: "When you buy a drop or a subscription, the receipt shows up here.", done: "Done", account: "Your account", login: "Log in",
     pricing: "Pricing", creators: "For Creators", premium: "Premium",
@@ -22,10 +22,10 @@ const shell = {
     about: "About", terms: "Terms", privacy: "Privacy", help: "Help",
     rights: "© 2026 Tokkame. All rights reserved.",
     online: "New drops", onlineClose: "Close", verified: "Verified · For sale", who: "See new drops",
-    ticker: ["18+ ADULTS ONLY", "BUY THE DROP", "NO LIVE ROOM", "SUBSCRIBE", "UNLOCK", "80% TO HER"],
+    ticker: ["WATCH FREE", "ONE PROGRAM", "PUBLISH A CUT", "PLUS $6.99", "NO UNLOCK", "THE NEXT ONE STARTS"],
   },
   es: {
-    home: "Inicio", talk: "Drops", videos: "Videos", discover: "Descubrir", trending: "Tendencias",
+    home: "Inicio", talk: "Estudio", videos: "Videos", discover: "Plus", trending: "Tendencias",
     search: "Buscar creadoras, drops...", menu: "Abrir menú", close: "Cerrar menú",
     notes: "Notificaciones", empty: "Todavía no hay nada.", emptyHint: "Cuando compras un drop o una suscripción, el recibo aparece aquí.", done: "Listo", account: "Tu cuenta", login: "Entrar",
     pricing: "Precios", creators: "Para creadoras", premium: "Premium",
@@ -34,7 +34,7 @@ const shell = {
     about: "Acerca de", terms: "Términos", privacy: "Privacidad", help: "Ayuda",
     rights: "© 2026 Tokkame. Todos los derechos reservados.",
     online: "Drops nuevos", onlineClose: "Cerrar", verified: "Verificada · En venta", who: "Ver drops nuevos",
-    ticker: ["SOLO ADULTOS 18+", "COMPRA EL DROP", "SIN SALA EN VIVO", "SUSCRÍBETE", "DESBLOQUEA", "80% PARA ELLA"],
+    ticker: ["VER ES GRATIS", "UN PROGRAMA", "PUBLICA UN CORTE", "PLUS $6.99", "SIN DESBLOQUEO", "EL SIGUIENTE EMPIEZA"],
   },
 } as const;
 
@@ -54,9 +54,9 @@ export function AppShell({
   const t = shell[lang];
   const mainLinks = [
     { href: "/", label: t.home, icon: "home" },
-    { href: "/drops", label: t.talk, icon: "play" },
+    { href: "/studio", label: t.talk, icon: "play" },
     { href: "/videos", label: t.videos, icon: "play" },
-    { href: "/discover", label: t.discover, icon: "compass" },
+    { href: "/plus", label: t.discover, icon: "crown" },
     { href: "/trending", label: t.trending, icon: "flame" },
   ];
   const path = usePathname();

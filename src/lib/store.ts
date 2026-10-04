@@ -265,6 +265,7 @@ function seed(): DB {
     calls: [],
     callAsks: [],
     seats: [],
+    cuts: [],
   };
 
   const post = (
@@ -594,6 +595,7 @@ function readFile(): DB | null {
     if (!parsed.calls) parsed.calls = [];
     if (!parsed.callAsks) parsed.callAsks = [];
     if (!parsed.seats) parsed.seats = [];
+    if (!parsed.cuts) parsed.cuts = [];
     return parsed;
   } catch {
     return null;
@@ -790,6 +792,30 @@ export function addTopup(db: DB, user: User, amount: number, note = "Fondos de p
     note,
   });
 }
+
+export function chargePlatform(db: DB, from: User, gross: number, note: string) {
+  const amount = cents(gross);
+  if (from.balance + 0.001 < amount) return { ok: false as const, error: "Saldo de prueba insuficiente. Agrega fondos en Wallet." };
+  from.balance = cents(from.balance - amount);
+  db.transactions.push({
+    id: uid("tx"),
+    fromUserId: from.id,
+    toUserId: null,
+    type: "subscription",
+    amount,
+    fee: amount,
+    net: 0,
+    createdAt: new Date().toISOString(),
+    note,
+  });
+  return { ok: true as const };
+}
+
+export function plusActive(user: { plusUntil?: string | null } | null | undefined) {
+  return Boolean(user?.plusUntil && new Date(user.plusUntil).getTime() > Date.now());
+}
+
+export const PLUS_PRICE = 6.99;
 
 export const LINE_GOAL = 24;
 export const SEAT_PRICE = 2;

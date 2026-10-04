@@ -9,11 +9,13 @@ import { clearSession, confirmAgeCookie, getSessionUser, setSession } from "./au
 import { hashPassword, uid, verifyPassword } from "./password";
 import { CATEGORIES, cents, REGIONS } from "./format";
 import { getLang } from "./lang";
+import { CLIPS } from "./studio";
 import { cleanText, SAFETY_ERROR, violatesSafety } from "./safety";
 import {
   activeSub,
   addTopup,
   canViewPost,
+  chargePlatform,
   DEFAULT_TIERS,
   earnings,
   findCreator,
@@ -23,6 +25,8 @@ import {
   lineSeats,
   mutate,
   OPEN_PRICE,
+  PLUS_PRICE,
+  plusActive,
   readDb,
   SEAT_PRICE,
   spend,
@@ -856,6 +860,45 @@ export async function adminDismiss(formData: FormData) {
     if (report && report.status === "open") report.status = "dismissed";
   });
   await bounce({ ok: "moderacion" });
+}
+
+export async function buyPlus() {
+  const me = await getSessionUser();
+  if (!me) redirect("/signup?next=/plus");
+  const es = (await getLang()) === "es";
+  const result = await mutate((db) => {
+    const user = db.users.find((item) => item.id === me!.id)!;
+    const paid = chargePlatform(db, user, PLUS_PRICE, "Tokkame Plus");
+    if (!paid.ok) return { error: es ? "No alcanza el saldo de prueba." : "Not enough sandbox balance." };
+    const start = Math.max(Date.now(), user.plusUntil ? new Date(user.plusUntil).getTime() : 0);
+    user.plusUntil = new Date(start + 30 * 24 * 60 * 60 * 1000).toISOString();
+    return { ok: true as const };
+  });
+  if ("error" in result && result.error) redirect(`/plus?error=${encodeURIComponent(result.error)}`);
+  redirect("/plus?ok=plus");
+}
+
+export async function publishCut(formData: FormData) {
+  const me = await getSessionUser();
+  if (!me) redirect("/signup?next=/studio");
+  const es = (await getLang()) === "es";
+  const caption = cleanText(String(formData.get("caption") || ""), 80);
+  const clipId = String(formData.get("clipId") || "");
+  if (!CLIPS.some((clip) => clip.id === clipId)) redirect(`/studio?error=${encodeURIComponent(es ? "Elige un video." : "Pick a video.")}`);
+  if (caption.length < 3) redirect(`/studio?error=${encodeURIComponent(es ? "Escribe una línea." : "Write one line.")}`);
+  if (violatesSafety(caption)) redirect(`/studio?error=${encodeURIComponent(SAFETY_ERROR)}`);
+  const result = await mutate((db) => {
+    const user = db.users.find((item) => item.id === me!.id)!;
+    if (!db.cuts) db.cuts = [];
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const today = db.cuts.filter((item) => item.userId === user.id && new Date(item.createdAt).getTime() >= start.getTime()).length;
+    if (!plusActive(user) && today >= 1) return { error: es ? "Hoy ya publicaste el corte gratis. Plus quita el límite." : "You already published today's free cut. Plus removes the limit." };
+    db.cuts.push({ id: uid("cut"), userId: user.id, clipId, caption, createdAt: new Date().toISOString() });
+    return { ok: true as const };
+  });
+  if ("error" in result && result.error) redirect(`/studio?error=${encodeURIComponent(result.error)}`);
+  redirect("/?ok=corte");
 }
 
 export async function ensureCreatorLink(username: string) {

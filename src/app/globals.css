@@ -1786,6 +1786,21 @@ html::-webkit-scrollbar-thumb { background: #3a3032; border-radius: 999px; }
   position: relative;
 }
 .online-fab i { display: none; }
+.cut-app { position: relative; height: calc(100dvh - 150px); min-height: 520px; border-radius: 28px; overflow: hidden; background: #000; color: white; }
+.cut-app video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cut-shade { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,0.72)); }
+.cut-copy { position: absolute; left: 16px; right: 88px; bottom: 18px; display: grid; gap: 6px; }
+.cut-copy p, .cut-copy span { margin: 0; }
+.cut-copy p { color: #ff8b94; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.cut-copy h1 { margin: 0; font-size: 32px; letter-spacing: -0.04em; line-height: 1; }
+.cut-copy span { color: #e7e7ea; font-weight: 650; }
+.cut-side { position: absolute; right: 12px; bottom: 18px; display: grid; gap: 8px; }
+.cut-side button, .cut-side a { min-height: 40px; padding: 0 12px; border-radius: 999px; border: 0; background: white; color: #111; font-weight: 800; display: grid; place-items: center; }
+.cut-index { position: absolute; top: 14px; right: 14px; margin: 0; font-size: 12px; font-weight: 800; }
+.studio-tool { width: min(560px, 100%); margin: 18px auto 32px; display: grid; gap: 12px; }
+.studio-tool h1 { margin: 0; font-size: 42px; letter-spacing: -0.045em; }
+.studio-tool h1 span { color: #9c9ca6; font-size: 20px; }
+.plus-list { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 .line-page { width: min(440px, 100%); margin: 12px auto 28px; display: grid; justify-items: center; gap: 12px; text-align: center; }
 .line-page h1 { margin: 0; font-size: 42px; letter-spacing: -0.045em; }
 .line-count { margin: 0; display: flex; align-items: flex-end; gap: 6px; }

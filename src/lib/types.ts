@@ -30,6 +30,7 @@ export type User = {
   verificationNote: string;
   ageConfirmedAt: string | null;
   balance: number;
+  plusUntil?: string | null;
   messagePrice: number;
   referredBy: string | null;
   suspended: boolean;
@@ -141,6 +142,14 @@ export type CallSession = {
   createdAt: string;
 };
 
+export type Cut = {
+  id: string;
+  userId: string;
+  clipId: string;
+  caption: string;
+  createdAt: string;
+};
+
 export type Seat = {
   id: string;
   userId: string;
@@ -170,6 +179,7 @@ export type DB = {
   calls: CallSession[];
   callAsks: CallAsk[];
   seats: Seat[];
+  cuts: Cut[];
 };
 
 export type PublicUser = Omit<User, "passwordHash">;
