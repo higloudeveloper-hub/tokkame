@@ -9,6 +9,7 @@ export type LuxPerson = {
   username: string;
   photo: string;
   clip?: string;
+  line?: { id: string; filled: number; goal: number };
 };
 
 export type LuxPost = {
@@ -21,16 +22,16 @@ export type LuxPost = {
 
 const pack = {
   en: {
-    kicker: "Premium drops · 18+",
-    title: ["Buy the drop.", "Open it later."],
-    lead: "No live room. You pay for the file: one drop, or the month. She keeps 80%.",
-    live: "Drop",
+    kicker: "The line · 18+",
+    title: ["The line hits 24.", "The file opens."],
+    lead: "Pay $2 for a seat. At 24, everyone in that line gets it. Or pay $19 and open it now. Nobody has to be online.",
+    live: "Line",
     lines: [
-      "Locked until you pay. Then it is yours.",
-      "Subscribe and the new sets open first.",
-      "A receipt stays in your wallet.",
+      "The bar is public. You can watch it fill.",
+      "A seat is $2. Opening it now is $19.",
+      "No live room. The file waits until the line hits 24.",
     ],
-    call: "Open drop",
+    call: "Join the line",
     profile: "See her profile",
     trust: [
       ["Verified", "She can charge only after review."],
@@ -79,16 +80,16 @@ const pack = {
     ],
   },
   es: {
-    kicker: "Drops premium · 18+",
-    title: ["Compra el drop.", "Ábrelo después."],
-    lead: "No hay sala en vivo. Pagas por el archivo: un drop, o el mes. Ella se queda con el 80%.",
-    live: "Drop",
+    kicker: "La fila · 18+",
+    title: ["La fila llega a 24.", "El archivo abre."],
+    lead: "Un puesto cuesta $2. A los 24, lo reciben todos los de esa fila. O pagas $19 y lo abres ya. Nadie tiene que estar en línea.",
+    live: "Fila",
     lines: [
-      "Bloqueado hasta que pagas. Después es tuyo.",
-      "Si te suscribes, los sets nuevos abren primero.",
-      "El recibo se queda en tu billetera.",
+      "La barra es pública. Puedes ver cómo se llena.",
+      "El puesto cuesta $2. Abrirlo ya cuesta $19.",
+      "No hay sala. El archivo espera a que la fila llegue a 24.",
     ],
-    call: "Abrir drop",
+    call: "Entrar a la fila",
     profile: "Ver su perfil",
     trust: [
       ["Verificada", "Cobra solo después de la revisión."],
@@ -225,7 +226,10 @@ export function PhoneLuxury({ live, more, posts, lang }: { live: LuxPerson[]; mo
               <div className="sheet">
                 <h2>{person.name.split(" ")[0]} <Check /></h2>
                 <p>{t.lines[i % t.lines.length]}</p>
-                <Link className="red-btn call-now" href={`/creator/${person.username}`}>{t.call}</Link>
+                {person.line ? (
+                  <div className="lux-line"><i style={{ width: `${(person.line.filled / person.line.goal) * 100}%` }} /><span>{person.line.filled}/{person.line.goal}</span></div>
+                ) : null}
+                <Link className="red-btn call-now" href={person.line ? `/line/${person.line.id}` : `/creator/${person.username}`}>{t.call}</Link>
                 <Link className="see" href={`/creator/${person.username}`}>{t.profile}</Link>
               </div>
             </article>

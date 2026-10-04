@@ -4,7 +4,7 @@ import { PhoneLuxury } from "@/components/phone-luxury";
 import { VideoRail } from "@/components/video-rail";
 import { getLang } from "@/lib/lang";
 import { CLIPS, creatorCards, photoAt } from "@/lib/studio";
-import { isDropLocked, readDb } from "@/lib/store";
+import { isDropLocked, LINE_GOAL, lineSeats, readDb } from "@/lib/store";
 
 const desk = {
   en: {
@@ -83,13 +83,17 @@ export default async function HomePage() {
       <div>
         <section className="phone-home">
           <PhoneLuxury
-            live={online.map((creator) => ({
-              id: creator.id,
-              name: creator.name,
-              username: creator.username,
-              photo: creator.photo,
-              clip: CLIPS.find((clip) => clip.username === creator.username)?.src,
-            }))}
+            live={online.map((creator) => {
+              const premiere = db.posts.find((post) => post.creatorId === creator.id && post.visibility === "ppv");
+              return {
+                id: creator.id,
+                name: creator.name,
+                username: creator.username,
+                photo: creator.photo,
+                clip: CLIPS.find((clip) => clip.username === creator.username)?.src,
+                line: premiere ? { id: premiere.id, filled: Math.min(LINE_GOAL, lineSeats(db, premiere.id).length), goal: LINE_GOAL } : undefined,
+              };
+            })}
             more={cards.slice(0, 6).map((creator) => ({
               id: creator.id,
               name: creator.name,

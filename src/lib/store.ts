@@ -264,6 +264,7 @@ function seed(): DB {
     reports: [],
     calls: [],
     callAsks: [],
+    seats: [],
   };
 
   const post = (
@@ -592,6 +593,7 @@ function readFile(): DB | null {
     if (!parsed || parsed.version !== SEED_VERSION) return null;
     if (!parsed.calls) parsed.calls = [];
     if (!parsed.callAsks) parsed.callAsks = [];
+    if (!parsed.seats) parsed.seats = [];
     return parsed;
   } catch {
     return null;
@@ -668,7 +670,10 @@ export function canViewPost(db: DB, viewer: User | null, post: Post) {
   if (post.visibility === "public") return true;
   if (!viewer) return false;
   if (post.visibility === "ppv") {
-    return db.purchases.some((item) => item.userId === viewer.id && item.postId === post.id);
+    const bought = db.purchases.some((item) => item.userId === viewer.id && item.postId === post.id);
+    if (bought) return true;
+    const seats = (db.seats || []).filter((item) => item.postId === post.id);
+    return seats.length >= 24 && seats.some((item) => item.userId === viewer.id);
   }
   const sub = activeSub(db, viewer.id, post.creatorId);
   if (!sub) return false;
@@ -784,6 +789,14 @@ export function addTopup(db: DB, user: User, amount: number, note = "Fondos de p
     createdAt: new Date().toISOString(),
     note,
   });
+}
+
+export const LINE_GOAL = 24;
+export const SEAT_PRICE = 2;
+export const OPEN_PRICE = 19;
+
+export function lineSeats(db: DB, postId: string) {
+  return (db.seats || []).filter((item) => item.postId === postId);
 }
 
 export function lowestPrice(user: User) {

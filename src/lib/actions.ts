@@ -19,8 +19,12 @@ import {
   findCreator,
   findUserByLogin,
   isFollowing,
+  LINE_GOAL,
+  lineSeats,
   mutate,
+  OPEN_PRICE,
   readDb,
+  SEAT_PRICE,
   spend,
 } from "./store";
 import type { DropKind, Motif, TierId, Visibility } from "./types";
@@ -857,4 +861,52 @@ export async function adminDismiss(formData: FormData) {
 export async function ensureCreatorLink(username: string) {
   const creator = findCreator(readDb(), username);
   return creator?.username ?? null;
+}
+
+function lineBack(postId: string) {
+  return `/line/${postId}`;
+}
+
+export async function takeSeat(formData: FormData) {
+  const postId = String(formData.get("postId") || "");
+  const back = lineBack(postId);
+  const me = await getSessionUser();
+  if (!me) redirect(`/signup?next=${encodeURIComponent(back)}`);
+  const es = (await getLang()) === "es";
+  const result = await mutate((db) => {
+    const fan = db.users.find((user) => user.id === me!.id)!;
+    const post = db.posts.find((item) => item.id === postId && item.visibility === "ppv");
+    const creator = post ? db.users.find((user) => user.id === post.creatorId) : undefined;
+    if (!post || !creator || creator.verified !== "verified") return { error: es ? "Esa fila no está abierta." : "That line is not open." };
+    if (!db.seats) db.seats = [];
+    if (lineSeats(db, post.id).some((item) => item.userId === fan.id)) return { ok: true as const };
+    if (lineSeats(db, post.id).length >= LINE_GOAL) return { error: es ? "La fila ya abrió." : "The line already opened." };
+    const paid = spend(db, fan, creator, SEAT_PRICE, "ppv", "Puesto en la fila");
+    if ("error" in paid && paid.error) return { error: es ? "No alcanza el saldo de prueba." : "Not enough sandbox balance." };
+    db.seats.push({ id: uid("seat"), userId: fan.id, postId: post.id, createdAt: new Date().toISOString() });
+    return { ok: true as const };
+  });
+  if ("error" in result && result.error) redirect(`${back}?error=${encodeURIComponent(result.error)}`);
+  redirect(`${back}?ok=puesto`);
+}
+
+export async function openNow(formData: FormData) {
+  const postId = String(formData.get("postId") || "");
+  const back = lineBack(postId);
+  const me = await getSessionUser();
+  if (!me) redirect(`/signup?next=${encodeURIComponent(back)}`);
+  const es = (await getLang()) === "es";
+  const result = await mutate((db) => {
+    const fan = db.users.find((user) => user.id === me!.id)!;
+    const post = db.posts.find((item) => item.id === postId && item.visibility === "ppv");
+    const creator = post ? db.users.find((user) => user.id === post.creatorId) : undefined;
+    if (!post || !creator || creator.verified !== "verified") return { error: es ? "Ese archivo no está a la venta." : "That file is not for sale." };
+    if (db.purchases.some((item) => item.userId === fan.id && item.postId === post.id)) return { ok: true as const };
+    const paid = spend(db, fan, creator, OPEN_PRICE, "ppv", "Abrir ya");
+    if ("error" in paid && paid.error) return { error: es ? "No alcanza el saldo de prueba." : "Not enough sandbox balance." };
+    db.purchases.push({ id: uid("buy"), userId: fan.id, postId: post.id, createdAt: new Date().toISOString() });
+    return { ok: true as const };
+  });
+  if ("error" in result && result.error) redirect(`${back}?error=${encodeURIComponent(result.error)}`);
+  redirect(`${back}?ok=abierto`);
 }

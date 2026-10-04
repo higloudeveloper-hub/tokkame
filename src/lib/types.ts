@@ -141,6 +141,13 @@ export type CallSession = {
   createdAt: string;
 };
 
+export type Seat = {
+  id: string;
+  userId: string;
+  postId: string;
+  createdAt: string;
+};
+
 export type CallAsk = {
   id: string;
   fanId: string;
@@ -162,6 +169,7 @@ export type DB = {
   reports: Report[];
   calls: CallSession[];
   callAsks: CallAsk[];
+  seats: Seat[];
 };
 
 export type PublicUser = Omit<User, "passwordHash">;

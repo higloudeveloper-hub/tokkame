@@ -26,6 +26,8 @@ const OK: Record<"en" | "es", Record<string, string>> = {
     moderacion: "Moderation updated.",
     listo: "Done.",
     llamada: "Answer saved. If you said no, that call is not charged.",
+    puesto: "Seat saved. You are in the line.",
+    abierto: "Opened. The file is yours.",
   },
   es: {
     cuenta: "Cuenta lista. Tienes $100 de saldo de prueba.",
@@ -51,6 +53,8 @@ const OK: Record<"en" | "es", Record<string, string>> = {
     moderacion: "Moderación actualizada.",
     listo: "Listo.",
     llamada: "Respuesta guardada. Si dijiste que no, esa llamada no se cobra.",
+    puesto: "Puesto guardado. Ya estás en la fila.",
+    abierto: "Abierto. El archivo es tuyo.",
   },
 };
 
