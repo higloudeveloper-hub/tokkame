@@ -118,7 +118,19 @@ export function PromoCard({
   return (
     <article className={`promo-card${wide ? " is-wide" : ""}${locked ? " is-locked" : ""}`}>
       <div className={`promo-shot${ready ? " is-ready" : ""}`} onDoubleClick={() => like("add")}>
-        {clip ? <video src={clip} poster={photo} playsInline muted loop autoPlay onLoadedData={() => setReady(true)} /> : <img src={photo} alt="" onLoad={() => setReady(true)} />}
+        {clip ? (
+          <video src={clip} poster={photo} playsInline muted loop autoPlay onLoadedData={() => setReady(true)} />
+        ) : (
+          <img
+            src={photo}
+            alt=""
+            ref={(node) => {
+              if (node?.complete) setReady(true);
+            }}
+            onLoad={() => setReady(true)}
+            onError={() => setReady(true)}
+          />
+        )}
         {ready ? null : <span className="shot-shimmer" />}
         <BrandBurst on={burst} />
         {audio || track ? (
